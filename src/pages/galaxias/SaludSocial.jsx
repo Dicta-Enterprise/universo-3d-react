@@ -15,10 +15,10 @@ export default function Galaxias() {
         scene.background = spaceTexture;
 
         // Crear galaxia roja
-        const particles = 15000;
+        const particles = 20000;
         const spiralArms = 7;
-        const radius = 12;
-        const spread = 0.5;
+        const radius = 10;
+        const spread = 0.5; //dispercion de las particulas
         const positions = new Float32Array(particles * 3);
         const colors = new Float32Array(particles * 3);
         const color = new THREE.Color('#ff0000');
@@ -67,9 +67,84 @@ export default function Galaxias() {
 
         camera.position.set(0, 0, 18);
 
+        // Crear contenedor de texto de entrada (centro)
+        const centralDiv = document.createElement('div');
+        centralDiv.style.position = 'absolute';
+        centralDiv.style.top = '50%';
+        centralDiv.style.left = '15%';
+        centralDiv.style.transform = 'translate(-50%, -50%)';
+        centralDiv.style.color = 'white';
+        centralDiv.style.fontSize = '24px';
+        centralDiv.style.backgroundColor = 'rgba(255, 153, 135, 0.27)';
+        centralDiv.style.padding = '20px';
+        centralDiv.style.borderRadius = '10px';
+        centralDiv.style.display = 'flex';
+        centralDiv.style.flexDirection = 'column';
+        centralDiv.style.alignItems = 'center';
+        centralDiv.style.width = '360px';
+        document.body.appendChild(centralDiv);
+
+        const centralText = document.createElement('p');
+        centralText.textContent = "En los confines del vasto universo digital, existe una galaxia única conocida como Salud Social, un sistema estelar compuesto por planetas dedicados a promover el bienestar, el acceso equitativo a servicios y la colaboración entre comunidades. Esta galaxia se ha formado a través de la convergencia de tecnologías, iniciativas sociales y plataformas en línea que buscan mejorar la calidad de vida de las personas a través del conocimiento y la acción colectiva.";
+        centralDiv.appendChild(centralText);
+
+        // Crear contenedor de texto de entrada (derecha) con título y botones
+        const rightDiv = document.createElement('div');
+        rightDiv.style.position = 'absolute';
+        rightDiv.style.top = '50%';
+        rightDiv.style.right = '15%';
+        rightDiv.style.transform = 'translate(50%, -50%)';
+        rightDiv.style.color = 'white';
+        rightDiv.style.fontSize = '24px';
+        rightDiv.style.backgroundColor = 'rgba(135, 153, 255, 0.27)';
+        rightDiv.style.padding = '20px';
+        rightDiv.style.borderRadius = '10px';
+        rightDiv.style.display = 'flex';
+        rightDiv.style.flexDirection = 'column';
+        rightDiv.style.alignItems = 'center';
+        rightDiv.style.width = '360px';
+        document.body.appendChild(rightDiv);
+
+        const rightTitle = document.createElement('h2');
+        rightTitle.textContent = "Explora nuestros planetas";
+        rightDiv.appendChild(rightTitle);
+
+        // Crear los botones con imagen y redirección
+        const planets = [
+            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
+            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
+            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
+            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
+            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' }
+        ];
+
+        planets.forEach(planet => {
+            const button = document.createElement('button');
+            button.style.backgroundColor = 'transparent';
+            button.style.border = 'none';
+            button.style.margin = '10px';
+            button.style.cursor = 'pointer';
+
+            const img = document.createElement('img');
+            img.src = planet.imageUrl;
+            img.alt = planet.name;
+            img.style.width = '50px';
+            img.style.height = '50px';
+            img.style.marginRight = '10px';
+
+            const text = document.createElement('span');
+            text.textContent = planet.name;
+            text.style.color = 'white';
+
+            button.appendChild(img);
+            button.appendChild(text);
+            button.onclick = () => window.open(planet.url, '_blank');
+            rightDiv.appendChild(button);
+        });
+
         const animate = () => {
             requestAnimationFrame(animate);
-            galaxy.rotation.y += 0.001; // Animación de rotación
+            galaxy.rotation.y += 0.0005; // Animación de rotación
             renderer.render(scene, camera);
         };
         animate();
@@ -82,4 +157,3 @@ export default function Galaxias() {
 
     return <h1>Bienvenidos a la sección de Salud Social</h1>;
 }
-    

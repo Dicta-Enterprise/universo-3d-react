@@ -14,14 +14,20 @@ export default function Galaxias() {
         scene.background = spaceTexture;
 
         const galaxies = [];
-        const galaxyTitles = ["Peligros de Salud Social [R]", "Peligros Digitales [M]", "Peligros de Salud Física [C]", "Peligros de Salud Mental [V]"];
-        const galaxyUrls = [//--------- LINKS DE LOS URL -----------
+        const galaxyMaterials = [];
+        const galaxyTitles = [
+            "Peligros de Salud Social [R]",
+            "Peligros Digitales [M]",
+            "Peligros de Salud Física [C]",
+            "Peligros de Salud Mental [V]"
+        ];
+        const galaxyUrls = [
             "/ninos/salud_social",
             "/ninos/peligros_digitales",
             "/ninos/salud_fisica",
             "/ninos/salud_mental"
         ];
-        const galaxyPositions = [//----------- POSICION DE LAS GALAXIAS -------------
+        const galaxyPositions = [
             new THREE.Vector3(-13, 1, 0),
             new THREE.Vector3(13, 1, 0),
             new THREE.Vector3(0, -7, 0),
@@ -32,22 +38,66 @@ export default function Galaxias() {
         const mouse = new THREE.Vector2();
         let isAnimating = false;
 
-        // Crear un div para los títulos
-        const titleDiv = document.createElement('div');
-        titleDiv.style.position = 'absolute';
-        titleDiv.style.top = '56px';
-        titleDiv.style.width = '100%';
-        titleDiv.style.textAlign = 'center';
-        titleDiv.style.color = 'white';
-        titleDiv.style.fontSize = '48px';
-        titleDiv.style.display = 'none'; // Oculto inicialmente
-        document.body.appendChild(titleDiv);
+        // Crear contenedor de texto central
+        const centralDiv = document.createElement('div');
+        centralDiv.style.position = 'absolute';
+        centralDiv.style.top = '50%';
+        centralDiv.style.left = '50%';
+        centralDiv.style.transform = 'translate(-50%, -50%)';
+        centralDiv.style.color = 'white';
+        centralDiv.style.fontSize = '24px';
+        centralDiv.style.textAlign = 'center';
+        centralDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        centralDiv.style.padding = '20px';
+        centralDiv.style.borderRadius = '10px';
+        centralDiv.style.display = 'flex';
+        centralDiv.style.flexDirection = 'column';
+        centralDiv.style.alignItems = 'center';
+        centralDiv.style.width = '400px';
+        document.body.appendChild(centralDiv);
+
+        const centralText = document.createElement('p');
+        centralText.textContent = "¿A dónde vamos a ir hoy? <> (Seleccione una de las siguientes galaxias)";
+        centralDiv.appendChild(centralText);
+
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = "Confirmar";
+        confirmButton.style.marginTop = '10px';
+        confirmButton.style.padding = '12px 25px';
+        confirmButton.style.backgroundColor = '#4CAF50'; // Un verde llamativo
+        confirmButton.style.color = 'white';
+        confirmButton.style.border = 'none';
+        confirmButton.style.borderRadius = '8px'; // Bordes más redondeados
+        confirmButton.style.cursor = 'pointer';
+        confirmButton.style.fontSize = '16px';
+        confirmButton.style.fontWeight = 'bold';
+        confirmButton.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)'; // Sombra suave
+        confirmButton.style.transition = 'all 0.3s ease'; // Transiciones suaves
+        confirmButton.style.display = 'none';
+
+        // Efecto hover
+        confirmButton.addEventListener('mouseenter', () => {
+            confirmButton.style.backgroundColor = '#45a049'; // Verde más oscuro
+            confirmButton.style.boxShadow = '0px 6px 8px rgba(0, 0, 0, 0.2)'; // Sombra más pronunciada
+            confirmButton.style.transform = 'scale(1.05)'; // Ligeramente más grande
+        });
+
+        confirmButton.addEventListener('mouseleave', () => {
+            confirmButton.style.backgroundColor = '#4CAF50';
+            confirmButton.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
+            confirmButton.style.transform = 'scale(1)'; // Volver al tamaño original
+        });
+
+        centralDiv.appendChild(confirmButton);
+
+
+        let selectedGalaxyIndex = -1;
 
         const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
             const particles = 10000;
-            const spiralArms = 7;//numero de brazos de las galaxias
+            const spiralArms = 7;
             const radius = 5;
-            const spread = 0.5;//dispersacion de las particulas
+            const spread = 0.5;
             const positions = new Float32Array(particles * 3);
             const colors = new Float32Array(particles * 3);
             const color = new THREE.Color(baseColor);
@@ -88,6 +138,7 @@ export default function Galaxias() {
 
             scene.add(galaxy);
             galaxies.push(galaxy);
+            galaxyMaterials.push(material);
         };
 
         galaxyPositions.forEach((pos, index) => {
@@ -124,12 +175,7 @@ export default function Galaxias() {
                 if (t < 1) {
                     requestAnimationFrame(animateMove);
                 } else {
-                    titleDiv.textContent = title;
-                    titleDiv.style.display = 'block'; // Mostrar el título
-                    setTimeout(() => {
-                        window.location.href = url; // Redirigir a la URL
-                    }, 1500); // Tiempo de retraso 1000 = 1seg
-                    isAnimating = false;
+                    window.location.href = url;
                 }
             };
 
@@ -143,21 +189,39 @@ export default function Galaxias() {
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(galaxies);
 
+            galaxyMaterials.forEach((material) => {
+                material.size = 0.05;
+                material.color.setHex(0xffffff);
+            });
+
             if (intersects.length > 0) {
                 const targetGalaxy = intersects[0].object;
                 const galaxyIndex = galaxies.indexOf(targetGalaxy);
+
                 if (galaxyIndex !== -1) {
-                    moveToGalaxy(targetGalaxy, galaxyTitles[galaxyIndex], galaxyUrls[galaxyIndex]);
+                    selectedGalaxyIndex = galaxyIndex;
+
+                    galaxyMaterials[galaxyIndex].size = 0.1;
+                    galaxyMaterials[galaxyIndex].color.setHex(0xffffff);// 
+
+                    centralText.textContent = `Iremos a ${galaxyTitles[galaxyIndex]}, ¿Correcto?`;
+                    confirmButton.style.display = 'block';
                 }
             }
         };
+
+        confirmButton.addEventListener('click', () => {
+            if (selectedGalaxyIndex !== -1) {
+                moveToGalaxy(galaxies[selectedGalaxyIndex], galaxyTitles[selectedGalaxyIndex], galaxyUrls[selectedGalaxyIndex]);
+            }
+        });
 
         renderer.domElement.addEventListener('click', onClick);
 
         const animate = () => {
             requestAnimationFrame(animate);
             galaxies.forEach((galaxy, index) => {
-                const speed = 0.001 + index * 0.0003;
+                const speed = 0.0002 + index * 0.0002;//velocidad del giro de animacion
                 galaxy.rotation.y += speed;
             });
             renderer.render(scene, camera);
@@ -167,8 +231,7 @@ export default function Galaxias() {
         return () => {
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            titleDiv.remove();
-            renderer.domElement.removeEventListener('click', onClick);
+            centralDiv.remove();
         };
     }, []);
 
