@@ -1,7 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 
-export default function Galaxias() {
+export default function EsferaTexturizada() {
+    const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
+
+    // Lista de texturas disponibles
+    const textures = [
+        '/assets/2k_makemake_fictional.jpg',
+        '/assets/2k_haumea_fictional.jpg',
+        '/assets/earthx5400x2700.jpg',
+    ];
+
+    // Lista de textos correspondientes a las texturas
+    const texts = [
+        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km (satélite que gira alrededor del mundo dictariano)\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico puede llevar a la muerte\nTemperatura: extremadamente o frío=-30°C es muerte   o caliente hasta 127ºC es muerte\nVillano: Ciberbull",
+        "En este planeta....",
+        "En este otro planeta....",
+    ];
+
+    // Lista de URLs de los planetas
+    const planetUrls = [
+        '/ninos/salud_social/planeta_kio',  // URL para el primer planeta
+        'https://www.planetox.com',    // URL para el segundo planeta
+        'https://www.planetoye.com',   // URL para el tercer planeta
+    ];
+
     useEffect(() => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -14,146 +37,148 @@ export default function Galaxias() {
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
         scene.background = spaceTexture;
 
-        // Crear galaxia roja
-        const particles = 20000;
-        const spiralArms = 7;
-        const radius = 10;
-        const spread = 0.5; //dispercion de las particulas
-        const positions = new Float32Array(particles * 3);
-        const colors = new Float32Array(particles * 3);
-        const color = new THREE.Color('#ff0000');
-
-        for (let i = 0; i < particles; i++) {
-            const i3 = i * 3;
-            const r = Math.random() * radius;
-            const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.5 + Math.random() * spread;
-
-            const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
-            const y = (Math.random() - 0.5) * spread;
-            const z = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
-
-            positions[i3] = x;
-            positions[i3 + 1] = y;
-            positions[i3 + 2] = z;
-
-            const variation = Math.random() * 0.4 - 0.2;
-            const adjustedColor = color.clone().offsetHSL(0, 0, variation);
-
-            colors[i3] = adjustedColor.r;
-            colors[i3 + 1] = adjustedColor.g;
-            colors[i3 + 2] = adjustedColor.b;
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-        const material = new THREE.PointsMaterial({
-            size: 0.05,
-            vertexColors: true,
+        // Crear esfera texturizada
+        const sphereGeometry = new THREE.SphereGeometry(6, 64, 64); // Esfera con mayor detalle
+        const sphereMaterial = new THREE.MeshStandardMaterial({
+            map: new THREE.TextureLoader().load(textures[currentTextureIndex]),
         });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.position.set(0, 0, 0);
+        scene.add(sphere);
 
-        const galaxy = new THREE.Points(geometry, material);
-        galaxy.position.set(0, 2, 0); // Posición de la galaxia
-        galaxy.rotation.set(Math.PI / 5, 0, 0); // Rotación inicial de la galaxia
-        scene.add(galaxy);
-
-        // Crear esfera roja (sol)
-        const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32); // Esfera con un radio de 0.5
-        const sphereMaterial = new THREE.MeshBasicMaterial({ color: '#ff0000' });
-        const sun = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sun.position.set(0, 2, 0); // Posición central de la galaxia
-        scene.add(sun);
+        // Luz
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(2, 5, 10);
+        scene.add(pointLight);
 
         camera.position.set(0, 0, 18);
 
-        // Crear contenedor de texto de entrada (centro)
-        const centralDiv = document.createElement('div');
-        centralDiv.style.position = 'absolute';
-        centralDiv.style.top = '50%';
-        centralDiv.style.left = '15%';
-        centralDiv.style.transform = 'translate(-50%, -50%)';
-        centralDiv.style.color = 'white';
-        centralDiv.style.fontSize = '24px';
-        centralDiv.style.backgroundColor = 'rgba(255, 153, 135, 0.27)';
-        centralDiv.style.padding = '20px';
-        centralDiv.style.borderRadius = '10px';
-        centralDiv.style.display = 'flex';
-        centralDiv.style.flexDirection = 'column';
-        centralDiv.style.alignItems = 'center';
-        centralDiv.style.width = '360px';
-        document.body.appendChild(centralDiv);
+        // Ajustar el tamaño y posición de la esfera al centro de la pantalla
+        const resizeHandler = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        window.addEventListener('resize', resizeHandler);
 
-        const centralText = document.createElement('p');
-        centralText.textContent = "En los confines del vasto universo digital, existe una galaxia única conocida como Salud Social, un sistema estelar compuesto por planetas dedicados a promover el bienestar, el acceso equitativo a servicios y la colaboración entre comunidades. Esta galaxia se ha formado a través de la convergencia de tecnologías, iniciativas sociales y plataformas en línea que buscan mejorar la calidad de vida de las personas a través del conocimiento y la acción colectiva.";
-        centralDiv.appendChild(centralText);
+// Contenedor principal para texto y botones
+const mainDiv = document.createElement('div');
+mainDiv.style.position = 'absolute';
+mainDiv.style.top = '0';
+mainDiv.style.left = '0';
+mainDiv.style.width = '100%';
+mainDiv.style.height = '100%';
+mainDiv.style.display = 'flex';
+mainDiv.style.flexDirection = 'column';
+mainDiv.style.alignItems = 'center'; // Centrado horizontal
+mainDiv.style.justifyContent = 'center'; // Centrado vertical
+mainDiv.style.color = 'white';
+mainDiv.style.pointerEvents = 'none'; // Asegura que Three.js funcione correctamente
+document.body.appendChild(mainDiv);
 
-        // Crear contenedor de texto de entrada (derecha) con título y botones
-        const rightDiv = document.createElement('div');
-        rightDiv.style.position = 'absolute';
-        rightDiv.style.top = '50%';
-        rightDiv.style.right = '15%';
-        rightDiv.style.transform = 'translate(50%, -50%)';
-        rightDiv.style.color = 'white';
-        rightDiv.style.fontSize = '24px';
-        rightDiv.style.backgroundColor = 'rgba(135, 153, 255, 0.27)';
-        rightDiv.style.padding = '20px';
-        rightDiv.style.borderRadius = '10px';
-        rightDiv.style.display = 'flex';
-        rightDiv.style.flexDirection = 'column';
-        rightDiv.style.alignItems = 'center';
-        rightDiv.style.width = '360px';
-        document.body.appendChild(rightDiv);
+// Título centrado
+const title = document.createElement('h1');
+title.textContent = 'Bienvenidos a la sección de Salud Social';
+title.style.fontSize = '32px';
+title.style.textAlign = 'center'; // Asegura que el texto esté centrado
+title.style.pointerEvents = 'auto';
+mainDiv.appendChild(title);
 
-        const rightTitle = document.createElement('h2');
-        rightTitle.textContent = "Explora nuestros planetas";
-        rightDiv.appendChild(rightTitle);
+        // Contenedor de texto
+        const textContainer = document.createElement('div');
+        textContainer.style.margin = 'auto';
+        textContainer.style.backgroundColor = 'rgba(255, 153, 135, 0.27)';
+        textContainer.style.padding = '24px';
+        textContainer.style.borderRadius = '10px';
+        textContainer.style.pointerEvents = 'auto';
+        textContainer.innerHTML = texts[currentTextureIndex].replace(/\n/g, '<br />'); // Reemplaza saltos de línea
 
-        // Crear los botones con imagen y redirección
-        const planets = [
-            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
-            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
-            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
-            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' },
-            { name: 'Planeta 1', url: 'url1', imageUrl: '/assets/planet1.jpg' }
-        ];
+        // Controles (botones en forma de flechas)
+        const controlsDiv = document.createElement('div');
+        controlsDiv.style.display = 'flex';
+        controlsDiv.style.justifyContent = 'space-between';
+        controlsDiv.style.width = '100%';
+        controlsDiv.style.pointerEvents = 'auto';
 
-        planets.forEach(planet => {
-            const button = document.createElement('button');
-            button.style.backgroundColor = 'transparent';
-            button.style.border = 'none';
-            button.style.margin = '10px';
-            button.style.cursor = 'pointer';
+        // Botón izquierdo (anterior)
+        const leftArrow = document.createElement('button');
+        leftArrow.innerHTML = '⟵';
+        leftArrow.style.fontSize = '32px';
+        leftArrow.style.background = 'rgba(255, 255, 255, 0.2)'; // Fondo transparente pero visible
+        leftArrow.style.border = 'none';
+        leftArrow.style.color = 'white';
+        leftArrow.style.cursor = 'pointer';
+        leftArrow.style.margin = '20px';
+        leftArrow.style.padding = '10px';
+        leftArrow.style.borderRadius = '10px';
+        controlsDiv.appendChild(leftArrow);
 
-            const img = document.createElement('img');
-            img.src = planet.imageUrl;
-            img.alt = planet.name;
-            img.style.width = '50px';
-            img.style.height = '50px';
-            img.style.marginRight = '10px';
-
-            const text = document.createElement('span');
-            text.textContent = planet.name;
-            text.style.color = 'white';
-
-            button.appendChild(img);
-            button.appendChild(text);
-            button.onclick = () => window.open(planet.url, '_blank');
-            rightDiv.appendChild(button);
+        // Botón para abrir URL
+        const urlButton = document.createElement('button');
+        urlButton.innerHTML = 'Ver más';
+        urlButton.style.fontSize = '24px';
+        urlButton.style.background = 'rgba(255, 255, 255, 0.5)';
+        urlButton.style.border = 'none';
+        urlButton.style.color = 'black';
+        urlButton.style.cursor = 'pointer';
+        urlButton.style.margin = '20px';
+        urlButton.style.padding = '10px';
+        urlButton.style.borderRadius = '10px';
+        urlButton.addEventListener('click', () => {
+            window.open(planetUrls[currentTextureIndex], '_blank'); // Redirige a la URL del planeta actual
         });
+        controlsDiv.appendChild(urlButton);
 
+        // Botón derecho (siguiente)
+        const rightArrow = document.createElement('button');
+        rightArrow.innerHTML = '⟶';
+        rightArrow.style.fontSize = '32px';
+        rightArrow.style.background = 'rgba(255, 255, 255, 0.2)'; // Fondo transparente pero visible
+        rightArrow.style.border = 'none';
+        rightArrow.style.color = 'white';
+        rightArrow.style.cursor = 'pointer';
+        rightArrow.style.margin = '20px';
+        rightArrow.style.padding = '10px';
+        rightArrow.style.borderRadius = '10px';
+        controlsDiv.appendChild(rightArrow);
+
+        // Añadir contenedor de texto y controles al final
+        mainDiv.appendChild(textContainer);
+        mainDiv.appendChild(controlsDiv);
+
+        // Función para cambiar textura y texto
+        const changeTexture = (direction) => {
+            let nextIndex = currentTextureIndex;
+            if (direction === 'next') {
+                nextIndex = (currentTextureIndex + 1) % textures.length;
+            } else if (direction === 'prev') {
+                nextIndex = (currentTextureIndex - 1 + textures.length) % textures.length;
+            }
+            const newTexture = new THREE.TextureLoader().load(textures[nextIndex]);
+            sphere.material.map = newTexture;
+            sphere.material.needsUpdate = true;
+            setCurrentTextureIndex(nextIndex); // Actualiza el índice actual
+            textContainer.innerHTML = texts[nextIndex].replace(/\n/g, '<br />'); // Actualiza el texto con saltos de línea
+        };
+
+        rightArrow.addEventListener('click', () => changeTexture('next'));
+        leftArrow.addEventListener('click', () => changeTexture('prev'));
+
+        // Animación
         const animate = () => {
             requestAnimationFrame(animate);
-            galaxy.rotation.y += 0.0005; // Animación de rotación
+            sphere.rotation.y += 0.0005; // Rotación animada
             renderer.render(scene, camera);
         };
         animate();
 
         return () => {
+            window.removeEventListener('resize', resizeHandler);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
+            document.body.removeChild(mainDiv);
         };
-    }, []);
+    }, [currentTextureIndex, textures, texts, planetUrls]);
 
-    return <h1>Bienvenidos a la sección de Salud Social</h1>;
+    return null;
 }
