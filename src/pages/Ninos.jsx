@@ -1,5 +1,10 @@
 import React from 'react'; // Asegúrate de incluir esto
+import Background from '../components/BackgroundStars';
 
 export default function Ninos() {
-    return <h1>Bienvenidos a la sección de Niños</h1>;
+    return (
+        <div>
+            <Background></Background>
+        </div>
+    );
 }
