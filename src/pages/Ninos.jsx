@@ -10,8 +10,343 @@ export default function Galaxias() {
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
-        scene.background = spaceTexture;
+        /*const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
+        scene.background = spaceTexture;*/
+
+        // Establecer el fondo de la escena
+        scene.background = new THREE.Color(0x000000);
+
+        // -------------------------
+
+        // Agregar 2 luz ambiental y una luz puntual
+        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Luz suave
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(50, 0, 30);
+        scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight2.position.set(-50, 0, 30);
+        scene.add(pointLight2);
+
+        // Crear una estrella de 5 puntas
+        function crearEstrella(color) {
+            const shape = new THREE.Shape();
+            const radioExterior = 2;
+            const radioInterior = 1.2;
+            const numPuntas = 5;
+            const anguloPaso = Math.PI / numPuntas;
+            const suavizado = 0.2; // Controla qué tan redondeadas son las puntas 0.4
+
+            for (let i = 0; i <= numPuntas * 2; i++) {
+                const angulo = i * anguloPaso;
+                const radio = i % 2 === 0 ? radioExterior : radioInterior;
+                const x = radio * Math.cos(angulo);
+                const y = radio * Math.sin(angulo);
+
+                if (i === 0) {
+                    shape.moveTo(x, y);
+                } else {
+                    // Calculamos el punto de control para suavizar la curva
+                    const anguloPrevio = (i - 1) * anguloPaso;
+                    const radioPrevio = (i - 1) % 2 === 0 ? radioExterior : radioInterior;
+                    const xPrev = radioPrevio * Math.cos(anguloPrevio);
+                    const yPrev = radioPrevio * Math.sin(anguloPrevio);
+
+                    const anguloCentro = (anguloPrevio + angulo) / 2;
+                    const radioCentro = (radio + radioPrevio) / 2 + suavizado;
+                    const xCentro = radioCentro * Math.cos(anguloCentro);
+                    const yCentro = radioCentro * Math.sin(anguloCentro);
+
+                    shape.quadraticCurveTo(xCentro, yCentro, x, y);
+                }
+            }
+            shape.closePath();
+
+            const geometry = new THREE.ExtrudeGeometry(shape, {
+                depth: 0.5,
+                bevelEnabled: true,
+                bevelSize: 0.2,
+                bevelThickness: 0.3,
+            });
+
+            const material = new THREE.MeshStandardMaterial({ 
+                color: color, 
+                metalness: 0, 
+                roughness: 0 
+            });
+
+            return new THREE.Mesh(geometry, material);
+        }
+
+        // Función para crear una línea vertical
+        function crearLineaVertical(altura) {
+            const geometry = new THREE.CylinderGeometry(0.05, 0.05, altura, 32);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    color: { value: new THREE.Color(0xffffff) },
+                    opacityStart: { value: 1.0 },  // Opacidad en la base
+                    opacityEnd: { value: 0.0 }     // Opacidad en el otro extremo
+                },
+                vertexShader: `
+                    varying float vPositionY;
+                    void main() {
+                        vPositionY = position.y;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    uniform float opacityStart;
+                    uniform float opacityEnd;
+                    varying float vPositionY;
+
+                    void main() {
+                        float opacity = mix(opacityStart, opacityEnd, (vPositionY + 5.0) / 10.0); 
+                        gl_FragColor = vec4(color, opacity);
+                    }
+                `,
+                transparent: true
+            });
+            
+            
+            const linea = new THREE.Mesh(geometry, material);
+            return linea;
+        }
+
+         // Función para crear un círculo
+        function crearCirculo(color, radio = 1) {
+            const geometry = new THREE.CircleGeometry(radio, 32);
+            const material = new THREE.MeshStandardMaterial({ color: color, side: THREE.DoubleSide });
+            const circulo = new THREE.Mesh(geometry, material);
+            return circulo;
+        }
+
+        // Función para crear una cruz redonda
+        function crearCruzRedonda(color, altura = 4, ancho = 2, grosor = 0.1) {
+            // Crear el brazo vertical
+            const brazoVertical = new THREE.Mesh(
+                new THREE.CylinderGeometry(grosor, grosor, altura, 32),
+                new THREE.MeshStandardMaterial({ color: color })
+            );
+
+            // Crear el brazo horizontal
+            const brazoHorizontal = new THREE.Mesh(
+                new THREE.CylinderGeometry(grosor, grosor, ancho, 32),
+                new THREE.MeshStandardMaterial({ color: color })
+            );
+            brazoHorizontal.rotation.z = Math.PI / 2; // Rotar 90 grados
+
+            // Crear una esfera en la intersección
+            const esfera = new THREE.Mesh(
+                new THREE.SphereGeometry(grosor * 1.5, 32, 32),
+                new THREE.MeshStandardMaterial({ color: color })
+            );
+
+            // Agrupar los elementos de la cruz
+            const cruz = new THREE.Group();
+            cruz.add(brazoVertical);
+            cruz.add(brazoHorizontal);
+            cruz.add(esfera);
+
+            return cruz;
+        }
+        
+        function Termometro(){
+             // Material rojo (simulando mercurio)
+            const material = new THREE.MeshStandardMaterial({ color: 0xFF5AAA, roughness: 0.5 });
+
+            // Crear el cilindro (tubo del termómetro)
+            const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2.5, 32);
+            const cylinder = new THREE.Mesh(cylinderGeometry, material);
+            cylinder.position.y = 1.5; // Ajuste para que se vea en la parte superior
+
+            // Crear la esfera (bulbo del termómetro)
+            const sphereGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+            const sphere = new THREE.Mesh(sphereGeometry, material);
+            sphere.position.y = 0; // Base del termómetro
+
+            // Agregar objetos a la escena
+            const Termometro = new THREE.Group();
+            Termometro.add(cylinder);
+            Termometro.add(sphere);
+
+            return Termometro;
+        }
+
+        // Definir posiciones y colores de las estrellas
+        const estrellasConfig = [
+            { x: -70, y: 21, z: -30, color: 0X00ff00, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.6 },
+            { x: -75, y: -32, z: -30, color: 0Xff0000, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.7},
+            { x: -55, y: 16, z: -30, color: 0xFADC00, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.8 },
+            { x: -46, y: -17, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: -30, y: 5, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: -50, y: 0, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.7},
+            { x: -33, y: -32, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.7},
+            { x: -35, y: 20, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.8},
+            { x: 10, y: 25, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.6},
+            { x: 0, y: 15, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: 7, y: -3, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: 10, y: -18, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: 10, y: -32, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: 34, y: -3, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
+            { x: 55, y: -3, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.8},
+            { x: 35, y: 20, z: -30, color: 0x9d4edd, rotX: 0, rotY: - Math.PI / 6, rotZ: Math.PI / 2, escalado: 0.8},
+            { x: 55, y: 15, z: -30, color: 0xFADC00, rotX: 0, rotY: 3 * Math.PI / 4, rotZ: Math.PI / 2, escalado: 0.8 },
+            { x: 50, y: -20, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5 },
+            { x: 70, y: 10, z: -30, color: 0x9d4edd, rotX: 0, rotY: 3 * Math.PI / 3.5, rotZ: Math.PI / 2, escalado: 0.8},
+        ];
+        
+        // Definir posiciones y colores para círculos
+        const circulosConfig = [
+            { x: -60, y: 20, z: -20, color: 0x00ff00, radio: 0.2 }, //verde
+            { x: -55, y: 0, z: -20, color: 0xff0000, radio: 1.5}, //rojo
+            { x: -54, y: -10, z: -20, color: 0xff0000, radio: 0.4 },
+            { x: -50, y: 25, z: -20, color: 0x00ff00, radio: 0.3 },
+            { x: -50, y: 5, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -50, y: -25, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -45, y: -8, z: -20, color: 0xff0000, radio: 0.4 },
+            { x: -40, y: 8, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -40, y: 25, z: -20, color: 0x00ff00, radio: 0.2 },
+            { x: -40, y: -18, z: -20, color: 0xff0000, radio: 0.5 },
+            { x: -37, y: -22, z: -20, color: 0x0cb7f2, radio: 0.2 }, // celeste
+            { x: -33, y: -25, z: -20, color: 0x0cb7f2, radio: 0.2 },
+            { x: -30, y: -20, z: -20, color: 0x0cb7f2, radio: 0.2 },
+            { x: -30, y: 0, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -32, y: 10, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -34, y: -10, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -30, y: 20, z: -20, color: 0x00ff00, radio: 0.3 },
+            { x: -28, y: -5, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -22, y: 10, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -25, y: 22, z: -20, color: 0x00ff00, radio: 0.2 },
+            { x: -20, y: -15, z: -20, color: 0x0cb7f2, radio: 0.2 },
+            { x: -18, y: 3, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -15, y: -3, z: -20, color: 0xff0000, radio: 0.2 },
+            { x: -10, y: -26, z: -20, color: 0x0cb7f2, radio: 0.2},
+            { x: -10, y: -10, z: -20, color: 0x0cb7f2, radio: 0.2},
+            { x: -10, y: 10, z: -20, color: 0x00ff00, radio: 0.2},
+            { x: -8, y: 20, z: -20, color: 0x00ff00, radio: 0.3},
+            { x: -6, y: 5, z: -20, color: 0x00ff00, radio: 0.2},
+            { x: -4, y: -5, z: -20, color: 0x0cb7f2, radio: 0.2},
+            { x: 0, y: -28, z: -20, color: 0x0cb7f2, radio: 0.2},
+            { x: 8, y: 13, z: -20, color: 0x00ff00, radio: 0.2},
+            { x: 6, y: 5, z: -20, color: 0x00ff00, radio: 0.3},
+            { x: 2, y: -18, z: -20, color: 0x0cb7f2, radio: 0.3},
+            { x: 10, y: 26, z: -20, color: 0x00ff00, radio: 0.2},
+            { x: 18, y: 20, z: -20, color: 0x00ff00, radio: 0.3},
+            { x: 13, y: -20, z: -20, color: 0x0cb7f2, radio: 0.3},
+            { x: 17, y: -7, z: -20, color: 0x9d4edd, radio: 0.3}, //morado
+            { x: 20, y: 5, z: -20, color: 0x9d4edd, radio: 0.2},
+            { x: 22, y: -17, z: -20, color: 0x0cb7f2, radio: 0.4},
+            { x: 26, y: -15, z: -20, color: 0x0cb7f2, radio: 0.3 },
+            { x: 30, y: -25, z: -20, color: 0x0cb7f2, radio: 1.2 },
+            { x: 33, y: -13, z: -20, color: 0x9d4edd, radio: 0.5 },
+            { x: 35, y: 0, z: -20, color: 0x9d4edd, radio: 0.2 },
+            { x: 40, y: -10, z: -20, color: 0x9d4edd, radio: 0.3 },
+            { x: 40, y: 10, z: -20, color: 0x9d4edd, radio: 0.2 },
+            { x: 47, y: 25, z: -20, color: 0x9d4edd, radio: 1.2 },
+            { x: 50, y: -16, z: -20, color: 0x0cb7f2, radio: 0.3 },
+            { x: 55, y: -13, z: -20, color: 0x0cb7f2, radio: 0.3 },
+            { x: 60, y: 25, z: -20, color: 0x9d4edd, radio: 0.4 },
+            { x: 60, y: -25, z: -20, color: 0x0cb7f2, radio: 0.4},
+        ];
+
+        const crucesConfig = [
+            { x: -50, y: -25, z: -20, color: 0xFF5AAA, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: 0},
+            { x: -50, y: 15, z: -20, color: 0xFF5AAA, altura: 2, ancho: 2, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4 },
+            { x: -30, y: 25, z: -20, color: 0x81E138, altura: 1.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: -20, y: -10, z: -20, color: 0x81E138, altura: 2.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: -15, y: -20, z: -20, color: 0x0cb7f2, altura: 2.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: -15, y: 16, z: -20, color: 0x81E138, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: 20, y: -20, z: -20, color: 0x0cb7f2, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4},
+            { x: 28, y: 10, z: -20, color: 0x81E138, altura: 1.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: 35, y: 22, z: -20, color: 0xFF5AAA, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+            { x: 50, y: -25, z: -20, color: 0x9d4edd, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4 },
+            { x: 60, y: 0, z: -20, color: 0xFF5AAA, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
+        ];
+        
+        // Configuración de líneas con posición y rotación separadas
+        const lineasConfig = [
+            { x: -70, y: 32, z: -30, altura: 15},
+            { x: -55, y: 32, z: -30, altura: 25},
+            { x: -35, y: 32, z: -30, altura: 18},
+            { x: 35, y: 32, z: -30, altura: 18},
+            { x: 55, y: 32, z: -30, altura: 25},
+            { x: 70, y: 28, z: -30, altura: 30},
+        ];
+
+        const TermometroConfig = [
+            { x: 25, y: 0, z: 0, rotx: 0, roty: 0, rotz: 0},
+            { x: 20, y: -10, z: 0, rotx: Math.PI, roty: 0, rotz: 0},
+            { x: -25, y: -8, z: 0, rotx: Math.PI, roty: 0, rotz: 0},
+            { x: -18, y: 8, z: 0, rotx: 0, roty: 0, rotz: 0},
+        ];
+
+        const estrellas = [];
+        const cruces = [];
+        const termometros = [];
+        const circulos = [];
+
+        // Crear y posicionar estrellas con colores fijos
+        TermometroConfig.forEach(config => {
+            const termometro = Termometro();
+            termometro.position.set(config.x, config.y, config.z);
+            termometro.rotation.set(config.rotx, config.roty, config.rotz);
+            termometro.scale.set(0.5,0.5,0.5);
+        
+            scene.add(termometro);
+            termometros.push(termometro);
+
+            // Animación de oscilación
+            termometro.userData = { angle: Math.random() * Math.PI * 2 }; // Guardamos un ángulo inicial aleatorio
+
+            const swingSpeed = 0.005; // Velocidad de oscilación
+
+            termometro.animation = () => {
+                termometro.userData.angle += swingSpeed; // Aumentamos el ángulo en cada frame
+                termometro.rotation.z = Math.sin(termometro.userData.angle) * 0.2; // Aplicamos el movimiento de oscilación
+            };
+        });
+
+        // Crear y posicionar estrellas con colores fijos
+        estrellasConfig.forEach(config => {
+            const estrella = crearEstrella(config.color);
+            estrella.position.set(config.x, config.y, config.z);
+
+            estrella.rotation.set(config.rotX, config.rotY, config.rotZ);
+            estrella.scale.set(config.escalado,config.escalado,config.escalado);
+        
+            scene.add(estrella);
+            estrellas.push(estrella);
+        });
+
+        // Crear y agregar líneas a la escena
+        lineasConfig.forEach((config) => {
+            const linea = crearLineaVertical(config.altura);
+            linea.position.set(config.x, config.y, config.z);
+            scene.add(linea);
+            
+        });
+
+        // Crear y posicionar círculos con colores fijos
+        circulosConfig.forEach(config => {
+            const circulo = crearCirculo(config.color, config.radio);
+            circulo.position.set(config.x, config.y, config.z);
+            scene.add(circulo);
+            circulos.push(circulo);
+        });
+
+        // Crear y posicionar cruces redondas con colores fijos
+        crucesConfig.forEach(config => {
+            const cruz = crearCruzRedonda(config.color, config.altura, config.ancho, config.grosor);
+            cruz.position.set(config.x, config.y, config.z);
+            cruz.rotation.set(config.rotx, config.roty, config.rotz);
+            scene.add(cruz);
+            cruces.push(cruz);
+        });
+
+        // ------------------- Galaxia
 
         const galaxies = [];
         const galaxyMaterials = [];
@@ -218,14 +553,77 @@ export default function Galaxias() {
 
         renderer.domElement.addEventListener('click', onClick);
 
+        let time = 0;
+        let scaleDirection = 1; // 1 para agrandar, -1 para achicar
+        let scaleSpeed = 0.002; // Velocidad de cambio de escala
+        let scaleLimit = 1.5; // Límite de escala máximo
+        let minScale = 0.3; // Límite de escala mínimo
+
         const animate = () => {
             requestAnimationFrame(animate);
+            
+            time += 0.02;
+            console.log(time);
+
             galaxies.forEach((galaxy, index) => {
                 const speed = 0.0002 + index * 0.0002;//velocidad del giro de animacion
                 galaxy.rotation.y += speed;
             });
+            
+            cruces.forEach(cruz => {
+                cruz.rotation.z += 0.005;  // Rotación en el eje X
+            });
+
+            const tiempoBase = Date.now() * 0.001;
+
+            estrellas.forEach((estrella, index) => {
+                const velocidad = 1; // Ajusta la velocidad del rebote
+                const amplitud = 0.03; // Ajusta la altura del rebote
+                const tiempo = tiempoBase + index * 0.3; // Desfase entre estrellas
+                
+                const direccion = index % 2 === 0 ? 1 : -1;
+
+                estrella.position.y += direccion * Math.sin(tiempo * velocidad) * amplitud * 0.5 ;
+                estrella.rotation.z += 0.005; // Rotación continua
+            });
+
+            circulos.forEach((circulo, index) => {
+                const velocidad = 0.5; // Ajusta la velocidad del rebote
+                const amplitud = 0.01; // Ajusta la altura del rebote
+                const tiempo = tiempoBase + index * 0.3; // Desfase entre círculos
+            
+                // Alterna la dirección del rebote para algunos círculos
+                const direccion = index % 2 === 0 ? 1 : -1;
+            
+                circulo.position.y += direccion * Math.sin(tiempo * velocidad) * amplitud;
+            
+                // Efecto de escala pulsante
+                if (scaleDirection === 1) {
+                    circulo.scale.set(
+                        circulo.scale.x + scaleSpeed,
+                        circulo.scale.y + scaleSpeed,
+                        circulo.scale.z + scaleSpeed
+                    );
+                } else {
+                    circulo.scale.set(
+                        circulo.scale.x - scaleSpeed,
+                        circulo.scale.y - scaleSpeed,
+                        circulo.scale.z - scaleSpeed
+                    );
+                }
+            
+                if (circulo.scale.x >= scaleLimit || circulo.scale.x <= minScale) {
+                    scaleDirection *= -1;
+                }
+            });
+
+            termometros.forEach(termometro => {
+                termometro.animation(); // Llamamos a la animación de cada termómetro
+            });
+
             renderer.render(scene, camera);
         };
+        
         animate();
 
         return () => {
