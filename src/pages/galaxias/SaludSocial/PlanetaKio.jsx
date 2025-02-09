@@ -4,6 +4,30 @@ import * as THREE from 'three';
 export default function Jovenes() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+    const textures = [
+        '/assets/2k_makemake_fictional.jpg',
+        '/assets/2k_haumea_fictional.jpg',
+        '/assets/earthx5400x2700.jpg',
+        '/assets/2k_neptune.jpg',
+        '/assets/2k_venus_surface.jpg',
+    ];
+
+    const texts = [
+        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
+        "SEGUNDO PLANETA - - ",
+        "TERCER PLANETA - - - ",
+        "CUARTO PLANETA - - - - ",
+        "QUINTO PLANETA - - - - - ",
+    ];
+
+    const planetUrls = [
+        '/ninos/salud_social/planeta_kio',
+        '/ninos/salud_social/planeta_2',
+        '/ninos/salud_social/planeta_3',
+        '/ninos/salud_social/planeta_4',
+        '/ninos/salud_social/planeta_5',
+    ];
+
     useEffect(() => {
         // Configuración de Three.js para el fondo estrellado y el planeta
         const scene = new THREE.Scene();
@@ -20,7 +44,7 @@ export default function Jovenes() {
         // Planeta giratorio
         const sphereGeometry = new THREE.SphereGeometry(5, 64, 64);
         const sphereMaterial = new THREE.MeshStandardMaterial({
-            map: new THREE.TextureLoader().load('/assets/2k_makemake_fictional.jpg'), // Textura del planeta
+            map: new THREE.TextureLoader().load(textures[0]), // Usar la primera textura por defecto
         });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
@@ -60,13 +84,13 @@ export default function Jovenes() {
         const createButton = (text, onClick, color = '#ff0000') => {
             const button = document.createElement('button');
             button.innerHTML = text;
-            button.style.fontSize = '16px';
+            button.style.fontSize = '20px';
             button.style.background = 'none';
             button.style.border = `2px solid ${color}`;
             button.style.color = color;
             button.style.cursor = 'pointer';
-            button.style.padding = '10px 20px';
-            button.style.borderRadius = '20px';
+            button.style.padding = '12px 32px';
+            button.style.borderRadius = '12px';
             button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
             button.style.transition = 'all 0.3s ease';
             button.style.textShadow = `0 0 3px ${color}`;
@@ -127,28 +151,85 @@ export default function Jovenes() {
             <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta KIO, explorando su geografía, clima, y los desafíos únicos que presenta.</p>
         `, true);
 
-        // Botón "Seguir explorando" debajo del Resumen
-        const seguirExplorandoButton = createButton('Seguir explorando', () => {
-            window.history.back(); // Redirige a la página anterior
-        }, '#FFFFFF'); // Color
-
-        leftDiv.appendChild(seguirExplorandoButton);
-
         // Crear el div de Beneficios
         const rightDiv = createContentDiv(`
             <h2>Beneficios</h2>
             <p>Al completar este curso, ganarás una comprensión profunda de KIO, habilidades prácticas para navegar sus desafíos, y una certificación reconocida.</p>
         `, false);
 
+        // Botón "Seguir explorando" debajo del Resumen
+        const seguirExplorandoButton = createButton('Seguir explorando', () => {
+            window.history.back(); // Redirige a la página anterior
+        }, '#FFFFFF'); // Color
+
         // Botón "Comprar" debajo de Beneficios
         const comprarButton = createButton('Comprar', () => {
             window.location.href = ''; // ----------------------- LANDING PAGE -------------     <<<<<<------
         }, '#FFFFFF'); // Color
 
-        rightDiv.appendChild(comprarButton);
+        // Crear un contenedor para el contenido izquierdo y su botón
+        const leftContainer = document.createElement('div');
+        leftContainer.style.display = 'flex';
+        leftContainer.style.flexDirection = 'column';
+        leftContainer.style.alignItems = 'center';
+        leftContainer.appendChild(leftDiv);
+        leftContainer.appendChild(seguirExplorandoButton);
 
-        mainDiv.appendChild(leftDiv);
-        mainDiv.appendChild(rightDiv);
+        // Crear un contenedor para el contenido derecho y su botón
+        const rightContainer = document.createElement('div');
+        rightContainer.style.display = 'flex';
+        rightContainer.style.flexDirection = 'column';
+        rightContainer.style.alignItems = 'center';
+        rightContainer.appendChild(rightDiv);
+        rightContainer.appendChild(comprarButton);
+
+        // Añadir los contenedores al div principal
+        mainDiv.appendChild(rightContainer);
+        mainDiv.appendChild(leftContainer);
+
+        // Crear la pasarela de planetas
+        const planetCarousel = document.createElement('div');
+        planetCarousel.style.position = 'absolute';
+        planetCarousel.style.bottom = '20px';
+        planetCarousel.style.left = '50%';
+        planetCarousel.style.transform = 'translateX(-50%)';
+        planetCarousel.style.display = 'flex';
+        planetCarousel.style.gap = '20px';
+        planetCarousel.style.pointerEvents = 'auto';
+        planetCarousel.style.zIndex = '1000';
+        planetCarousel.style.overflowX = 'auto'; // Para permitir el desplazamiento horizontal en móviles
+        planetCarousel.style.padding = '10px'; // Espaciado interno
+        planetCarousel.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fondo semitransparente
+        planetCarousel.style.borderRadius = '10px'; // Bordes redondeados
+        mainDiv.appendChild(planetCarousel);
+
+        // Crear miniaturas de planetas
+        textures.forEach((texture, index) => {
+            const planetThumbnail = document.createElement('div');
+            planetThumbnail.style.width = '60px';
+            planetThumbnail.style.height = '60px';
+            planetThumbnail.style.borderRadius = '50%';
+            planetThumbnail.style.backgroundImage = `url(${texture})`;
+            planetThumbnail.style.backgroundSize = 'cover';
+            planetThumbnail.style.cursor = 'pointer';
+            planetThumbnail.style.transition = 'transform 0.3s ease';
+
+            // Efecto hover
+            planetThumbnail.addEventListener('mouseover', () => {
+                planetThumbnail.style.transform = 'scale(1.1)';
+            });
+
+            planetThumbnail.addEventListener('mouseout', () => {
+                planetThumbnail.style.transform = 'scale(1)';
+            });
+
+            // Acción al hacer clic
+            planetThumbnail.addEventListener('click', () => {
+                window.location.href = planetUrls[index]; // Redirige a la URL correspondiente
+            });
+
+            planetCarousel.appendChild(planetThumbnail);
+        });
 
         // Manejar cambios de tamaño de la ventana
         const handleResize = () => {

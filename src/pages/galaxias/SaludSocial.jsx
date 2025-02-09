@@ -9,18 +9,24 @@ export default function EsferaTexturizada() {
         '/assets/2k_makemake_fictional.jpg',
         '/assets/2k_haumea_fictional.jpg',
         '/assets/earthx5400x2700.jpg',
+        '/assets/2k_neptune.jpg',
+        '/assets/2k_venus_surface.jpg',
     ];
 
     const texts = [
         "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "En este planeta....",
-        "En este otro planeta....",
+        "SEGUNDO PLANETA - - ",
+        "TERCER PLANETA - - - ",
+        "CUARTO PLANETA - - - - ",
+        "QUINTO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
         '/ninos/salud_social/planeta_2',
         '/ninos/salud_social/planeta_3',
+        '/ninos/salud_social/planeta_4',
+        '/ninos/salud_social/planeta_5',
     ];
 
     useEffect(() => {
@@ -57,10 +63,10 @@ export default function EsferaTexturizada() {
         };
         window.addEventListener('resize', resizeHandler);
 
-        //contenedor principal 
+        // Contenedor principal
         const mainDiv = document.createElement('div');
         mainDiv.style.position = 'absolute';
-        mainDiv.style.top = '10%';
+        mainDiv.style.top = '0';
         mainDiv.style.left = '0';
         mainDiv.style.width = '100%';
         mainDiv.style.height = '100%';
@@ -72,7 +78,7 @@ export default function EsferaTexturizada() {
         mainDiv.style.pointerEvents = 'none';
         document.body.appendChild(mainDiv);
 
-        //texto principal
+        // Texto principal
         const title = document.createElement('h1');
         title.textContent = 'Bienvenidos a la sección de Salud Social';
         title.style.fontSize = '40px';
@@ -81,14 +87,11 @@ export default function EsferaTexturizada() {
         title.style.position = 'absolute';
         title.style.left = '50%';
         title.style.top = '5%';
-        title.style.transform = 'translate(-50%, -50%)';
+        title.style.transform = 'translate(-50%, 0%)';
         mainDiv.appendChild(title);
 
-        //contenedor texto
+        // Contenedor de texto
         const textContainer = document.createElement('div');
-        mainDiv.style.justifyContent = '';
-        mainDiv.style.paddingTop = '450px';
-
         textContainer.style.fontSize = '20px';
         textContainer.style.backgroundColor = 'rgba(252, 107, 102, 0.32)';
         textContainer.style.padding = '24px';
@@ -96,13 +99,61 @@ export default function EsferaTexturizada() {
         textContainer.style.borderRadius = '10px';
         textContainer.style.pointerEvents = 'auto';
         textContainer.innerHTML = texts[currentTextureIndex].replace(/\n/g, '<br />');
+        mainDiv.appendChild(textContainer);
 
-        //contenedor de los botones <>
+        // Contenedor de la pasarela de planetas
+        const planetCarousel = document.createElement('div');
+        planetCarousel.style.position = 'absolute';
+        planetCarousel.style.bottom = '20px';
+        planetCarousel.style.left = '50%';
+        planetCarousel.style.transform = 'translateX(-50%)';
+        planetCarousel.style.display = 'flex';
+        planetCarousel.style.gap = '20px';
+        planetCarousel.style.pointerEvents = 'auto';
+        planetCarousel.style.zIndex = '1000';
+        planetCarousel.style.overflowX = 'auto'; // Para permitir el desplazamiento horizontal en móviles
+        planetCarousel.style.padding = '10px'; // Espaciado interno
+        planetCarousel.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fondo semitransparente
+        planetCarousel.style.borderRadius = '10px'; // Bordes redondeados
+        mainDiv.appendChild(planetCarousel);
 
+        // Crear miniaturas de planetas
+        textures.forEach((texture, index) => {
+            const planetThumbnail = document.createElement('div');
+            planetThumbnail.style.width = '48px';
+            planetThumbnail.style.height = '48px';
+            planetThumbnail.style.borderRadius = '50%';
+            planetThumbnail.style.backgroundImage = `url(${texture})`;
+            planetThumbnail.style.backgroundSize = 'cover';
+            planetThumbnail.style.cursor = 'pointer';
+            planetThumbnail.style.border = index === currentTextureIndex ? '2px solid #ff0000' : '2px solid transparent';
+            planetThumbnail.style.transition = 'border 0.3s ease';
+
+            planetThumbnail.addEventListener('click', () => {
+                setCurrentTextureIndex(index);
+                textContainer.innerHTML = texts[index].replace(/\n/g, '<br />');
+                sphere.material.map = new THREE.TextureLoader().load(textures[index]);
+                sphere.material.needsUpdate = true;
+
+                // Actualizar el borde de la miniatura seleccionada
+                planetCarousel.childNodes.forEach((thumbnail, i) => {
+                    thumbnail.style.border = i === index ? '2px solid #ff0000' : '2px solid transparent';
+                });
+            });
+
+            planetCarousel.appendChild(planetThumbnail);
+        });
+
+        // Contenedor de los botones
         const controlsDiv = document.createElement('div');
         controlsDiv.style.display = 'flex';
-        controlsDiv.style.gap = '64px';
+        controlsDiv.style.gap = '32px';
         controlsDiv.style.pointerEvents = 'auto';
+        controlsDiv.style.position = 'absolute';
+        controlsDiv.style.bottom = '100px'; // Posición ajustada para no solaparse con la pasarela
+        controlsDiv.style.left = '50%';
+        controlsDiv.style.transform = 'translateX(-50%)';
+        mainDiv.appendChild(controlsDiv);
 
         const createButton = (text, onClick, color = '#ff0000') => {
             const button = document.createElement('button');
@@ -117,21 +168,21 @@ export default function EsferaTexturizada() {
             button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
             button.style.transition = 'all 0.3s ease';
             button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-        
+
             // Efecto hover
             button.addEventListener('mouseover', () => {
                 button.style.transform = 'scale(1.05)';
                 button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
                 button.style.textShadow = `0 0 5px ${color}`;
             });
-        
+
             // Efecto al salir del hover
             button.addEventListener('mouseout', () => {
                 button.style.transform = 'scale(1)';
                 button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
                 button.style.textShadow = `0 0 3px ${color}`;
             });
-        
+
             // Efecto al hacer clic
             button.addEventListener('click', () => {
                 button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
@@ -140,7 +191,7 @@ export default function EsferaTexturizada() {
                 }, 200);
                 onClick();
             });
-        
+
             return button;
         };
 
@@ -161,6 +212,11 @@ export default function EsferaTexturizada() {
                 // Actualizar el texto del contenedor
                 textContainer.innerHTML = texts[nextIndex].replace(/\n/g, '<br />');
 
+                // Actualizar el borde de la miniatura seleccionada
+                planetCarousel.childNodes.forEach((thumbnail, index) => {
+                    thumbnail.style.border = index === nextIndex ? '2px solid #ff0000' : '2px solid transparent';
+                });
+
                 return nextIndex; // Retorna el nuevo índice para actualizar el estado correctamente
             });
         };
@@ -168,14 +224,14 @@ export default function EsferaTexturizada() {
         const backButton = createButton('← Back', () => {
             window.history.back();
         });
-        
+
         backButton.style.position = 'absolute';
         backButton.style.left = '20px';
-        backButton.style.top = '20px'; 
-        backButton.style.zIndex = '1000'; // para que el boton este por encima de todo
-        
+        backButton.style.top = '20px';
+        backButton.style.zIndex = '1000'; // para que el botón esté por encima de todo
+
         document.body.appendChild(backButton);
-        
+
         controlsDiv.appendChild(createButton('⟵', () => changeTexture('prev')));
         controlsDiv.appendChild(createButton('Ver más', () => {
             // Inicia la animación de acercamiento
@@ -188,9 +244,6 @@ export default function EsferaTexturizada() {
             }, 1000);  // Espera 1 segundo antes de redirigir
         }));
         controlsDiv.appendChild(createButton('⟶', () => changeTexture('next')));
-        
-        mainDiv.appendChild(textContainer);
-        mainDiv.appendChild(controlsDiv);
 
         // Función para manejar la animación de acercamiento de la cámara
         const zoomIn = () => {
