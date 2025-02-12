@@ -29,6 +29,46 @@ export default function EsferaTexturizada() {
         '/ninos/salud_social/planeta_5',
     ];
 
+    const createButton = (text, onClick, color = '#ff0000') => {
+        const button = document.createElement('button');
+        button.innerHTML = text;
+        button.style.fontSize = '24px';
+        button.style.background = 'none'; // Fondo transparente
+        button.style.border = `2px solid ${color}`; // Borde con color personalizado
+        button.style.color = color; // Color del texto
+        button.style.cursor = 'pointer';
+        button.style.padding = '12px 20px';
+        button.style.borderRadius = '20px';
+        button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
+        button.style.transition = 'all 0.3s ease';
+        button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
+
+        // Efecto hover
+        button.addEventListener('mouseover', () => {
+            button.style.transform = 'scale(1.05)';
+            button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+            button.style.textShadow = `0 0 5px ${color}`;
+        });
+
+        // Efecto al salir del hover
+        button.addEventListener('mouseout', () => {
+            button.style.transform = 'scale(1)';
+            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
+            button.style.textShadow = `0 0 3px ${color}`;
+        });
+
+        // Efecto al hacer clic
+        button.addEventListener('click', () => {
+            button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
+            setTimeout(() => {
+                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
+            }, 200);
+            onClick();
+        });
+
+        return button;
+    };
+
     useEffect(() => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -101,99 +141,16 @@ export default function EsferaTexturizada() {
         textContainer.innerHTML = texts[currentTextureIndex].replace(/\n/g, '<br />');
         mainDiv.appendChild(textContainer);
 
-        // Contenedor de la pasarela de planetas
-        const planetCarousel = document.createElement('div');
-        planetCarousel.style.position = 'absolute';
-        planetCarousel.style.bottom = '20px';
-        planetCarousel.style.left = '50%';
-        planetCarousel.style.transform = 'translateX(-50%)';
-        planetCarousel.style.display = 'flex';
-        planetCarousel.style.gap = '20px';
-        planetCarousel.style.pointerEvents = 'auto';
-        planetCarousel.style.zIndex = '1000';
-        planetCarousel.style.overflowX = 'auto'; // Para permitir el desplazamiento horizontal en móviles
-        planetCarousel.style.padding = '10px'; // Espaciado interno
-        planetCarousel.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fondo semitransparente
-        planetCarousel.style.borderRadius = '10px'; // Bordes redondeados
-        mainDiv.appendChild(planetCarousel);
-
-        // Crear miniaturas de planetas
-        textures.forEach((texture, index) => {
-            const planetThumbnail = document.createElement('div');
-            planetThumbnail.style.width = '48px';
-            planetThumbnail.style.height = '48px';
-            planetThumbnail.style.borderRadius = '50%';
-            planetThumbnail.style.backgroundImage = `url(${texture})`;
-            planetThumbnail.style.backgroundSize = 'cover';
-            planetThumbnail.style.cursor = 'pointer';
-            planetThumbnail.style.border = index === currentTextureIndex ? '2px solid #ff0000' : '2px solid transparent';
-            planetThumbnail.style.transition = 'border 0.3s ease';
-
-            planetThumbnail.addEventListener('click', () => {
-                setCurrentTextureIndex(index);
-                textContainer.innerHTML = texts[index].replace(/\n/g, '<br />');
-                sphere.material.map = new THREE.TextureLoader().load(textures[index]);
-                sphere.material.needsUpdate = true;
-
-                // Actualizar el borde de la miniatura seleccionada
-                planetCarousel.childNodes.forEach((thumbnail, i) => {
-                    thumbnail.style.border = i === index ? '2px solid #ff0000' : '2px solid transparent';
-                });
-            });
-
-            planetCarousel.appendChild(planetThumbnail);
-        });
-
         // Contenedor de los botones
         const controlsDiv = document.createElement('div');
         controlsDiv.style.display = 'flex';
         controlsDiv.style.gap = '32px';
         controlsDiv.style.pointerEvents = 'auto';
         controlsDiv.style.position = 'absolute';
-        controlsDiv.style.bottom = '100px'; // Posición ajustada para no solaparse con la pasarela
+        controlsDiv.style.bottom = '50px'; // Ajusta la posición de los botones
         controlsDiv.style.left = '50%';
         controlsDiv.style.transform = 'translateX(-50%)';
         mainDiv.appendChild(controlsDiv);
-
-        const createButton = (text, onClick, color = '#ff0000') => {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.style.fontSize = '24px';
-            button.style.background = 'none'; // Fondo transparente
-            button.style.border = `2px solid ${color}`; // Borde con color personalizado
-            button.style.color = color; // Color del texto
-            button.style.cursor = 'pointer';
-            button.style.padding = '12px 20px';
-            button.style.borderRadius = '20px';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
-            button.style.transition = 'all 0.3s ease';
-            button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-
-            // Efecto hover
-            button.addEventListener('mouseover', () => {
-                button.style.transform = 'scale(1.05)';
-                button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-                button.style.textShadow = `0 0 5px ${color}`;
-            });
-
-            // Efecto al salir del hover
-            button.addEventListener('mouseout', () => {
-                button.style.transform = 'scale(1)';
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                button.style.textShadow = `0 0 3px ${color}`;
-            });
-
-            // Efecto al hacer clic
-            button.addEventListener('click', () => {
-                button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
-                setTimeout(() => {
-                    button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                }, 200);
-                onClick();
-            });
-
-            return button;
-        };
 
         const changeTexture = (direction) => {
             setCurrentTextureIndex((prevIndex) => {
@@ -212,25 +169,9 @@ export default function EsferaTexturizada() {
                 // Actualizar el texto del contenedor
                 textContainer.innerHTML = texts[nextIndex].replace(/\n/g, '<br />');
 
-                // Actualizar el borde de la miniatura seleccionada
-                planetCarousel.childNodes.forEach((thumbnail, index) => {
-                    thumbnail.style.border = index === nextIndex ? '2px solid #ff0000' : '2px solid transparent';
-                });
-
                 return nextIndex; // Retorna el nuevo índice para actualizar el estado correctamente
             });
         };
-
-        const backButton = createButton('← Back', () => {
-            window.history.back();
-        });
-
-        backButton.style.position = 'absolute';
-        backButton.style.left = '20px';
-        backButton.style.top = '20px';
-        backButton.style.zIndex = '1000'; // para que el botón esté por encima de todo
-
-        document.body.appendChild(backButton);
 
         controlsDiv.appendChild(createButton('⟵', () => changeTexture('prev')));
         controlsDiv.appendChild(createButton('Ver más', () => {
@@ -267,6 +208,24 @@ export default function EsferaTexturizada() {
             document.body.removeChild(mainDiv);
         };
     }, [currentTextureIndex, textures, texts, planetUrls, isZooming]);
+
+    // Crear el botón "Back" fuera del useEffect para evitar múltiples instancias
+    useEffect(() => {
+        const backButton = createButton('← Back', () => {
+            window.history.back();
+        });
+
+        backButton.style.position = 'absolute';
+        backButton.style.left = '20px';
+        backButton.style.top = '20px';
+        backButton.style.zIndex = '1000'; // para que el botón esté por encima de todo
+
+        document.body.appendChild(backButton);
+
+        return () => {
+            document.body.removeChild(backButton);
+        };
+    }, []);
 
     return null;
 }

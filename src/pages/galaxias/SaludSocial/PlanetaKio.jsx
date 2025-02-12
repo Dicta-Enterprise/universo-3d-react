@@ -28,6 +28,62 @@ export default function Jovenes() {
         '/ninos/salud_social/planeta_5',
     ];
 
+    // Función para crear botones
+    const createButton = (text, onClick, color = '#ff0000') => {
+        const button = document.createElement('button');
+        button.innerHTML = text;
+        button.style.fontSize = '24px';
+        button.style.background = 'none';
+        button.style.border = `2px solid ${color}`;
+        button.style.color = color;
+        button.style.cursor = 'pointer';
+        button.style.padding = '12px 40px';
+        button.style.borderRadius = '12px';
+        button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
+        button.style.transition = 'all 0.3s ease';
+        button.style.textShadow = `0 0 3px ${color}`;
+        button.style.marginTop = '10px';
+        button.style.pointerEvents = 'auto'; // Asegurar que los botones sean clickeables
+
+        // Efecto hover
+        button.addEventListener('mouseover', () => {
+            button.style.transform = 'scale(1.05)';
+            button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+            button.style.textShadow = `0 0 5px ${color}`;
+        });
+
+        // Efecto al salir del hover
+        button.addEventListener('mouseout', () => {
+            button.style.transform = 'scale(1)';
+            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
+            button.style.textShadow = `0 0 3px ${color}`;
+        });
+
+        // Acción al hacer clic
+        button.addEventListener('click', onClick);
+
+        return button;
+    };
+
+    // Crear el botón "Back" fuera del useEffect principal
+    useEffect(() => {
+        const backButton = createButton('← Back', () => {
+            window.history.back(); // Redirige a la página anterior
+        }, '#FFFFFF'); // Color blanco
+
+        // Posicionar el botón "Back" en la esquina superior izquierda
+        backButton.style.position = 'absolute';
+        backButton.style.left = '20px';
+        backButton.style.top = '20px';
+        backButton.style.zIndex = '1000'; // Asegurar que esté por encima de otros elementos
+        document.body.appendChild(backButton);
+
+        // Limpieza al desmontar el componente
+        return () => {
+            document.body.removeChild(backButton);
+        };
+    }, []); // Este useEffect solo se ejecuta una vez al montar el componente
+
     useEffect(() => {
         // Configuración de Three.js para el fondo estrellado y el planeta
         const scene = new THREE.Scene();
@@ -50,9 +106,18 @@ export default function Jovenes() {
         scene.add(sphere);
 
         // Luz para iluminar el planeta
-        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        const pointLight = new THREE.PointLight(0xffffff, 0.15, 100);
         pointLight.position.set(5, 5, 10);
         scene.add(pointLight);
+
+        // Agregar una luz direccional para iluminar los planetas
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Color blanco, intensidad 1
+        directionalLight.position.set(5, 15, 10); // Posición de la luz
+        scene.add(directionalLight);
+
+        // Agregar una luz ambiental para suavizar las sombras
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Color gris, intensidad 0.5
+        scene.add(ambientLight);
 
         // Posición de la cámara
         camera.position.set(0, 0, 15);
@@ -80,42 +145,17 @@ export default function Jovenes() {
         mainDiv.style.pointerEvents = 'none';
         document.body.appendChild(mainDiv);
 
-        // Función para crear botones
-        const createButton = (text, onClick, color = '#ff0000') => {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.style.fontSize = '20px';
-            button.style.background = 'none';
-            button.style.border = `2px solid ${color}`;
-            button.style.color = color;
-            button.style.cursor = 'pointer';
-            button.style.padding = '12px 32px';
-            button.style.borderRadius = '12px';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-            button.style.transition = 'all 0.3s ease';
-            button.style.textShadow = `0 0 3px ${color}`;
-            button.style.marginTop = '10px';
-            button.style.pointerEvents = 'auto'; // Asegurar que los botones sean clickeables
-
-            // Efecto hover
-            button.addEventListener('mouseover', () => {
-                button.style.transform = 'scale(1.05)';
-                button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-                button.style.textShadow = `0 0 5px ${color}`;
-            });
-
-            // Efecto al salir del hover
-            button.addEventListener('mouseout', () => {
-                button.style.transform = 'scale(1)';
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                button.style.textShadow = `0 0 3px ${color}`;
-            });
-
-            // Acción al hacer clic
-            button.addEventListener('click', onClick);
-
-            return button;
-        };
+        // Texto principal
+        const title = document.createElement('h1');
+        title.textContent = 'Bienvenidos al Planeta KIO';
+        title.style.fontSize = '40px';
+        title.style.textAlign = 'center';
+        title.style.pointerEvents = 'auto';
+        title.style.position = 'absolute';
+        title.style.left = '50%';
+        title.style.top = '6%';
+        title.style.transform = 'translate(-50%, 0%)';
+        mainDiv.appendChild(title);
 
         // Crear los divs de contenido
         const createContentDiv = (content, isLeft) => {
@@ -127,7 +167,7 @@ export default function Jovenes() {
             div.style.margin = '32px';
             div.style.borderRadius = '10px';
             div.style.pointerEvents = 'auto';
-            div.style.maxWidth = '400px';
+            div.style.maxWidth = '340px';
             div.style.width = '100%';
             div.innerHTML = content;
 
@@ -157,12 +197,7 @@ export default function Jovenes() {
             <p>Al completar este curso, ganarás una comprensión profunda de KIO, habilidades prácticas para navegar sus desafíos, y una certificación reconocida.</p>
         `, false);
 
-        // Botón "Seguir explorando" debajo del Resumen
-        const seguirExplorandoButton = createButton('Seguir explorando', () => {
-            window.history.back(); // Redirige a la página anterior
-        }, '#FFFFFF'); // Color
-
-        // Botón "Comprar" debajo de Beneficios
+        // Botón "Comprar" debajo del Resumen
         const comprarButton = createButton('Comprar', () => {
             window.location.href = ''; // ----------------------- LANDING PAGE -------------     <<<<<<------
         }, '#FFFFFF'); // Color
@@ -173,63 +208,98 @@ export default function Jovenes() {
         leftContainer.style.flexDirection = 'column';
         leftContainer.style.alignItems = 'center';
         leftContainer.appendChild(leftDiv);
-        leftContainer.appendChild(seguirExplorandoButton);
+        leftContainer.appendChild(comprarButton); // Aquí se añade el botón "Comprar"
 
-        // Crear un contenedor para el contenido derecho y su botón
+        // Crear un contenedor para el contenido derecho
         const rightContainer = document.createElement('div');
         rightContainer.style.display = 'flex';
         rightContainer.style.flexDirection = 'column';
         rightContainer.style.alignItems = 'center';
         rightContainer.appendChild(rightDiv);
-        rightContainer.appendChild(comprarButton);
 
         // Añadir los contenedores al div principal
         mainDiv.appendChild(rightContainer);
         mainDiv.appendChild(leftContainer);
 
-        // Crear la pasarela de planetas
-        const planetCarousel = document.createElement('div');
-        planetCarousel.style.position = 'absolute';
-        planetCarousel.style.bottom = '20px';
-        planetCarousel.style.left = '50%';
-        planetCarousel.style.transform = 'translateX(-50%)';
-        planetCarousel.style.display = 'flex';
-        planetCarousel.style.gap = '20px';
-        planetCarousel.style.pointerEvents = 'auto';
-        planetCarousel.style.zIndex = '1000';
-        planetCarousel.style.overflowX = 'auto'; // Para permitir el desplazamiento horizontal en móviles
-        planetCarousel.style.padding = '10px'; // Espaciado interno
-        planetCarousel.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fondo semitransparente
-        planetCarousel.style.borderRadius = '10px'; // Bordes redondeados
-        mainDiv.appendChild(planetCarousel);
+        // Crear el título "Explore más"
+        const exploreTitle = document.createElement('h2');
 
-        // Crear miniaturas de planetas
-        textures.forEach((texture, index) => {
-            const planetThumbnail = document.createElement('div');
-            planetThumbnail.style.width = '60px';
-            planetThumbnail.style.height = '60px';
-            planetThumbnail.style.borderRadius = '50%';
-            planetThumbnail.style.backgroundImage = `url(${texture})`;
-            planetThumbnail.style.backgroundSize = 'cover';
-            planetThumbnail.style.cursor = 'pointer';
-            planetThumbnail.style.transition = 'transform 0.3s ease';
+        exploreTitle.textContent = 'Explore más';
+        exploreTitle.style.fontSize = '24px';
+        exploreTitle.style.textAlign = 'center';
+        exploreTitle.style.position = 'absolute';
+        exploreTitle.style.left = '50%';
+        exploreTitle.style.bottom = '90px'; // Posición por encima del carrusel de planetas
+        exploreTitle.style.transform = 'translateX(-50%)';
+        exploreTitle.style.color = 'white';
+        exploreTitle.style.zIndex = '1000'; // Asegurar que esté por encima de otros elementos
+        mainDiv.appendChild(exploreTitle);
 
-            // Efecto hover
-            planetThumbnail.addEventListener('mouseover', () => {
-                planetThumbnail.style.transform = 'scale(1.1)';
+        // Índices reorganizados para mover los planetas correctamente
+        const newOrder = [3, 4, 0, 1, 2]; // Reorganiza los índices según el nuevo orden
+
+        const kioIndex = 2; // El nuevo índice del Planeta KIO en la nueva disposición
+
+        // Tamaños de los planetas con KIO en grande
+        const planetSizes = [0.8, 1.2, 1.8, 1.2, 0.8]; // KIO más grande en la tercera posición
+
+        const planets = newOrder.map((originalIndex, newIndex) => {
+            const size = newIndex === kioIndex ? 2 : planetSizes[newIndex]; // Asegurar que KIO sea el más grande
+            const geometry = new THREE.SphereGeometry(size, 32, 32);
+            const material = new THREE.MeshStandardMaterial({
+                map: new THREE.TextureLoader().load(textures[originalIndex]), // Usar la textura en el nuevo orden
             });
 
-            planetThumbnail.addEventListener('mouseout', () => {
-                planetThumbnail.style.transform = 'scale(1)';
-            });
+            const planet = new THREE.Mesh(geometry, material);
 
-            // Acción al hacer clic
-            planetThumbnail.addEventListener('click', () => {
-                window.location.href = planetUrls[index]; // Redirige a la URL correspondiente
-            });
+            planet.position.x = (newIndex - 2) * 4; // Centrar KIO y alinear los demás planetas
+            planet.position.y = -17;
+            planet.position.z = -10;
 
-            planetCarousel.appendChild(planetThumbnail);
+            planet.userData.url = planetUrls[originalIndex]; // Mantener la URL original del planeta
+
+            scene.add(planet);
+            return planet;
         });
+
+        // Raycaster para detectar clics en los planetas
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Manejar clics en los planetas
+        const onDocumentClick = (event) => {
+            event.preventDefault();
+
+            // Calcular la posición del mouse en coordenadas normalizadas (-1 to +1)
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Lanzar un rayo desde la cámara en la dirección del mouse
+            raycaster.setFromCamera(mouse, camera);
+
+            // Verificar si el rayo intersecta con algún planeta
+            const intersects = raycaster.intersectObjects(planets);
+
+            if (intersects.length > 0) {
+                const planet = intersects[0].object;
+                window.location.href = planet.userData.url; // Redirigir a la URL del planeta
+            }
+        };
+
+        document.addEventListener('click', onDocumentClick, false);
+
+        // Animación de los planetas
+        const animatePlanets = () => {
+            requestAnimationFrame(animatePlanets);
+
+            // Rotar los planetas
+            planets.forEach((planet) => {
+                planet.rotation.y += 0.005;
+            });
+
+            renderer.render(scene, camera);
+        };
+        animatePlanets();
 
         // Manejar cambios de tamaño de la ventana
         const handleResize = () => {
@@ -264,10 +334,11 @@ export default function Jovenes() {
         // Limpieza al desmontar el componente
         return () => {
             window.removeEventListener('resize', handleResize);
+            document.removeEventListener('click', onDocumentClick);
             document.body.removeChild(mainDiv);
             renderer.dispose();
         };
     }, [isMobile]);
 
-    return <h1 style={{ textAlign: 'center', color: 'white', marginTop: '20px' }}>Bienvenidos al Planeta KIO</h1>;
+    return null; // No necesitamos devolver nada en el return
 }
