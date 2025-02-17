@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import CrearEstrellas3D from '../components/FondoJovenes/CrearEstrellas3D';
-import crearLineaVertical from '../components/FondoJovenes/CrearLineaVerticalEstrella';
-import crearCirculo from '../components/FondoJovenes/CrearCirculo';
-import CreaCruzRedonda from '../components/FondoJovenes/CrearCruzRedonda';
-import CrearTermometro from '../components/FondoJovenes/CrearTermometro';
-import CrearNube from '../components/FondoJovenes/CrearNube';
-import CrearLuna from '../components/FondoJovenes/CrearLuna';
-import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoJovenes/ArregloObjetos';
+import CrearEstrellas3D from '../components/FondoNIños/CrearEstrellas3D';
+import crearLineaVertical from '../components/FondoNIños/CrearLineaVerticalEstrella';
+import crearCirculo from '../components/FondoNIños/CrearCirculo';
+import CreaCruzRedonda from '../components/FondoNIños/CrearCruzRedonda';
+import CrearTermometro from '../components/FondoNIños/CrearTermometro';
+import CrearNube from '../components/FondoNIños/CrearNube';
+import CrearLuna from '../components/FondoNIños/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoNIños/ArregloObjetos';
 
 export default function Galaxias() {
     useEffect(() => {
