@@ -1,5 +1,13 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
+import CrearEstrellas3D from '../components/FondoJovenes/CrearEstrellas3D';
+import crearLineaVertical from '../components/FondoJovenes/CrearLineaVerticalEstrella';
+import crearCirculo from '../components/FondoJovenes/CrearCirculo';
+import CreaCruzRedonda from '../components/FondoJovenes/CrearCruzRedonda';
+import CrearTermometro from '../components/FondoJovenes/CrearTermometro';
+import CrearNube from '../components/FondoJovenes/CrearNube';
+import CrearLuna from '../components/FondoJovenes/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoJovenes/ArregloObjetos';
 
 export default function Galaxias() {
     useEffect(() => {
@@ -14,7 +22,9 @@ export default function Galaxias() {
         scene.background = spaceTexture;*/
 
         // Establecer el fondo de la escena
-        scene.background = new THREE.Color(0x000000);
+        //scene.background = new THREE.Color(0x000000);
+        scene.background = new THREE.Color(0x001833);
+        //scene.background = new THREE.Color(0x000c19);
 
         // -------------------------
 
@@ -30,269 +40,45 @@ export default function Galaxias() {
         pointLight2.position.set(-50, 0, 30);
         scene.add(pointLight2);
 
-        // Crear una estrella de 5 puntas
-        function crearEstrella(color) {
-            const shape = new THREE.Shape();
-            const radioExterior = 2;
-            const radioInterior = 1.2;
-            const numPuntas = 5;
-            const anguloPaso = Math.PI / numPuntas;
-            const suavizado = 0.2; // Controla qué tan redondeadas son las puntas 0.4
+        const pointLight3 = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight2.position.set(-60, -30, 30);
+        scene.add(pointLight3);
 
-            for (let i = 0; i <= numPuntas * 2; i++) {
-                const angulo = i * anguloPaso;
-                const radio = i % 2 === 0 ? radioExterior : radioInterior;
-                const x = radio * Math.cos(angulo);
-                const y = radio * Math.sin(angulo);
+        // Uso en la escena
+        const lunaCreciente = CrearLuna(0.3);
+        scene.add(lunaCreciente);
+        lunaCreciente.position.set(-13,17,-10);
 
-                if (i === 0) {
-                    shape.moveTo(x, y);
-                } else {
-                    // Calculamos el punto de control para suavizar la curva
-                    const anguloPrevio = (i - 1) * anguloPaso;
-                    const radioPrevio = (i - 1) % 2 === 0 ? radioExterior : radioInterior;
-                    const xPrev = radioPrevio * Math.cos(anguloPrevio);
-                    const yPrev = radioPrevio * Math.sin(anguloPrevio);
-
-                    const anguloCentro = (anguloPrevio + angulo) / 2;
-                    const radioCentro = (radio + radioPrevio) / 2 + suavizado;
-                    const xCentro = radioCentro * Math.cos(anguloCentro);
-                    const yCentro = radioCentro * Math.sin(anguloCentro);
-
-                    shape.quadraticCurveTo(xCentro, yCentro, x, y);
-                }
-            }
-            shape.closePath();
-
-            const geometry = new THREE.ExtrudeGeometry(shape, {
-                depth: 0.5,
-                bevelEnabled: true,
-                bevelSize: 0.2,
-                bevelThickness: 0.3,
-            });
-
-            const material = new THREE.MeshStandardMaterial({ 
-                color: color, 
-                metalness: 0, 
-                roughness: 0 
-            });
-
-            return new THREE.Mesh(geometry, material);
-        }
-
-        // Función para crear una línea vertical
-        function crearLineaVertical(altura) {
-            const geometry = new THREE.CylinderGeometry(0.05, 0.05, altura, 32);
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    color: { value: new THREE.Color(0xffffff) },
-                    opacityStart: { value: 1.0 },  // Opacidad en la base
-                    opacityEnd: { value: 0.0 }     // Opacidad en el otro extremo
-                },
-                vertexShader: `
-                    varying float vPositionY;
-                    void main() {
-                        vPositionY = position.y;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 color;
-                    uniform float opacityStart;
-                    uniform float opacityEnd;
-                    varying float vPositionY;
-
-                    void main() {
-                        float opacity = mix(opacityStart, opacityEnd, (vPositionY + 5.0) / 10.0); 
-                        gl_FragColor = vec4(color, opacity);
-                    }
-                `,
-                transparent: true
-            });
-            
-            
-            const linea = new THREE.Mesh(geometry, material);
-            return linea;
-        }
-
-         // Función para crear un círculo
-        function crearCirculo(color, radio = 1) {
-            const geometry = new THREE.CircleGeometry(radio, 32);
-            const material = new THREE.MeshStandardMaterial({ color: color, side: THREE.DoubleSide });
-            const circulo = new THREE.Mesh(geometry, material);
-            return circulo;
-        }
-
-        // Función para crear una cruz redonda
-        function crearCruzRedonda(color, altura = 4, ancho = 2, grosor = 0.1) {
-            // Crear el brazo vertical
-            const brazoVertical = new THREE.Mesh(
-                new THREE.CylinderGeometry(grosor, grosor, altura, 32),
-                new THREE.MeshStandardMaterial({ color: color })
-            );
-
-            // Crear el brazo horizontal
-            const brazoHorizontal = new THREE.Mesh(
-                new THREE.CylinderGeometry(grosor, grosor, ancho, 32),
-                new THREE.MeshStandardMaterial({ color: color })
-            );
-            brazoHorizontal.rotation.z = Math.PI / 2; // Rotar 90 grados
-
-            // Crear una esfera en la intersección
-            const esfera = new THREE.Mesh(
-                new THREE.SphereGeometry(grosor * 1.5, 32, 32),
-                new THREE.MeshStandardMaterial({ color: color })
-            );
-
-            // Agrupar los elementos de la cruz
-            const cruz = new THREE.Group();
-            cruz.add(brazoVertical);
-            cruz.add(brazoHorizontal);
-            cruz.add(esfera);
-
-            return cruz;
-        }
+        const lunaCreciente2 = CrearLuna(0.05);
+        scene.add(lunaCreciente2);
+        lunaCreciente2.position.set(10,0,-10);
+        lunaCreciente2.scale.set(1.5,1.5,1.5);
         
-        function Termometro(){
-             // Material rojo (simulando mercurio)
-            const material = new THREE.MeshStandardMaterial({ color: 0xFF5AAA, roughness: 0.5 });
-
-            // Crear el cilindro (tubo del termómetro)
-            const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2.5, 32);
-            const cylinder = new THREE.Mesh(cylinderGeometry, material);
-            cylinder.position.y = 1.5; // Ajuste para que se vea en la parte superior
-
-            // Crear la esfera (bulbo del termómetro)
-            const sphereGeometry = new THREE.SphereGeometry(0.3, 32, 32);
-            const sphere = new THREE.Mesh(sphereGeometry, material);
-            sphere.position.y = 0; // Base del termómetro
-
-            // Agregar objetos a la escena
-            const Termometro = new THREE.Group();
-            Termometro.add(cylinder);
-            Termometro.add(sphere);
-
-            return Termometro;
-        }
-
-        // Definir posiciones y colores de las estrellas
-        const estrellasConfig = [
-            { x: -70, y: 21, z: -30, color: 0X00ff00, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.6 },
-            { x: -75, y: -32, z: -30, color: 0Xff0000, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.7},
-            { x: -55, y: 16, z: -30, color: 0xFADC00, rotX: 0, rotY: Math.PI / 7, rotZ: Math.PI / 2, escalado: 0.8 },
-            { x: -46, y: -17, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: -30, y: 5, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: -50, y: 0, z: -30, color: 0xff0000, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.7},
-            { x: -33, y: -32, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.7},
-            { x: -35, y: 20, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.8},
-            { x: 10, y: 25, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.6},
-            { x: 0, y: 15, z: -30, color: 0x00ff00, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: 7, y: -3, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: 10, y: -18, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: 10, y: -32, z: -30, color: 0x0cb7f2, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: 34, y: -3, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5},
-            { x: 55, y: -3, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.8},
-            { x: 35, y: 20, z: -30, color: 0x9d4edd, rotX: 0, rotY: - Math.PI / 6, rotZ: Math.PI / 2, escalado: 0.8},
-            { x: 55, y: 15, z: -30, color: 0xFADC00, rotX: 0, rotY: 3 * Math.PI / 4, rotZ: Math.PI / 2, escalado: 0.8 },
-            { x: 50, y: -20, z: -30, color: 0x9d4edd, rotX: 0, rotY: Math.PI, rotZ: Math.PI / 2, escalado: 0.5 },
-            { x: 70, y: 10, z: -30, color: 0x9d4edd, rotX: 0, rotY: 3 * Math.PI / 3.5, rotZ: Math.PI / 2, escalado: 0.8},
-        ];
-        
-        // Definir posiciones y colores para círculos
-        const circulosConfig = [
-            { x: -60, y: 20, z: -20, color: 0x00ff00, radio: 0.2 }, //verde
-            { x: -55, y: 0, z: -20, color: 0xff0000, radio: 1.5}, //rojo
-            { x: -54, y: -10, z: -20, color: 0xff0000, radio: 0.4 },
-            { x: -50, y: 25, z: -20, color: 0x00ff00, radio: 0.3 },
-            { x: -50, y: 5, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -50, y: -25, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -45, y: -8, z: -20, color: 0xff0000, radio: 0.4 },
-            { x: -40, y: 8, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -40, y: 25, z: -20, color: 0x00ff00, radio: 0.2 },
-            { x: -40, y: -18, z: -20, color: 0xff0000, radio: 0.5 },
-            { x: -37, y: -22, z: -20, color: 0x0cb7f2, radio: 0.2 }, // celeste
-            { x: -33, y: -25, z: -20, color: 0x0cb7f2, radio: 0.2 },
-            { x: -30, y: -20, z: -20, color: 0x0cb7f2, radio: 0.2 },
-            { x: -30, y: 0, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -32, y: 10, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -34, y: -10, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -30, y: 20, z: -20, color: 0x00ff00, radio: 0.3 },
-            { x: -28, y: -5, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -22, y: 10, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -25, y: 22, z: -20, color: 0x00ff00, radio: 0.2 },
-            { x: -20, y: -15, z: -20, color: 0x0cb7f2, radio: 0.2 },
-            { x: -18, y: 3, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -15, y: -3, z: -20, color: 0xff0000, radio: 0.2 },
-            { x: -10, y: -26, z: -20, color: 0x0cb7f2, radio: 0.2},
-            { x: -10, y: -10, z: -20, color: 0x0cb7f2, radio: 0.2},
-            { x: -10, y: 10, z: -20, color: 0x00ff00, radio: 0.2},
-            { x: -8, y: 20, z: -20, color: 0x00ff00, radio: 0.3},
-            { x: -6, y: 5, z: -20, color: 0x00ff00, radio: 0.2},
-            { x: -4, y: -5, z: -20, color: 0x0cb7f2, radio: 0.2},
-            { x: 0, y: -28, z: -20, color: 0x0cb7f2, radio: 0.2},
-            { x: 8, y: 13, z: -20, color: 0x00ff00, radio: 0.2},
-            { x: 6, y: 5, z: -20, color: 0x00ff00, radio: 0.3},
-            { x: 2, y: -18, z: -20, color: 0x0cb7f2, radio: 0.3},
-            { x: 10, y: 26, z: -20, color: 0x00ff00, radio: 0.2},
-            { x: 18, y: 20, z: -20, color: 0x00ff00, radio: 0.3},
-            { x: 13, y: -20, z: -20, color: 0x0cb7f2, radio: 0.3},
-            { x: 17, y: -7, z: -20, color: 0x9d4edd, radio: 0.3}, //morado
-            { x: 20, y: 5, z: -20, color: 0x9d4edd, radio: 0.2},
-            { x: 22, y: -17, z: -20, color: 0x0cb7f2, radio: 0.4},
-            { x: 26, y: -15, z: -20, color: 0x0cb7f2, radio: 0.3 },
-            { x: 30, y: -25, z: -20, color: 0x0cb7f2, radio: 1.2 },
-            { x: 33, y: -13, z: -20, color: 0x9d4edd, radio: 0.5 },
-            { x: 35, y: 0, z: -20, color: 0x9d4edd, radio: 0.2 },
-            { x: 40, y: -10, z: -20, color: 0x9d4edd, radio: 0.3 },
-            { x: 40, y: 10, z: -20, color: 0x9d4edd, radio: 0.2 },
-            { x: 47, y: 25, z: -20, color: 0x9d4edd, radio: 1.2 },
-            { x: 50, y: -16, z: -20, color: 0x0cb7f2, radio: 0.3 },
-            { x: 55, y: -13, z: -20, color: 0x0cb7f2, radio: 0.3 },
-            { x: 60, y: 25, z: -20, color: 0x9d4edd, radio: 0.4 },
-            { x: 60, y: -25, z: -20, color: 0x0cb7f2, radio: 0.4},
-        ];
-
-        const crucesConfig = [
-            { x: -50, y: -25, z: -20, color: 0xFF5AAA, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: 0},
-            { x: -50, y: 15, z: -20, color: 0xFF5AAA, altura: 2, ancho: 2, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4 },
-            { x: -30, y: 25, z: -20, color: 0x81E138, altura: 1.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: -20, y: -10, z: -20, color: 0x81E138, altura: 2.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: -15, y: -20, z: -20, color: 0x0cb7f2, altura: 2.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: -15, y: 16, z: -20, color: 0x81E138, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: 20, y: -20, z: -20, color: 0x0cb7f2, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4},
-            { x: 28, y: 10, z: -20, color: 0x81E138, altura: 1.5, ancho: 1.5, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: 35, y: 22, z: -20, color: 0xFF5AAA, altura: 3, ancho: 3, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-            { x: 50, y: -25, z: -20, color: 0x9d4edd, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: Math.PI/4 },
-            { x: 60, y: 0, z: -20, color: 0xFF5AAA, altura: 1, ancho: 1, grosor: 0.1, rotx: 0, roty: 0, rotz: 0 },
-        ];
-        
-        // Configuración de líneas con posición y rotación separadas
-        const lineasConfig = [
-            { x: -70, y: 32, z: -30, altura: 15},
-            { x: -55, y: 32, z: -30, altura: 25},
-            { x: -35, y: 32, z: -30, altura: 18},
-            { x: 35, y: 32, z: -30, altura: 18},
-            { x: 55, y: 32, z: -30, altura: 25},
-            { x: 70, y: 28, z: -30, altura: 30},
-        ];
-
-        const TermometroConfig = [
-            { x: 25, y: 0, z: 0, rotx: 0, roty: 0, rotz: 0},
-            { x: 20, y: -10, z: 0, rotx: Math.PI, roty: 0, rotz: 0},
-            { x: -25, y: -8, z: 0, rotx: Math.PI, roty: 0, rotz: 0},
-            { x: -18, y: 8, z: 0, rotx: 0, roty: 0, rotz: 0},
-        ];
+        const lunaCreciente3 = CrearLuna(0.4);
+        scene.add(lunaCreciente3);
+        lunaCreciente3.position.set(-20,-10,-10);
+        lunaCreciente3.scale.set(0.8,0.8,0.8);
 
         const estrellas = [];
         const cruces = [];
         const termometros = [];
         const circulos = [];
+        const nubes = [];
+        const lineas = [];
+
+        nubeconfig.forEach(config => {
+            const nube = CrearNube();
+            nube.position.set(config.x, config.y, config.z);
+            nube.scale.set(config.escalado, config.escalado, config.escalado);
+            scene.add(nube);
+            nubes.push(nube);
+        });
 
         // Crear y posicionar estrellas con colores fijos
         TermometroConfig.forEach(config => {
-            const termometro = Termometro();
+            const termometro = CrearTermometro();
             termometro.position.set(config.x, config.y, config.z);
-            termometro.rotation.set(config.rotx, config.roty, config.rotz);
+            termometro.rotation.set(config.rotationx, config.rotationy, config.rotationz);
             termometro.scale.set(0.5,0.5,0.5);
         
             scene.add(termometro);
@@ -308,15 +94,15 @@ export default function Galaxias() {
                 termometro.rotation.z = Math.sin(termometro.userData.angle) * 0.2; // Aplicamos el movimiento de oscilación
             };
         });
-
+        
         // Crear y posicionar estrellas con colores fijos
         estrellasConfig.forEach(config => {
-            const estrella = crearEstrella(config.color);
+            const estrella = CrearEstrellas3D(config.color)
             estrella.position.set(config.x, config.y, config.z);
 
-            estrella.rotation.set(config.rotX, config.rotY, config.rotZ);
+            estrella.rotation.set(config.rotationX, config.rotationY, config.rotationZ);
             estrella.scale.set(config.escalado,config.escalado,config.escalado);
-        
+
             scene.add(estrella);
             estrellas.push(estrella);
         });
@@ -326,12 +112,13 @@ export default function Galaxias() {
             const linea = crearLineaVertical(config.altura);
             linea.position.set(config.x, config.y, config.z);
             scene.add(linea);
+            lineas.push(linea);
             
         });
 
         // Crear y posicionar círculos con colores fijos
         circulosConfig.forEach(config => {
-            const circulo = crearCirculo(config.color, config.radio);
+            const circulo = crearCirculo(config.color,config.radio);
             circulo.position.set(config.x, config.y, config.z);
             scene.add(circulo);
             circulos.push(circulo);
@@ -339,7 +126,7 @@ export default function Galaxias() {
 
         // Crear y posicionar cruces redondas con colores fijos
         crucesConfig.forEach(config => {
-            const cruz = crearCruzRedonda(config.color, config.altura, config.ancho, config.grosor);
+            const cruz = CreaCruzRedonda(config.color, config.altura, config.ancho, config.grosor);
             cruz.position.set(config.x, config.y, config.z);
             cruz.rotation.set(config.rotx, config.roty, config.rotz);
             scene.add(cruz);
@@ -348,7 +135,7 @@ export default function Galaxias() {
 
         // ------------------- Galaxia
 
-        const galaxies = [];
+        /*const galaxies = [];
         const galaxyMaterials = [];
         const galaxyTitles = [
             "Peligros de Salud Social [R]",
@@ -485,11 +272,11 @@ export default function Galaxias() {
                 { x: Math.PI / 3, y: 0, z: 0 },
             ];
             createGalaxy(pos, colors[index], rotations[index]);
-        });
+        });*/
 
         camera.position.set(0, 0, 18);
 
-        const moveToGalaxy = (galaxy, title, url) => {
+        /*const moveToGalaxy = (galaxy, title, url) => {
             if (isAnimating) return;
             isAnimating = true;
 
@@ -551,24 +338,221 @@ export default function Galaxias() {
             }
         });
 
-        renderer.domElement.addEventListener('click', onClick);
+        renderer.domElement.addEventListener('click', onClick);*/
+
+        let velocidadMovimiento = 0.00003; // Velocidad de la oscilación
+        let rangoOscilacion = 25; // El rango máximo de oscilación en el eje X
+        
+        // Función para actualizar la velocidad y el rango de oscilación en función del tamaño de la pantalla
+        const actualizarParametrosAnimacion = () => {
+            const isMobile = window.innerWidth < 768;
+
+            // Ajustar la velocidad y el rango de oscilación para pantallas pequeñas (móviles)
+            if (isMobile) {
+                velocidadMovimiento = 0.00005;  // Menor velocidad en móviles
+                rangoOscilacion = 5;            // Menor rango en móviles
+            } else {
+                velocidadMovimiento = 0.00005;  // Velocidad normal en pantallas grandes
+                rangoOscilacion = 25;            // Rango normal en pantallas grandes
+            }
+        };
+
+        // Creamos las nubes con direcciones iniciales
+        nubes.forEach((nube, index) => {
+            // Asignamos la dirección de inicio a cada nube
+            nube.direccion = (index % 2 === 0) ? -1 : 1;  // Primera nube izquierda (-1), segunda nube derecha (+1)
+        });
+
+        function moverNubes() {
+            nubes.forEach(nube => {
+                // Usamos Math.sin para crear un movimiento oscilante
+                let posicionX = rangoOscilacion * Math.sin(velocidadMovimiento * performance.now());
+        
+                // Modificamos la dirección de la nube según la asignada
+                nube.position.x = posicionX * nube.direccion;
+            });
+        }
+
+        // Función para manejar el redimensionamiento de la ventana
+        const onWindowResizeNube = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            nubeconfig.forEach((config, index) => {
+                const nube = nubes[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index === 0) {
+                        nube.scale.set(0.4, 0.4, 0.4); // Primera nube más pequeña
+                    } else {
+                        nube.scale.set(0.2, 0.2, 0.2); // Segunda nube más pequeña
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    nube.scale.set(config.escalado, config.escalado, config.escalado);
+                }
+            });
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+
+        const onWindowResizeEstrella = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            estrellasConfig.forEach((config, index) => {
+                const estrella = estrellas[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        estrella.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        estrella.scale.set(config.escalado/1.7,config.escalado/1.7,config.escalado/1.7);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    estrella.position.set(config.x, config.y, config.z);
+                    estrella.scale.set(config.escalado,config.escalado,config.escalado);
+                }
+            });
+        };
+
+        const onWindowResizeLineas = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            lineasConfig.forEach((config, index) => {
+                const linea = lineas[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        linea.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    linea.position.set(config.x, config.y, config.z);
+                }
+            });
+        };
+
+        const onWindowResizeTermometro = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            TermometroConfig.forEach((config, index) => {
+                const termometro = termometros[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        termometro.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    termometro.position.set(config.x, config.y, config.z);
+                }
+            });
+        };
+
+        const onWindowResizeCruces = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            crucesConfig.forEach((config, index) => {
+                const cruz = cruces[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        cruz.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        cruz.scale.set(0.7,0.7,0.7);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    cruz.position.set(config.x, config.y, config.z);
+                    cruz.scale.set(1,1,1);
+                }
+            });
+        };
+
+        const onWindowResizeLuna = () => {
+            const isMobile = window.innerWidth < 768;
+            
+            lunaCreciente.position.set(isMobile ? -10 : -13, isMobile ? 15 : 17, -10);
+            lunaCreciente.scale.set(isMobile ? 0.7 : 1, isMobile ? 0.7 : 1, isMobile ? 0.7 : 1);
+            lunaCreciente2.position.set(isMobile ? 6 : 10, isMobile ? 0 : 0, -10);
+            lunaCreciente2.scale.set(isMobile ? 1.2 : 1.5, isMobile ? 1.2 : 1.5, isMobile ? 1.2 : 1.5);
+            lunaCreciente3.position.set(isMobile ? -10 : -20, isMobile ? -6 : -10, -10);
+            lunaCreciente3.scale.set(isMobile ? 0.6 : 0.8, isMobile ? 0.6 : 0.8, isMobile ? 0.6 : 0.8);
+        };
+
+        const onWindowResizeCirculos = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            circulosConfig.forEach((config, index) => {
+                const circulo = circulos[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= circulos.length - 1) {
+                        circulo.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        circulo.scale.set(0.5,0.5,0.5);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    circulo.position.set(config.x, config.y, config.z);
+                    circulo.scale.set(1,1,1);
+                }
+            });
+        };
+
+        // Escuchar el evento de redimensionamiento de la ventana
+        window.addEventListener('resize', onWindowResizeNube);
+        window.addEventListener('resize', actualizarParametrosAnimacion);
+        window.addEventListener('resize', onWindowResizeEstrella);
+        window.addEventListener('resize', onWindowResizeLineas);
+        window.addEventListener('resize', onWindowResizeTermometro);
+        window.addEventListener('resize', onWindowResizeCruces);
+        window.addEventListener('resize', onWindowResizeLuna);
+        window.addEventListener('resize', onWindowResizeCirculos);
+        
+        onWindowResizeNube();
+        actualizarParametrosAnimacion();
+        onWindowResizeEstrella();
+        onWindowResizeLineas();
+        onWindowResizeTermometro();
+        onWindowResizeCruces();
+        onWindowResizeLuna();
+        onWindowResizeCirculos();
 
         let time = 0;
         let scaleDirection = 1; // 1 para agrandar, -1 para achicar
         let scaleSpeed = 0.002; // Velocidad de cambio de escala
-        let scaleLimit = 1.5; // Límite de escala máximo
         let minScale = 0.3; // Límite de escala mínimo
 
         const animate = () => {
             requestAnimationFrame(animate);
             
+            let scaleLimit = window.innerWidth < 768 ? 0.7 : 1.5; // Límite de escala máximo
+            
             time += 0.02;
             console.log(time);
 
-            galaxies.forEach((galaxy, index) => {
+            /*galaxies.forEach((galaxy, index) => {
                 const speed = 0.0002 + index * 0.0002;//velocidad del giro de animacion
                 galaxy.rotation.y += speed;
-            });
+            });*/
             
             cruces.forEach(cruz => {
                 cruz.rotation.z += 0.005;  // Rotación en el eje X
@@ -581,9 +565,8 @@ export default function Galaxias() {
                 const amplitud = 0.03; // Ajusta la altura del rebote
                 const tiempo = tiempoBase + index * 0.3; // Desfase entre estrellas
                 
-                const direccion = index % 2 === 0 ? 1 : -1;
 
-                estrella.position.y += direccion * Math.sin(tiempo * velocidad) * amplitud * 0.5 ;
+                estrella.position.y += Math.cos(tiempo * velocidad) * amplitud * 0.5 ;
                 estrella.rotation.z += 0.005; // Rotación continua
             });
 
@@ -592,10 +575,8 @@ export default function Galaxias() {
                 const amplitud = 0.01; // Ajusta la altura del rebote
                 const tiempo = tiempoBase + index * 0.3; // Desfase entre círculos
             
-                // Alterna la dirección del rebote para algunos círculos
-                const direccion = index % 2 === 0 ? 1 : -1;
             
-                circulo.position.y += direccion * Math.sin(tiempo * velocidad) * amplitud;
+                circulo.position.y += Math.cos(tiempo * velocidad) * amplitud;
             
                 // Efecto de escala pulsante
                 if (scaleDirection === 1) {
@@ -621,15 +602,18 @@ export default function Galaxias() {
                 termometro.animation(); // Llamamos a la animación de cada termómetro
             });
 
+            moverNubes();
+            
             renderer.render(scene, camera);
         };
         
         animate();
 
         return () => {
+            window.removeEventListener('resize', onWindowResize);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            centralDiv.remove();
+            //centralDiv.remove();
         };
     }, []);
 
