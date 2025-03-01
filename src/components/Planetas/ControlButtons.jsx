@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#ff0000' }) {
+export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#ff0000', clickSoundRef, planetSoundRef }) {
     const buttonStyle = {
         fontSize: '24px',
         background: 'none',
@@ -26,6 +26,13 @@ export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#f
         e.currentTarget.style.textShadow = `0 0 3px ${color}`;
     };
 
+    const handleClick = (callback, soundRef) => {
+        if (soundRef.current) {
+            soundRef.current.play();
+        }
+        callback();
+    };
+
     return (
         <div
             style={{
@@ -43,7 +50,7 @@ export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#f
                 style={buttonStyle}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
-                onClick={onPrev}
+                onClick={() => handleClick(onPrev, clickSoundRef)}
             >
                 ⟵
             </button>
@@ -51,7 +58,7 @@ export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#f
                 style={buttonStyle}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
-                onClick={onViewMore}
+                onClick={() => handleClick(onViewMore, planetSoundRef)}
             >
                 Ver más
             </button>
@@ -59,7 +66,7 @@ export default function ControlButtons({ onPrev, onNext, onViewMore, color = '#f
                 style={buttonStyle}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
-                onClick={onNext}
+                onClick={() => handleClick(onNext, clickSoundRef)}
             >
                 ⟶
             </button>

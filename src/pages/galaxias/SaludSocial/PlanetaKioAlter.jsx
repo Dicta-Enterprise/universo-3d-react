@@ -22,7 +22,7 @@ const Planeta = () => {
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/Planeta2',
+        '/ninos/salud_social/planeta_2',
         '/ninos/salud_social/planeta_3',
         '/ninos/salud_social/planeta_4',
         '/ninos/salud_social/planeta_5',
@@ -34,7 +34,7 @@ const Planeta = () => {
     ];
 
     const handleComprarClick = () => {
-        window.location.href = '/comprar'; // Redirige a la página de compra
+        window.location.href = ''; // Redirigir a la página de compra
     };
 
     useEffect(() => {

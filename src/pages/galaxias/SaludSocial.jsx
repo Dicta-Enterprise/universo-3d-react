@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import BackButton from '../../components/BackButton';
 import DivCentral from '../../components/Planetas/DivCentral';
@@ -8,6 +8,8 @@ import InfoBox from '../../components/Planetas/InfoBox';
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
     const [isZooming, setIsZooming] = useState(false);
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
         '/assets/2k_makemake_fictional.jpg',
@@ -15,6 +17,11 @@ export default function EsferaTexturizada() {
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
         '/assets/2k_venus_surface.jpg',
+        '/assets/2k_uranus.jpg',
+        '/assets/2k_venus_atmosphere.jpg',
+        '/assets/2k_earth_clouds.jpg',
+        '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
     ];
 
     const texts = [
@@ -23,6 +30,11 @@ export default function EsferaTexturizada() {
         "TERCER PLANETA - - - ",
         "CUARTO PLANETA - - - - ",
         "QUINTO PLANETA - - - - - ",
+        "SEXTO PLANETA - - - - - ",
+        "SEPTIMO PLANETA - - - - - ",
+        "OCTAVO PLANETA - - - - - ",
+        "NOVENO PLANETA - - - - - ",
+        "DECIMO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
@@ -31,6 +43,11 @@ export default function EsferaTexturizada() {
         '/ninos/salud_social/planeta_3',
         '/ninos/salud_social/planeta_4',
         '/ninos/salud_social/planeta_5',
+        '/ninos/salud_social/planeta_6',
+        '/ninos/salud_social/planeta_7',
+        '/ninos/salud_social/planeta_8',
+        '/ninos/salud_social/planeta_9',
+        '/ninos/salud_social/planeta_10',
     ];
 
     const changeTexture = (direction) => {
@@ -71,6 +88,29 @@ export default function EsferaTexturizada() {
         scene.add(pointLight);
 
         camera.position.set(0, 0, 18);
+
+        // Configurar el AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+
+        // Cargar el sonido de clic
+        const clickSound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/assets/sounds/click-space.mp3', (buffer) => {
+            clickSound.setBuffer(buffer);
+            clickSound.setLoop(false);
+            clickSound.setVolume(0.5);
+        });
+        clickSoundRef.current = clickSound;
+
+        // Cargar el sonido de "Planeta.mp3"
+        const planetSound = new THREE.Audio(listener);
+        audioLoader.load('/assets/sounds/Planeta.mp3', (buffer) => {
+            planetSound.setBuffer(buffer);
+            planetSound.setLoop(false);
+            planetSound.setVolume(0.5);
+        });
+        planetSoundRef.current = planetSound;
 
         const animate = () => {
             requestAnimationFrame(animate);
@@ -114,6 +154,8 @@ export default function EsferaTexturizada() {
                         window.location.href = planetUrls[currentTextureIndex]; // Redirige
                     }, 1000); // Ajusta el tiempo según la duración de la animación
                 }}
+                clickSoundRef={clickSoundRef}
+                planetSoundRef={planetSoundRef}
             />
         </div>
     );

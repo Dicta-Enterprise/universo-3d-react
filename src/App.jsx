@@ -11,6 +11,8 @@ import PeligrosDigitales from './pages/galaxias/PeligrosDigitales';
 
 import PlanetaKio from './pages/galaxias/SaludSocial/PlanetaKio';
 
+//import Comprar from './pages/galaxias/SaludSocial/compra.html';
+
 
 function App() {
     return (
@@ -26,6 +28,7 @@ function App() {
                 <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
 
                 <Route path="/ninos/salud_social/planeta_kio" element={<PlanetaKio />} />
+
 
 
             </Routes>

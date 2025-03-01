@@ -34,7 +34,7 @@ const Planeta = () => {
     ];
 
     const handleComprarClick = () => {
-        window.location.href = '/comprar'; // Redirige a la página de compra
+        window.location.href = '/compra.html'; // Redirige a la página de compra
     };
 
     useEffect(() => {
