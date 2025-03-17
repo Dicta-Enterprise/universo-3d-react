@@ -42,7 +42,7 @@ const Planeta = () => {
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
-            <BackButton color="#FFFFFF" />
+            <BackButton color="#ff0000" background= {'none'}/>
             <ThreeScene textures={textures} currentTextureIndex={0} />
             <MainContent isMobile={isMobile} onComprarClick={handleComprarClick} />
             <PlanetCarousel textures={textures} planetUrls={planetUrls} />

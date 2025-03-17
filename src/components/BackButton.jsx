@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function BackButton({ color = '#ff0000' }) { // Color predeterminado: rojo
+export default function BackButton({color , background}) { // Color predeterminado: rojo
     const handleClick = () => {
         window.history.back();
     };
@@ -12,8 +12,8 @@ export default function BackButton({ color = '#ff0000' }) { // Color predetermin
                 left: '20px',
                 top: '20px',
                 zIndex: '1000',
-                fontSize: '24px',
-                background: 'none',
+                fontSize: '20px',
+                background: background,
                 border: `2px solid ${color}`,
                 color: color,
                 cursor: 'pointer',
@@ -26,11 +26,11 @@ export default function BackButton({ color = '#ff0000' }) { // Color predetermin
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)'; // Efecto hover
-                e.currentTarget.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`; // Sombra más pronunciada
+                e.currentTarget.style.boxShadow = `0 0 5px ${color}, 0 0 5px ${color}`; // Sombra más pronunciada
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)'; // Volver al tamaño original
-                e.currentTarget.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Restaurar sombra
+                e.currentTarget.style.boxShadow = `0 0 5px ${color}, 0 0 5px ${color}`; // Restaurar sombra
             }}
             onClick={handleClick}
         >

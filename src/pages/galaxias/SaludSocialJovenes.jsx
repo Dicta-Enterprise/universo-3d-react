@@ -1,46 +1,80 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
-import BackButton from '../components/BackButton';
+import BackButton from '../../components/BackButton';
+import DivCentral from '../../components/Planetas/DivCentral';
+import ControlButtons from '../../components/Planetas/ControlButtons';
+import InfoBox from '../../components/Planetas/InfoBox';
 
-function App() {
-    return (
-        <div className="min-h-screen bg-[#0a0014] flex items-center justify-center">
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1a0b2e] via-[#0a0014] to-[#1a0b2e] opacity-90"></div>
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `
-            radial-gradient(circle at 20% 35%, rgba(76, 0, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 75% 44%, rgba(255, 0, 128, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 46% 52%, rgba(0, 255, 255, 0.15) 0%, transparent 50%)
-          `,
-                    backgroundBlendMode: 'screen'
-                }}></div>
-            </div>
-            <Galaxias />
-            <BackButton color={'#7b2fdd'} background= {'none'}/>
-        </div>
-    );
-}
+export default function EsferaTexturizada() {
+    const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
+    const [isZooming, setIsZooming] = useState(false);
 
-function Galaxias() {
+    const textures = [
+        '/assets/2k_makemake_fictional.jpg',
+        '/assets/2k_haumea_fictional.jpg',
+        '/assets/earthx5400x2700.jpg',
+        '/assets/2k_neptune.jpg',
+        '/assets/2k_venus_surface.jpg',
+    ];
+
+    const texts = [
+        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
+        "SEGUNDO PLANETA - - ",
+        "TERCER PLANETA - - - ",
+        "CUARTO PLANETA - - - - ",
+        "QUINTO PLANETA - - - - - ",
+    ];
+
+    const planetUrls = [
+        '/jovenes/salud_social/planeta_kio',
+        '/jovenes/salud_social/planeta_2',
+        '/jovenes/salud_social/planeta_3',
+        '/jovenes/salud_social/planeta_4',
+        '/jovenes/salud_social/planeta_5',
+    ];
+
+    const changeTexture = (direction) => {
+        setCurrentTextureIndex((prevIndex) => {
+            let nextIndex = prevIndex;
+            if (direction === 'next') {
+                nextIndex = (prevIndex + 1) % textures.length;
+            } else if (direction === 'prev') {
+                nextIndex = (prevIndex - 1 + textures.length) % textures.length;
+            }
+            return nextIndex;
+        });
+    };
+
     useEffect(() => {
-        // Configuración inicial de Three.js
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.style.overflow = 'hidden';
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        document.body.appendChild(renderer.domElement);
 
-        // Hacer el renderer responsive
-        const updateSize = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+        const handleResize = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+    
+            // Actualizar el tamaño del renderizador
+            renderer.setSize(width, height);
+    
+            // Actualizar la relación de aspecto de la cámara
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimización para dispositivos de alta densidad
         };
 
-        window.addEventListener('resize', updateSize);
-        updateSize();
+        // Escuchar el evento de cambio de tamaño
+        window.addEventListener('resize', handleResize);
 
-        document.body.appendChild(renderer.domElement);
+        /*const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
+        scene.background = spaceTexture;*/
+
+        // Fondo de Jovenes ----------------------------------
 
         // Fondo y luces
         const backgroundColor = new THREE.Color('#0a0014');
@@ -49,9 +83,9 @@ function Galaxias() {
         const ambientLight = new THREE.AmbientLight(0x2a1f3d, 1.5);//0x2a1f3d, 1.5
         scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight(0x7b2fdd, 2, 100); ///0x7b2fdd, 2, 100
-        pointLight.position.set(50, 0, 30);
-        scene.add(pointLight);
+        const pointLight5 = new THREE.PointLight(0x7b2fdd, 2, 100); ///0x7b2fdd, 2, 100
+        pointLight5.position.set(50, 0, 30);
+        scene.add(pointLight5);
 
         const pointLight2 = new THREE.PointLight(0xff3366, 2, 100); //0xff3366, 2, 100
         pointLight2.position.set(-50, 0, 30); 
@@ -65,38 +99,6 @@ function Galaxias() {
         dirLight.position.set(0, 10, -50);
         scene.add(dirLight);
 
-
-
-        // Función para crear planetas
-        /*    function createPlanet(radius, color, position, rings = false) {
-              const planetGeometry = new THREE.SphereGeometry(radius, 32, 32);
-              const planetMaterial = new THREE.MeshPhongMaterial({
-                color: color,
-                shininess: 15,
-                bumpScale: 0.05,
-              });
-              const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-              planet.position.copy(position);
-        
-              if (rings) {
-                const ringGeometry = new THREE.RingGeometry(radius * 1.5, radius * 2, 32);
-                const ringMaterial = new THREE.MeshBasicMaterial({
-                  color: 0xffffff,
-                  side: THREE.DoubleSide,
-                  transparent: true,
-                  opacity: 0.4
-                });
-                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-                ring.rotation.x = Math.PI / 2;
-                planet.add(ring);
-              }
-        
-              scene.add(planet);
-              return planet;
-            }
-        */
-
-        // Función para crear planetas con luz y rotación
         function createPlanet(radius, color, position, rings = false) {
             const planetGeometry = new THREE.SphereGeometry(radius, 32, 32);
 
@@ -520,111 +522,41 @@ const animateShootingStar = (index) => {
     dropStar();
 };
 
-// Fin de modificado meteoritos
-// Arrays para almacenar las estrellas fugaces y meteoritos
-const shootingStars = [];
-const meteors = [];
+        // Fin de modificado meteoritos
+        // Arrays para almacenar las estrellas fugaces y meteoritos
+        const shootingStars = [];
+        const meteors = [];
 
-// Función para actualizar estrellas fugaces
-function updateShootingStars() {
-    if (Math.random() < 0.02 && shootingStars.length < 6) { // Reducida la frecuencia
-        const star = createShootingStar();
-        scene.add(star);
-        shootingStars.push(star);
-    }
-    
-    for (let i = shootingStars.length - 1; i >= 0; i--) {
-        const star = shootingStars[i];
-        const positions = star.geometry.attributes.position.array;
-        
-        positions[0] += star.velocity.x;
-        positions[1] += star.velocity.y;
-        positions[2] += star.velocity.z;
-        
-        for (let j = positions.length - 3; j > 0; j -= 3) {
-            positions[j] = positions[j - 3];
-            positions[j + 1] = positions[j - 2];
-            positions[j + 2] = positions[j - 1];
+        // Función para actualizar estrellas fugaces
+        function updateShootingStars() {
+            if (Math.random() < 0.02 && shootingStars.length < 6) { // Reducida la frecuencia
+                const star = createShootingStar();
+                scene.add(star);
+                shootingStars.push(star);
+            }
+            
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                const star = shootingStars[i];
+                const positions = star.geometry.attributes.position.array;
+                
+                positions[0] += star.velocity.x;
+                positions[1] += star.velocity.y;
+                positions[2] += star.velocity.z;
+                
+                for (let j = positions.length - 3; j > 0; j -= 3) {
+                    positions[j] = positions[j - 3];
+                    positions[j + 1] = positions[j - 2];
+                    positions[j + 2] = positions[j - 1];
+                }
+                
+                star.geometry.attributes.position.needsUpdate = true;
+                
+                if (positions[1] < -100 || positions[0] > 150 || positions[0] < -150 || positions[2] > 50) {
+                    scene.remove(star);
+                    shootingStars.splice(i, 1);
+                }
+            }
         }
-        
-        star.geometry.attributes.position.needsUpdate = true;
-        
-        if (positions[1] < -100 || positions[0] > 150 || positions[0] < -150 || positions[2] > 50) {
-            scene.remove(star);
-            shootingStars.splice(i, 1);
-        }
-    }
-}
-
-        //Inicio de planetas
-        const galaxyPositionss = [
-            new THREE.Vector3(-15, 1, 0),
-            new THREE.Vector3(15, 1, 0),
-            new THREE.Vector3(0, -7, 0),
-            new THREE.Vector3(0, 7, 0),
-        ];
-
-        const shiningStars = createShiningStars();
-        //const lightBeams = createLightBeams();
-
-        // Configuración de las galaxias principales
-        const galaxies = [];
-        const galaxyMaterials = [];
-        const galaxyTitles = [
-            "Peligros de Salud Social [R]",
-            "Peligros Digitales [M]",
-            "Peligros de Salud Física [C]",
-            "Peligros de Salud Mental [V]"
-        ];
-        const galaxyUrls = [
-            "/jovenes/salud_social",
-            "/jovenes/peligros_digitales",
-            "/jovenes/salud_fisica",
-            "/jovenes/salud_mental"
-        ];
-        
-        /*const galaxyPositions = [
-            new THREE.Vector3(-15, 1, 0),
-            new THREE.Vector3(15, 1, 0),
-            new THREE.Vector3(0, -7, 0),
-            new THREE.Vector3(0, 7, 0),
-        ];
-
-        const galaxyPositionsMobile = [
-            new THREE.Vector3(0, 10, 0),
-            new THREE.Vector3(0, 3, 0),
-            new THREE.Vector3(0, -4, 0),
-            new THREE.Vector3(0, -11, 0),
-        ];*/
-
-        function getGalaxyPositions() {
-            const isMobile = window.innerWidth < 768; // Definir si es móvil según el ancho de la pantalla
-        
-            return isMobile
-                ? [
-                    new THREE.Vector3(0, 10, 0),
-                    new THREE.Vector3(0, 4, 0),
-                    new THREE.Vector3(0, -3, 0),
-                    new THREE.Vector3(0, -10, 0),
-                ]
-                : [
-                    new THREE.Vector3(-15, 1, 0),
-                    new THREE.Vector3(15, 1, 0),
-                    new THREE.Vector3(0, -7, 0),
-                    new THREE.Vector3(0, 7, 0),
-                ];
-        }
-
-        // Función para actualizar las posiciones de las galaxias
-        const updateGalaxyPositions = () => {
-            const newPositions = getGalaxyPositions();
-            galaxies.forEach((galaxy, index) => {
-                galaxy.position.copy(newPositions[index]);
-            });
-        };
-
-        // Usar la función para la posicion de planetas
-        const galaxyPositions = getGalaxyPositions();
 
         const planets = [];
         const numPlanets = 70;
@@ -639,9 +571,9 @@ function updateShootingStars() {
             let x, y, z;
 
             do {
-                /*x = (Math.random() * 700) - 350;
-                y = (Math.random() * 300) - 150;
-                z = -200;*/
+                //x = (Math.random() * 700) - 350;
+                //y = (Math.random() * 300) - 150;
+                //z = -200;
 
                 x = (Math.random() * 360) - 180;
                 y = (Math.random() * 140) - 70;
@@ -650,8 +582,7 @@ function updateShootingStars() {
                 position = new THREE.Vector3(x, y, z);
 
                 // Verifica si la posición está demasiado cerca de una galaxia o de otro planeta
-                tooClose = galaxyPositions.some(galaxy => position.distanceTo(galaxy) < minDistance) ||
-                        planets.some(planet => position.distanceTo(planet.position) < minSeparation);
+                tooClose = planets.some(planet => position.distanceTo(planet.position) < minSeparation);
             } while (tooClose); // Si está cerca, se genera otra posición
 
             const hasRings = Math.random() < 0.3;  // 30% de probabilidad de tener anillos
@@ -659,231 +590,8 @@ function updateShootingStars() {
             const newPlanet = createPlanet(size, color, position, hasRings);
             planets.push(newPlanet);
         }
-        
-        // Configuración de la interfaz
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-        let isAnimating = false;
 
-        // Crear contenedor de texto central responsive
-        const centralDiv = document.createElement('div');
-        centralDiv.style.position = 'absolute';
-        centralDiv.style.top = '50%';
-        centralDiv.style.left = '50%';
-        centralDiv.style.transform = 'translate(-50%, -50%)';
-        centralDiv.style.color = '#ffffff';
-        centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-        centralDiv.style.textAlign = 'center';
-        centralDiv.style.background = 'linear-gradient(180deg, rgba(26, 11, 46, 0.9) 0%, rgba(10, 0, 20, 0.9) 100%)';
-        centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-        centralDiv.style.borderRadius = '15px';
-        centralDiv.style.display = 'flex';
-        centralDiv.style.flexDirection = 'column';
-        centralDiv.style.alignItems = 'center';
-        centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-        centralDiv.style.maxWidth = '450px';
-        centralDiv.style.backdropFilter = 'blur(10px)';
-        centralDiv.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-        centralDiv.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4)';
-        document.body.appendChild(centralDiv);
-
-        const centralText = document.createElement('p');
-        centralText.textContent = "¿A dónde vamos a ir hoy? (Seleccione una de las siguientes galaxias)";
-        centralText.style.margin = '0';
-        centralText.style.fontWeight = '300';
-        centralText.style.letterSpacing = '0.5px';
-        centralText.style.lineHeight = '1.5';
-        centralDiv.appendChild(centralText);
-
-        const confirmButton = document.createElement('button');
-        confirmButton.textContent = "Confirmar";
-        confirmButton.style.marginTop = '20px';
-        confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-        confirmButton.style.background = 'linear-gradient(135deg, #7b2fdd 0%, #ff3366 100%)';
-        confirmButton.style.color = 'white';
-        confirmButton.style.border = 'none';
-        confirmButton.style.borderRadius = '8px';
-        confirmButton.style.cursor = 'pointer';
-        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        confirmButton.style.fontWeight = '500';
-        confirmButton.style.letterSpacing = '1px';
-        confirmButton.style.boxShadow = '0 4px 15px rgba(123, 47, 221, 0.3)';
-        confirmButton.style.transition = 'all 0.3s ease';
-        confirmButton.style.display = 'none';
-
-        confirmButton.addEventListener('mouseenter', () => {
-            confirmButton.style.transform = 'translateY(-2px)';
-            confirmButton.style.boxShadow = '0 6px 20px rgba(123, 47, 221, 0.4)';
-        });
-
-        confirmButton.addEventListener('mouseleave', () => {
-            confirmButton.style.transform = 'translateY(0)';
-            confirmButton.style.boxShadow = '0 4px 15px rgba(123, 47, 221, 0.3)';
-        });
-
-        centralDiv.appendChild(confirmButton);
-
-        // Actualizar estilos en resize
-        window.addEventListener('resize', () => {
-            centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-            centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-            centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-            confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-            confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        });
-
-        let selectedGalaxyIndex = -1;
-
-        const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
-            const particles = 15000;
-            const spiralArms = 5;
-            const radius = 5;
-            const spread = 0.8;
-            const positions = new Float32Array(particles * 3);
-            const colors = new Float32Array(particles * 3);
-            const color = new THREE.Color(baseColor);
-
-            for (let i = 0; i < particles; i++) {
-                const i3 = i * 3;
-                const r = Math.random() * radius;
-                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.8;
-
-                const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
-                const y = (Math.random() - 0.5) * spread;
-                const z = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
-
-                positions[i3] = x;
-                positions[i3 + 1] = y;
-                positions[i3 + 2] = z;
-
-                const variation = Math.random() * 0.5 - 0.25;
-                const adjustedColor = color.clone().offsetHSL(0, 0.1, variation);
-
-                colors[i3] = adjustedColor.r;
-                colors[i3 + 1] = adjustedColor.g;
-                colors[i3 + 2] = adjustedColor.b;
-            }
-
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const material = new THREE.PointsMaterial({
-                size: 0.05,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
-            });
-
-            const galaxy = new THREE.Points(geometry, material);
-            galaxy.position.copy(position);
-            galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
-
-            scene.add(galaxy);
-            galaxies.push(galaxy);
-            galaxyMaterials.push(material);
-        };
-
-        // Crear las galaxias iniciales
-        const initialPositions = getGalaxyPositions();
-        const colors = ['#ff3366', '#7b2fdd', '#00ffff', '#4CAF50'];
-        const rotations = [
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-        ];
-        initialPositions.forEach((pos, index) => {
-            createGalaxy(pos, colors[index], rotations[index]);
-        });
-
-        // Escuchar cambios de tamaño de pantalla para actualizar las posiciones de las galaxias
-        window.addEventListener('resize', updateGalaxyPositions);
-
-        camera.position.set(0, 0, 36);
-        //camera.position.set(0, 0, 18);
-     //   camera.position.z = 30;  // Coloca la cámara más lejos de los planetas si es necesario
-
-
-        const moveToGalaxy = (galaxy, title, url) => {
-            if (isAnimating) return;
-            isAnimating = true;
-            
-            // Hacer invisibles las galaxias no seleccionadas
-            galaxies.forEach(g => {
-                if(g === galaxy){
-                    g.visible = true;
-                }else{
-                    g.visible = false;
-                }
-            });
-
-            const duration = 1.5;
-            const distance = 9;
-            const direction = new THREE.Vector3().subVectors(camera.position, galaxy.position).normalize();
-            const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
-            const startPosition = new THREE.Vector3().copy(camera.position);
-            let elapsed = 0;
-
-            const animateMove = () => {
-                elapsed += 0.01;
-                const t = Math.min(elapsed / duration, 1);
-                const easeT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-
-                camera.position.lerpVectors(startPosition, targetPosition, easeT);
-                camera.lookAt(galaxy.position);
-
-                if (t < 1) {
-                    requestAnimationFrame(animateMove);
-                } else {
-                    window.location.href = url;
-                }
-            };
-
-            animateMove();
-        };
-
-        const onClick = (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(galaxies);
-
-            galaxyMaterials.forEach((material) => {
-                material.size = 0.05;
-                material.opacity = 0.8;
-            });
-
-            if (intersects.length > 0) {
-                const targetGalaxy = intersects[0].object;
-                const galaxyIndex = galaxies.indexOf(targetGalaxy);
-
-                if (galaxyIndex !== -1) {
-                    selectedGalaxyIndex = galaxyIndex;
-
-                    galaxyMaterials[galaxyIndex].size = 0.08;
-                    galaxyMaterials[galaxyIndex].opacity = 1;
-
-                    centralText.textContent = `Iremos a ${galaxyTitles[galaxyIndex]}, ¿Correcto?`;
-                    confirmButton.style.display = 'block';
-                }
-            }
-        };
-
-        confirmButton.addEventListener('click', () => {
-            if (selectedGalaxyIndex !== -1) {
-                centralDiv.style.display = 'none';
-                moveToGalaxy(galaxies[selectedGalaxyIndex], galaxyTitles[selectedGalaxyIndex], galaxyUrls[selectedGalaxyIndex]);
-                setTimeout(() => {
-                    centralDiv.style.display = 'flex'; // Mostrar el centralDiv
-                    isAnimating = false;
-                }, 900); // Retraso adicional (opcional)
-            }
-        });
-
-        renderer.domElement.addEventListener('click', onClick);
+        const shiningStars = createShiningStars();
 
         // Posicionar las nebulosas en eje z
         spiralNebula.position.z = -700;
@@ -896,8 +604,31 @@ function updateShootingStars() {
 
         let currentNebula = 0;
 
+
+        // --------------------------------------------------
+
+        const sphereGeometry = new THREE.SphereGeometry(6, 64, 64);
+        const sphereMaterial = new THREE.MeshStandardMaterial({
+            map: new THREE.TextureLoader().load(textures[currentTextureIndex]),
+        });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        scene.add(sphere);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(2, 5, 10);
+        scene.add(pointLight);
+
+        camera.position.set(0, 0, 36);
+
         const animate = () => {
             requestAnimationFrame(animate);
+
+            // Animación de zoom
+            if (isZooming && camera.position.z > 7) {
+                camera.position.z -= 0.1; // Ajusta la velocidad del zoom
+            }
+
+            // del Fondo Jovenes ---------------
 
             // Crear una lista de velocidades únicas para cada anillo
             let ringRotations = planets.map(() => (Math.random() * 0.001) + 0.001); // Velocidad entre 0.001 y 0.005
@@ -958,34 +689,43 @@ function updateShootingStars() {
                 }
             }
 
-            // Animar galaxias
-            galaxies.forEach((galaxy, index) => {
-                const speed = 0.0002 + index * 0.0001;
-                galaxy.rotation.y += speed;
-
-                const breathingSpeed = 0.001;
-                const breathingAmount = 0.1;
-                galaxy.scale.x = galaxy.scale.y = galaxy.scale.z = 1 + Math.sin(Date.now() * breathingSpeed) * breathingAmount;
-
-                // Hacer la galaxia invisible usando la propiedad 'visible'
-                //galaxy.visible = true; // Esto ocultará el objeto sin eliminarlo de la escena
-            });
-
+            // ---------------------------------
+            sphere.rotation.y += 0.0005;
             renderer.render(scene, camera);
         };
-
         animate();
-        animateShootingStar(currentStarIndex);
 
         return () => {
-            window.removeEventListener('resize', updateSize);
+            window.removeEventListener('resize', handleResize);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            centralDiv.remove();
         };
-    }, []);
+    }, [currentTextureIndex, textures, isZooming]); // Añade isZooming como dependencia
 
-    return null;
+    return (
+        <div
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100vh',
+                overflow: 'hidden',
+            }}
+        >
+            <BackButton color={'#ff0000'} background= {'none'}/>
+            <DivCentral title="Bienvenidos a la sección de Salud Social">
+                <InfoBox text={texts[currentTextureIndex]} />
+            </DivCentral>
+            <ControlButtons
+                onPrev={() => changeTexture('prev')}
+                onNext={() => changeTexture('next')}
+                onViewMore={() => {
+                    setIsZooming(true); // Activa la animación de zoom
+                    setTimeout(() => {
+                        setIsZooming(false); // Desactiva la animación
+                        window.location.href = planetUrls[currentTextureIndex]; // Redirige
+                    }, 1000); // Ajusta el tiempo según la duración de la animación
+                }}
+            />
+        </div>
+    );
 }
-
-export default App;
