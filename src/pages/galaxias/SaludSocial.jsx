@@ -39,8 +39,8 @@ export default function EsferaTexturizada() {
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_2',
-        '/ninos/salud_social/planeta_3',
+        '/ninos/salud_social/planeta_mer',
+        '/ninos/salud_social/planeta_ven',
         '/ninos/salud_social/planeta_4',
         '/ninos/salud_social/planeta_5',
         '/ninos/salud_social/planeta_6',
@@ -140,7 +140,7 @@ export default function EsferaTexturizada() {
                 overflow: 'hidden',
             }}
         >
-            <BackButton />
+            <BackButton redirectUrl="/ninos" /> {/* Pasa la URL dinámica */}
             <DivCentral title="Bienvenidos a la sección de Salud Social">
                 <InfoBox text={texts[currentTextureIndex]} />
             </DivCentral>

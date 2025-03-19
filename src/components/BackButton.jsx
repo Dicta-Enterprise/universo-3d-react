@@ -1,8 +1,24 @@
 import React from 'react';
 
-export default function BackButton({ color = '#ff0000' }) { // Color predeterminado: rojo
+const LeftArrow = () => (
+    <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M15 18l-6-6 6-6" />
+    </svg>
+);
+
+export default function BackButton({ color = '#ff0000', redirectUrl = "/"}) { // Color predeterminado: rojo
     const handleClick = () => {
-        window.history.back();
+        //window.history.back();
+        window.location.href = redirectUrl;
     };
 
     return (
@@ -23,6 +39,9 @@ export default function BackButton({ color = '#ff0000' }) { // Color predetermin
                 transition: 'all 0.3s ease',
                 textShadow: `0 0 3px ${color}`,
                 transform: 'scale(1)', // Estado normal
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)'; // Efecto hover
@@ -34,7 +53,8 @@ export default function BackButton({ color = '#ff0000' }) { // Color predetermin
             }}
             onClick={handleClick}
         >
-            ← Regresar
+            <LeftArrow />
+            <span style={{ marginLeft: '8px' }}>Atras</span>
         </button>
     );
 }

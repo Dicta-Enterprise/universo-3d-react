@@ -6,26 +6,24 @@ import BackButton from '../components/BackButton';
 export default function Ninos() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [selectedGalaxy, setSelectedGalaxy] = useState(null);
-    const [galaxiesVisible, setGalaxiesVisible] = useState(true); // Estado para controlar la visibilidad de las galaxias
+    const [galaxiesVisible, setGalaxiesVisible] = useState(true);
 
-    const galaxiesRef = useRef([]); // Referencia para almacenar las galaxias
-    const cameraRef = useRef(null); // Referencia para la cámara
-    const isAnimatingRef = useRef(false); // Referencia para controlar la animación
-    const audioListenerRef = useRef(null); // Referencia para el AudioListener
-    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
-    const magicSoundRef = useRef(null); // Referencia para el sonido de animación
+    const galaxiesRef = useRef([]);
+    const cameraRef = useRef(null);
+    const isAnimatingRef = useRef(false);
+    const audioListenerRef = useRef(null);
+    const clickSoundRef = useRef(null);
+    const magicSoundRef = useRef(null);
 
     useEffect(() => {
         const handleResize = () => {
             const newIsMobile = window.innerWidth < 768;
             setIsMobile(newIsMobile);
 
-            // Actualizar el tamaño del renderer
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
 
-            // Actualizar las posiciones de las galaxias
             galaxiesRef.current.forEach((galaxy, index) => {
                 const newPosition = newIsMobile ? galaxyPositionsMobile[index] : galaxyPositionsPC[index];
                 galaxy.position.copy(newPosition);
@@ -49,15 +47,10 @@ export default function Ninos() {
 
         cameraRef.current = camera;
 
-        //---------------------------------------------------------
-        //---------------------S O N I D O ------------------------
-        //---------------------------------------------------------
-        // Configurar el AudioListener
         const listener = new THREE.AudioListener();
         camera.add(listener);
         audioListenerRef.current = listener;
 
-        // Cargar el sonido de clic
         const clickSound = new THREE.Audio(listener);
         const audioLoader = new THREE.AudioLoader();
         audioLoader.load('/assets/sounds/click.mp3', (buffer) => {
@@ -67,7 +60,6 @@ export default function Ninos() {
         });
         clickSoundRef.current = clickSound;
 
-        // Cargar el sonido de animación (magic.mp3)
         const magicSound = new THREE.Audio(listener);
         audioLoader.load('/assets/sounds/magic.mp3', (buffer) => {
             magicSound.setBuffer(buffer);
@@ -75,8 +67,6 @@ export default function Ninos() {
             magicSound.setVolume(0.5);
         });
         magicSoundRef.current = magicSound;
-        //---------------------------------------------------------
-        //---------------------------------------------------------
 
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
         scene.background = spaceTexture;
@@ -98,14 +88,14 @@ export default function Ninos() {
         const galaxyPositionsPC = [
             new THREE.Vector3(-13, 1, 0),
             new THREE.Vector3(13, 1, 0),
-            new THREE.Vector3(0, -8, 0),
+            new THREE.Vector3(0, -8 , 0),
             new THREE.Vector3(0, 9, 0),
         ];
         const galaxyPositionsMobile = [
             new THREE.Vector3(0, 10, 0),
-            new THREE.Vector3(0, 4, 0),
-            new THREE.Vector3(0, -3, 0),
-            new THREE.Vector3(0, -10, 0),
+            new THREE.Vector3(0, 3, 0),
+            new THREE.Vector3(0, -4, 0),
+            new THREE.Vector3(0, -11, 0),
         ];
 
         const raycaster = new THREE.Raycaster();
@@ -113,21 +103,20 @@ export default function Ninos() {
 
         const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
             const particles = 10000;
-            const spiralArms = 7;
             const radius = 5;
-            const spread = 0.45;
+            const spread = 0.5; // Reducir el spread para una línea más definida
             const positions = new Float32Array(particles * 3);
             const colors = new Float32Array(particles * 3);
             const color = new THREE.Color(baseColor);
 
             for (let i = 0; i < particles; i++) {
                 const i3 = i * 3;
-                const r = Math.random() * radius;
-                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.5 + Math.random() * spread;
+                const r = (i / particles) * radius; // Aumentar el radio gradualmente
+                const angle = r * 5; // Aumentar el ángulo para crear una espiral
 
                 const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
-                const y = (Math.random() - 0.5) * spread;
-                const z = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
+                const y = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
+                const z = (Math.random() - 0.5) * spread;
 
                 positions[i3] = x;
                 positions[i3 + 1] = y;
@@ -153,22 +142,21 @@ export default function Ninos() {
             const galaxy = new THREE.Points(geometry, material);
             galaxy.position.copy(position);
             galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
-            galaxy.visible = galaxiesVisible; // Asegurar que la visibilidad se ajuste según el estado
+            galaxy.visible = galaxiesVisible;
 
             scene.add(galaxy);
             galaxies.push(galaxy);
             galaxyMaterials.push(material);
         };
 
-        // Posicionar las galaxias según el tamaño de la pantalla inicial
         const initialPositions = isMobile ? galaxyPositionsMobile : galaxyPositionsPC;
         initialPositions.forEach((pos, index) => {
             const colors = ['#ff0000', '#9d4edd', '#0cb7f2', '#00ff00'];
             const rotations = [
-                { x: Math.PI / 3.5, y: 0, z: 0 }, //rojo
-                { x: Math.PI / 5, y: 0, z: 0 }, //morado
-                { x: Math.PI / 10, y: 0, z: 0 }, //celeste
-                { x: Math.PI / 20, y: 0, z: 0 }, //verde
+                { x: Math.PI / 3.5, y: 0, z: 0 },
+                { x: Math.PI / 5, y: 0, z: 0 },
+                { x: Math.PI / 10, y: 0, z: 0 },
+                { x: Math.PI / 20, y: 0, z: 0 },
             ];
             createGalaxy(pos, colors[index], rotations[index]);
         });
@@ -203,7 +191,6 @@ export default function Ninos() {
                         index: galaxyIndex,
                     });
 
-                    // Reproducir el sonido de clic  <-------
                     if (clickSoundRef.current) {
                         clickSoundRef.current.play();
                     }
@@ -220,7 +207,7 @@ export default function Ninos() {
             galaxies.forEach((galaxy, index) => {
                 if (galaxiesVisible) {
                     const speed = 0.0002 + index * 0.0002;
-                    galaxy.rotation.y += speed;
+                    galaxy.rotation.z += speed;
                 }
             });
             renderer.render(scene, camera);
@@ -231,55 +218,50 @@ export default function Ninos() {
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
         };
-    }, [isMobile, galaxiesVisible]); // Asegúrate de incluir galaxiesVisible en las dependencias
+    }, [isMobile, galaxiesVisible]);
 
     const handleConfirm = () => {
         if (selectedGalaxy && !isAnimatingRef.current) {
             const selectedGalaxyIndex = selectedGalaxy.index;
             const galaxy = galaxiesRef.current[selectedGalaxyIndex];
             const url = selectedGalaxy.url;
-    
-            // Ocultar todas las galaxias excepto la seleccionada
+
             galaxiesRef.current.forEach((galaxy, index) => {
-                galaxy.visible = index === selectedGalaxyIndex; // Solo la seleccionada es visible
+                galaxy.visible = index === selectedGalaxyIndex;
             });
-    
-            // Iniciar la animación de acercamiento
+
             isAnimatingRef.current = true;
-    
-            // Reproducir el sonido de animación (magic.mp3)
+
             if (magicSoundRef.current) {
                 magicSoundRef.current.play();
             }
-    
-            const duration = 1.5; // Duración de la animación
-            const distance = 9; // Distancia a la que se acerca la cámara
+
+            const duration = 1.5;
+            const distance = 9;
             const direction = new THREE.Vector3().subVectors(cameraRef.current.position, galaxy.position).normalize();
             const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
             const startPosition = new THREE.Vector3().copy(cameraRef.current.position);
             let elapsed = 0;
-    
+
             const animateMove = () => {
                 elapsed += 0.01;
                 const t = Math.min(elapsed / duration, 1);
-    
-                // ANIMACION DE ACERCAMINETO DE GALAXIA
+
                 cameraRef.current.position.lerpVectors(startPosition, targetPosition, t);
                 cameraRef.current.lookAt(galaxy.position);
-    
+
                 if (t < 1) {
                     requestAnimationFrame(animateMove);
                 } else {
                     setTimeout(() => {
-                        // Restaurar la visibilidad de todas las galaxias antes de redirigir
                         galaxiesRef.current.forEach((galaxy) => {
                             galaxy.visible = true;
                         });
                         window.location.href = url;
-                    }, 1000); // DURACION DE ANIMACION DE ACERCAMIENTO --------------
+                    }, 1000);
                 }
             };
-    
+
             animateMove();
         }
     };
@@ -287,7 +269,7 @@ export default function Ninos() {
     return (
         <>
             <CentralText selectedGalaxy={selectedGalaxy} onConfirm={handleConfirm} />
-            <BackButton redirectUrl="/" /> {/* Pasa la URL dinámica */}
+            <BackButton redirectUrl="/" />
         </>
     );
 }

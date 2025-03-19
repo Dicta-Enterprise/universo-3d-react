@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import ResizeHandler from './ResizeHandler';
 
 const ThreeScene = ({ textures, planetUrls }) => {
     const mountRef = useRef(null);
     const sceneRef = useRef(new THREE.Scene());
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [currentIndex, setCurrentIndex] = useState(0); // Índice actual para mostrar los planetas
 
     // Refs to store persistent objects
     const cameraRef = useRef(null);
@@ -18,8 +16,8 @@ const ThreeScene = ({ textures, planetUrls }) => {
         console.log("🚀 Iniciando escena...");
 
         // Crear cámara y renderizador (solo una vez)
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 24);
+        const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 18);
         camera.lookAt(0, 0, 0);
         cameraRef.current = camera;
 
@@ -31,7 +29,7 @@ const ThreeScene = ({ textures, planetUrls }) => {
         // Agregar el renderizador al contenedor
         if (mountRef.current) {
             mountRef.current.appendChild(renderer.domElement);
-            renderer.domElement.style.position = 'fixed'; // Fijo para cubrir toda la pantalla
+            renderer.domElement.style.position = 'absolute';
             renderer.domElement.style.top = '0';
             renderer.domElement.style.left = '0';
             renderer.domElement.style.zIndex = 0; // Asegurar que esté detrás de otros elementos
@@ -39,9 +37,6 @@ const ThreeScene = ({ textures, planetUrls }) => {
 
         // Fondo estrellado
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
-        spaceTexture.wrapS = THREE.RepeatWrapping;
-        spaceTexture.wrapT = THREE.RepeatWrapping;
-        spaceTexture.repeat.set(4, 4); // Ajusta el valor de repetición según sea necesario
         sceneRef.current.background = spaceTexture;
         console.log("✅ Fondo estrellado agregado.");
 
@@ -56,7 +51,7 @@ const ThreeScene = ({ textures, planetUrls }) => {
 
         // Planeta central (creado solo una vez)
         if (!sphereRef.current) {
-            const sphereGeometry = new THREE.SphereGeometry(6, 80, 80);
+            const sphereGeometry = new THREE.SphereGeometry(4.5, 64, 64);
             const sphereMaterial = new THREE.MeshStandardMaterial({
                 map: new THREE.TextureLoader().load(textures[0]), // Textura del planeta central
                 roughness: 0.7, // Aumentar la rugosidad
@@ -121,58 +116,58 @@ const ThreeScene = ({ textures, planetUrls }) => {
     // Efecto para actualizar los mini planetas cuando cambia currentIndex
     useEffect(() => {
         console.log("🔄 Actualizando mini planetas...");
-        console.log("Current index changed:", currentIndex);
-    
+
+        // Función para crear y posicionar los planetas visibles
         const createAndPositionPlanets = () => {
             // Eliminar solo los planetas del carrusel (no el planeta central ni las luces)
             sceneRef.current.children
                 .filter((child) => child.userData?.isPlanet)
                 .forEach((planet) => sceneRef.current.remove(planet));
-    
+
             // Crear y posicionar los nuevos planetas
             const spacing = 2.5; // Espacio entre planetas
             const visiblePlanets = [
-                textures[(currentIndex - 1 + textures.length) % textures.length], // Textura anterior
-                textures[currentIndex], // Textura actual
-                textures[(currentIndex + 1) % textures.length], // Textura siguiente
+                textures[(currentIndex - 1 + textures.length) % textures.length], // Textura anterior (posición 1)
+                textures[currentIndex], // Textura actual (posición 2, planeta central)
+                textures[(currentIndex + 1) % textures.length], // Textura siguiente (posición 3)
             ].map((texture, index) => {
-                const geometry = new THREE.SphereGeometry(1, 32, 32);
+                const geometry = new THREE.SphereGeometry(1, 32, 32); // Tamaño fijo para todos los mini planetas
                 const material = new THREE.MeshStandardMaterial({
                     map: new THREE.TextureLoader().load(texture),
-                    roughness: 0.7,
+                    roughness: 0.7, // Aplicar los mismos ajustes a los mini planetas
                     metalness: 0.3,
                 });
                 const planet = new THREE.Mesh(geometry, material);
-    
+
                 // Asignar la URL correspondiente al planeta
                 const urlIndex = (currentIndex + index - 1 + textures.length) % textures.length;
-                planet.userData.url = planetUrls[urlIndex];
-                planet.userData.isPlanet = true;
-    
+                planet.userData.url = planetUrls[urlIndex]; // Asignar la URL correcta
+                planet.userData.isPlanet = true; // Marcar como planeta del carrusel
+
                 // Posicionar los planetas
-                const x = (index - 1) * spacing;
-                const y = 9;
-                const z = 0;
-                planet.position.set(x, y, z);
-    
+                const x = (index - 1) * spacing; // Centrar los planetas en la escena
+                const y = -10; // Altura de los planetas (ajusta este valor para cambiar la altura)
+                const z = 0; // Profundidad de los planetas
+                planet.position.set(x, y, z); // Posición en fila
+
                 // Hacer el planeta central más grande
-                if (index === 1) {
-                    planet.scale.set(1.1, 1.1, 1.1);
+                if (index === 1) { // Si es el planeta central (textura actual)
+                    planet.scale.set(1.1, 1.1, 1.1); // Escala más grande
                 } else {
-                    planet.scale.set(0.8, 0.8, 0.8);
+                    planet.scale.set(0.8, 0.8, 0.8); // Escala normal para los otros planetas
                 }
-    
+
                 sceneRef.current.add(planet);
                 return planet;
             });
-    
-            planetsRef.current = visiblePlanets;
+
+            planetsRef.current = visiblePlanets; // Store the mini planets in a ref
             console.log("✅ Planetas actualizados.");
         };
-    
+
         // Crear y posicionar los planetas inicialmente
         createAndPositionPlanets();
-    }, [textures, planetUrls, currentIndex]); // Dependencia de currentIndex
+    }, [textures, planetUrls, currentIndex]); // Dependencia de currentIndex para actualizar los planetas
 
     // Efecto para manejar la animación
     useEffect(() => {
@@ -234,24 +229,9 @@ const ThreeScene = ({ textures, planetUrls }) => {
         </svg>
     );
 
-    // Dentro del return de ThreeScene.js
     return (
-        <div style={{
-            position: 'fixed', // Fijo para cubrir toda la pantalla
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: 0, // Asegura que esté detrás del contenido principal
-        }}>
-            <div ref={mountRef} style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 0
-            }} />
+        <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+            <div ref={mountRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }} />
             {/* Botones de next y prev */}
             <button
                 onClick={handlePrev}
@@ -261,11 +241,11 @@ const ThreeScene = ({ textures, planetUrls }) => {
                     color: '#ffffff',
                     cursor: 'pointer',
                     fontSize: '48px',
-                    position: 'fixed', // Usar fixed para que siempre estén visibles
-                    bottom: '830px',
-                    left: isMobile ? '10%' : '40%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 3, // Asegurar que estén por encima del contenido
+                    position: 'absolute',
+                    bottom: '20px', // Mantener en la parte inferior
+                    left: '40%', // Mover más cerca del centro horizontal
+                    transform: 'translateX(-50%)', // Ajustar para centrar horizontalmente
+                    zIndex: 1,
                     transition: 'all 0.3s ease',
                 }}
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateX(-50%) scale(1.2)'}
@@ -281,11 +261,11 @@ const ThreeScene = ({ textures, planetUrls }) => {
                     color: '#ffffff',
                     cursor: 'pointer',
                     fontSize: '48px',
-                    position: 'fixed', // Usar fixed para que siempre estén visibles
-                    bottom: '830px',
-                    right: isMobile ? '10%' : '40%',
-                    transform: 'translateX(50%)',
-                    zIndex: 3,
+                    position: 'absolute',
+                    bottom: '20px', // Mantener en la parte inferior
+                    right: '40%', // Mover más cerca del centro horizontal
+                    transform: 'translateX(50%)', // Ajustar para centrar horizontalmente
+                    zIndex: 1,
                     transition: 'all 0.3s ease',
                 }}
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateX(50%) scale(1.2)'}
@@ -293,8 +273,6 @@ const ThreeScene = ({ textures, planetUrls }) => {
             >
                 <RightArrow />
             </button>
-            {/* Integrar el ResizeHandler */}
-            <ResizeHandler setIsMobile={setIsMobile} />
         </div>
     );
 };

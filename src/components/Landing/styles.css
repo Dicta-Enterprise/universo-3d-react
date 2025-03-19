@@ -1,0 +1,70 @@
+@keyframes rgbFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.rgb-border {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 2px solid transparent; /* Borde transparente para el efecto RGB */
+    box-shadow: 0 0 10px rgba(255, 0, 153, 0.3); /* Sombra inicial */
+}
+
+/* Pseudo-elemento para la sombra RGB */
+.rgb-border::before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Ajusta según el tamaño de la sombra */
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 0, 0, 0.3),
+        rgba(255, 128, 0, 0.3),
+        rgba(0, 255, 255, 0.3),
+        rgba(0, 0, 255, 0.3),
+        rgba(128, 0, 255, 0.3),
+        rgba(255, 0, 255, 0.3),
+        rgba(255, 0, 0, 0.3)
+    );
+    background-size: 400% 400%;
+    border-radius: 12px;
+    z-index: -2; /* Detrás del contenido */
+    animation: rgbFlow 10s linear infinite;
+    opacity: 0.8;
+    filter: blur(20px); /* Difuminar para simular la sombra */
+}
+
+/* Pseudo-elemento para el fondo oscuro */
+.rgb-border::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    z-index: -1; /* Encima de la sombra pero detrás del contenido */
+}
+
+/* Efecto RGB en bordes */
+.rgb-border {
+    border-image: linear-gradient(
+        45deg,
+        rgba(255, 0, 0, 0.3),
+        rgba(255, 128, 0, 0.3),
+        rgba(0, 255, 255, 0.3),
+        rgba(0, 0, 255, 0.3),
+        rgba(128, 0, 255, 0.3),
+        rgba(255, 0, 255, 0.3),
+        rgba(255, 0, 0, 0.3)
+    ) 1;
+    border-image-slice: 1;
+}
