@@ -704,8 +704,8 @@ function updateShootingStars() {
         confirmButton.style.border = 'none';
         confirmButton.style.borderRadius = '8px';
         confirmButton.style.cursor = 'pointer';
-        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        confirmButton.style.fontWeight = '500';
+        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '18px';
+        confirmButton.style.fontWeight = '700';
         confirmButton.style.letterSpacing = '1px';
         confirmButton.style.boxShadow = '0 4px 15px rgba(123, 47, 221, 0.3)';
         confirmButton.style.transition = 'all 0.3s ease';

@@ -56,7 +56,7 @@ export default function Ninos() {
         // -------------------------
 
         // Agregar 2 luz ambiental y una luz puntual
-        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Luz suave
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Luz suave
         scene.add(ambientLight);
 
         const pointLight = new THREE.PointLight(0xffffff, 1, 100);
@@ -242,7 +242,7 @@ export default function Ninos() {
         // Posicionar las galaxias según el tamaño de la pantalla inicial
         const initialPositions = isMobile ? galaxyPositionsMobile : galaxyPositionsPC;
         initialPositions.forEach((pos, index) => {
-            const colors = ['#ff0000', '#9d4edd', '#0cb7f2', '#00ff00'];
+            const colors = ['#FE797B', '#A587CA', '#36CEDC', '#8FE968'];
             const rotations = [
                 { x: Math.PI / 3.5, y: 0, z: 0 }, //rojo
                 { x: Math.PI / 5, y: 0, z: 0 }, //morado
@@ -601,7 +601,7 @@ export default function Ninos() {
     return (
         <>
             <CentralText selectedGalaxy={selectedGalaxy} onConfirm={handleConfirm} />
-            <BackButton color={'#ff0000'} background= {'none'}/>
+            <BackButton color={'#FF746C'} background= {'none'}/>
         </>
     );
 }

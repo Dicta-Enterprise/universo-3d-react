@@ -609,12 +609,12 @@ export default function Padres() {
         confirmButton.style.marginTop = '20px';
         confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
         confirmButton.style.background = 'linear-gradient(135deg,rgb(255, 233, 110) 0%,rgb(213, 175, 52) 50%,rgb(169, 121, 0) 100%)';
-        confirmButton.style.color = 'white';
+        confirmButton.style.color = 'black';
         confirmButton.style.border = 'none';
         confirmButton.style.borderRadius = '8px';
         confirmButton.style.cursor = 'pointer';
-        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        confirmButton.style.fontWeight = '500';
+        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '18px';
+        confirmButton.style.fontWeight = '700';
         confirmButton.style.letterSpacing = '1px';
         confirmButton.style.boxShadow = '0 4px 15px rgba(218, 165, 32, 0.3)';
         confirmButton.style.transition = 'all 0.3s ease';

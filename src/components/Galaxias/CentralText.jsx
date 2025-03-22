@@ -2,7 +2,7 @@
 import React from 'react';
 
 export default function CentralText({ selectedGalaxy, onConfirm }) {
-    const colors = ['#ff0000', '#9d4edd', '#0cb7f2', '#00ff00'];
+    const colors = ['#FF746C', '#cc99ff', '#69b6d9', '#55DDBB'];
     const galaxyIndex = selectedGalaxy ? selectedGalaxy.index : -1;
 
     return (
@@ -14,7 +14,7 @@ export default function CentralText({ selectedGalaxy, onConfirm }) {
             color: 'white',
             fontSize: '24px',
             textAlign: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: 'rgba(15, 38, 44, 0.5)',
             padding: '20px',
             borderRadius: '10px',
             display: 'flex',
@@ -33,9 +33,9 @@ export default function CentralText({ selectedGalaxy, onConfirm }) {
                         backgroundColor: colors[galaxyIndex],
                         color: 'white',
                         border: 'none',
-                        borderRadius: '8px',
+                        borderRadius: '20px',
                         cursor: 'pointer',
-                        fontSize: '16px',
+                        fontSize: '20px',
                         fontWeight: 'bold',
                         boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                         transition: 'all 0.3s ease',
