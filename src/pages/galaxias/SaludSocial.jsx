@@ -401,9 +401,9 @@ export default function EsferaTexturizada() {
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
 
-        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        /*const pointLight = new THREE.PointLight(0xffffff, 1, 100);
         pointLight.position.set(2, 5, 10);
-        scene.add(pointLight);
+        scene.add(pointLight);*/
 
         camera.position.set(0, 0, 18);
 

@@ -179,19 +179,19 @@ export default function Ninos() {
             new THREE.Vector3(-13, 1, 0),
             new THREE.Vector3(13, 1, 0),
             new THREE.Vector3(0, -7, 0),
-            new THREE.Vector3(0, 10, 0),
+            new THREE.Vector3(0, 8, 0),
         ];
         const galaxyPositionsMobile = [
-            new THREE.Vector3(0, 10, 0),
-            new THREE.Vector3(0, 3, 0),
-            new THREE.Vector3(0, -4, 0),
+            new THREE.Vector3(0, 11, 0),
+            new THREE.Vector3(0, 5, 0),
+            new THREE.Vector3(0, -6, 0),
             new THREE.Vector3(0, -11, 0),
         ];
     
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
     
-        const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
+        /*const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
             const particles = 10000;
             const spiralArms = 7;
             const radius = 5;
@@ -237,6 +237,53 @@ export default function Ninos() {
             scene.add(galaxy);
             galaxies.push(galaxy);
             galaxyMaterials.push(material);
+        };*/
+
+        const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
+            const particles = 10000;
+            const radius = 5;
+            const spread = 0.5; // Reducir el spread para una línea más definida
+            const positions = new Float32Array(particles * 3);
+            const colors = new Float32Array(particles * 3);
+            const color = new THREE.Color(baseColor);
+
+            for (let i = 0; i < particles; i++) {
+                const i3 = i * 3;
+                const r = (i / particles) * radius; // Aumentar el radio gradualmente
+                const angle = r * 5; // Aumentar el ángulo para crear una espiral
+
+                const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
+                const y = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
+                const z = (Math.random() - 0.5) * spread;
+
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+
+                const variation = Math.random() * 0.4 - 0.2;
+                const adjustedColor = color.clone().offsetHSL(0, 0, variation);
+
+                colors[i3] = adjustedColor.r;
+                colors[i3 + 1] = adjustedColor.g;
+                colors[i3 + 2] = adjustedColor.b;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+            });
+
+            const galaxy = new THREE.Points(geometry, material);
+            galaxy.position.copy(position);
+            galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
+
+            scene.add(galaxy);
+            galaxies.push(galaxy);
+            galaxyMaterials.push(material);
         };
     
         // Posicionar las galaxias según el tamaño de la pantalla inicial
@@ -244,10 +291,10 @@ export default function Ninos() {
         initialPositions.forEach((pos, index) => {
             const colors = ['#FE797B', '#A587CA', '#36CEDC', '#8FE968'];
             const rotations = [
-                { x: Math.PI / 3.5, y: 0, z: 0 }, //rojo
-                { x: Math.PI / 5, y: 0, z: 0 }, //morado
-                { x: Math.PI / 10, y: 0, z: 0 }, //celeste
-                { x: Math.PI / 20, y: 0, z: 0 }, //verde
+                { x: 0.8 * Math.PI, y: 0, z: 0 }, //rojo
+                { x: Math.PI / 2.5, y: 0, z: 0 }, //morado
+                { x: Math.PI / 4, y: 0, z: 0 }, //celeste
+                { x: -1.5 * Math.PI, y: 0, z: 0 }, //verde
             ];
             createGalaxy(pos, colors[index], rotations[index]);
         });
@@ -492,7 +539,7 @@ export default function Ninos() {
             requestAnimationFrame(animate);
             galaxies.forEach((galaxy, index) => {
                 const speed = 0.0002 + index * 0.0002;
-                galaxy.rotation.y += speed;
+                galaxy.rotation.z += speed;
             });
             
             let scaleLimit = window.innerWidth < 768 ? 0.7 : 1.5; // Límite de escala máximo
