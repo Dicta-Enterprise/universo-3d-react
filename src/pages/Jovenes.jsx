@@ -736,9 +736,9 @@ function updateShootingStars() {
 
         const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
             const particles = 15000;
-            const spiralArms = 5;
+            const spiralArms = 2;
             const radius = 5;
-            const spread = 0.8;
+            const spread = 0.5;
             const positions = new Float32Array(particles * 3);
             const colors = new Float32Array(particles * 3);
             const color = new THREE.Color(baseColor);
@@ -746,7 +746,7 @@ function updateShootingStars() {
             for (let i = 0; i < particles; i++) {
                 const i3 = i * 3;
                 const r = Math.random() * radius;
-                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.8;
+                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 3;
 
                 const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
                 const y = (Math.random() - 0.5) * spread;
