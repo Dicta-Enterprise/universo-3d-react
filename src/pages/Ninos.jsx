@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import CrearEstrellas3D from '../components/FondoNIños/CrearEstrellas3D';
 import crearLineaVertical from '../components/FondoNIños/CrearLineaVerticalEstrella';
@@ -9,12 +9,33 @@ import CrearNube from '../components/FondoNIños/CrearNube';
 import CrearLuna from '../components/FondoNIños/CrearLuna';
 import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoNIños/ArregloObjetos';
 
-export default function Galaxias() {
+export default function Ninos() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [selectedGalaxy, setSelectedGalaxy] = useState(null);
+    const [galaxiesVisible, setGalaxiesVisible] = useState(true); // Estado para controlar la visibilidad de las galaxias
+
+    const galaxiesRef = useRef([]); // Referencia para almacenar las galaxias
+    const cameraRef = useRef(null); // Referencia para la cámara
+    const isAnimatingRef = useRef(false); // Referencia para controlar la animación
+    const audioListenerRef = useRef(null); // Referencia para el AudioListener
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const magicSoundRef = useRef(null); // Referencia para el sonido de animación
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
+            const newIsMobile = window.innerWidth < 768;
+            setIsMobile(newIsMobile);
+
+            // Actualizar el tamaño del renderer
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            // Actualizar las posiciones de las galaxias
+            galaxiesRef.current.forEach((galaxy, index) => {
+                const newPosition = newIsMobile ? galaxyPositionsMobile[index] : galaxyPositionsPC[index];
+                galaxy.position.copy(newPosition);
+            });
         };
 
         window.addEventListener('resize', handleResize);
@@ -139,6 +160,8 @@ export default function Galaxias() {
             scene.add(cruz);
             cruces.push(cruz);
         });
+
+        galaxiesRef.current = galaxies;
 
         camera.position.set(0, 0, 18);
 
@@ -406,66 +429,68 @@ export default function Galaxias() {
         
         animate();
 
-        updateGalaxyPositions();
-
-        // Crear botón de regresar
-        const createButton = (text, onClick, color = '#ff0000') => {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.style.fontSize = '24px';
-            button.style.background = 'none'; // Fondo transparente
-            button.style.border = `2px solid ${color}`; // Borde con color personalizado
-            button.style.color = color; // Color del texto
-            button.style.cursor = 'pointer';
-            button.style.padding = '12px 20px';
-            button.style.borderRadius = '20px';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
-            button.style.transition = 'all 0.3s ease';
-            button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-        
-            // Efecto hover
-            button.addEventListener('mouseover', () => {
-                button.style.transform = 'scale(1.05)';
-                button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-                button.style.textShadow = `0 0 5px ${color}`;
-            });
-        
-            // Efecto al salir del hover
-            button.addEventListener('mouseout', () => {
-                button.style.transform = 'scale(1)';
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                button.style.textShadow = `0 0 3px ${color}`;
-            });
-        
-            // Efecto al hacer clic
-            button.addEventListener('click', () => {
-                button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
-                setTimeout(() => {
-                    button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                }, 200);
-                onClick();
-            });
-        
-            return button;
-        };
-
-        const backButton = createButton('← Regresar', () => {
-            window.history.back();
-        });
-        
-        backButton.style.position = 'absolute';
-        backButton.style.left = '20px';
-        backButton.style.top = '20px'; 
-        backButton.style.zIndex = '1000'; // para que el boton este por encima de todo
-        
-        document.body.appendChild(backButton);
-
         return () => {
             window.removeEventListener('resize', onWindowResize);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
         };
-    }, [isMobile]);
+    }, [isMobile, galaxiesVisible]); // Asegúrate de incluir galaxiesVisible en las dependencias
 
-    return null;
+    const handleConfirm = () => {
+        if (selectedGalaxy && !isAnimatingRef.current) {
+            const selectedGalaxyIndex = selectedGalaxy.index;
+            const galaxy = galaxiesRef.current[selectedGalaxyIndex];
+            const url = selectedGalaxy.url;
+    
+            // Ocultar todas las galaxias excepto la seleccionada
+            galaxiesRef.current.forEach((galaxy, index) => {
+                galaxy.visible = index === selectedGalaxyIndex; // Solo la seleccionada es visible
+            });
+    
+            // Iniciar la animación de acercamiento
+            isAnimatingRef.current = true;
+    
+            // Reproducir el sonido de animación (magic.mp3)
+            if (magicSoundRef.current) {
+                magicSoundRef.current.play();
+            }
+    
+            const duration = 1.5; // Duración de la animación
+            const distance = 9; // Distancia a la que se acerca la cámara
+            const direction = new THREE.Vector3().subVectors(cameraRef.current.position, galaxy.position).normalize();
+            const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
+            const startPosition = new THREE.Vector3().copy(cameraRef.current.position);
+            let elapsed = 0;
+    
+            const animateMove = () => {
+                elapsed += 0.01;
+                const t = Math.min(elapsed / duration, 1);
+    
+                // ANIMACION DE ACERCAMINETO DE GALAXIA
+                cameraRef.current.position.lerpVectors(startPosition, targetPosition, t);
+                cameraRef.current.lookAt(galaxy.position);
+    
+                if (t < 1) {
+                    requestAnimationFrame(animateMove);
+                } else {
+                    setTimeout(() => {
+                        // Restaurar la visibilidad de todas las galaxias antes de redirigir
+                        galaxiesRef.current.forEach((galaxy) => {
+                            galaxy.visible = true;
+                        });
+                        window.location.href = url;
+                    }, 1000); // DURACION DE ANIMACION DE ACERCAMIENTO --------------
+                }
+            };
+    
+            animateMove();
+        }
+    };
+
+    return (
+        <>
+            <CentralText selectedGalaxy={selectedGalaxy} onConfirm={handleConfirm} />
+            <BackButton redirectUrl="/" /> {/* Pasa la URL dinámica */}
+        </>
+    );
 }

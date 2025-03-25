@@ -1,9 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
+import BackButton from '../../components/BackButton';
+import DivCentral from '../../components/Planetas/DivCentral';
+import ControlButtons from '../../components/Planetas/ControlButtons';
+import InfoBox from '../../components/Planetas/InfoBox';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
-    const [isZooming, setIsZooming] = useState(false);  // Estado para controlar la animación de acercamiento
+    const [isZooming, setIsZooming] = useState(false);
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
         '/assets/2k_makemake_fictional.jpg',
@@ -11,6 +17,11 @@ export default function EsferaTexturizada() {
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
         '/assets/2k_venus_surface.jpg',
+        '/assets/2k_uranus.jpg',
+        '/assets/2k_venus_atmosphere.jpg',
+        '/assets/2k_earth_clouds.jpg',
+        '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
     ];
 
     const texts = [
@@ -19,54 +30,36 @@ export default function EsferaTexturizada() {
         "TERCER PLANETA - - - ",
         "CUARTO PLANETA - - - - ",
         "QUINTO PLANETA - - - - - ",
+        "SEXTO PLANETA - - - - - ",
+        "SEPTIMO PLANETA - - - - - ",
+        "OCTAVO PLANETA - - - - - ",
+        "NOVENO PLANETA - - - - - ",
+        "DECIMO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_2',
-        '/ninos/salud_social/planeta_3',
+        '/ninos/salud_social/planeta_mer',
+        '/ninos/salud_social/planeta_ven',
         '/ninos/salud_social/planeta_4',
         '/ninos/salud_social/planeta_5',
+        '/ninos/salud_social/planeta_6',
+        '/ninos/salud_social/planeta_7',
+        '/ninos/salud_social/planeta_8',
+        '/ninos/salud_social/planeta_9',
+        '/ninos/salud_social/planeta_10',
     ];
 
-    const createButton = (text, onClick, color = '#ff0000') => {
-        const button = document.createElement('button');
-        button.innerHTML = text;
-        button.style.fontSize = '24px';
-        button.style.background = 'none'; // Fondo transparente
-        button.style.border = `2px solid ${color}`; // Borde con color personalizado
-        button.style.color = color; // Color del texto
-        button.style.cursor = 'pointer';
-        button.style.padding = '12px 20px';
-        button.style.borderRadius = '20px';
-        button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
-        button.style.transition = 'all 0.3s ease';
-        button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-
-        // Efecto hover
-        button.addEventListener('mouseover', () => {
-            button.style.transform = 'scale(1.05)';
-            button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-            button.style.textShadow = `0 0 5px ${color}`;
+    const changeTexture = (direction) => {
+        setCurrentTextureIndex((prevIndex) => {
+            let nextIndex = prevIndex;
+            if (direction === 'next') {
+                nextIndex = (prevIndex + 1) % textures.length;
+            } else if (direction === 'prev') {
+                nextIndex = (prevIndex - 1 + textures.length) % textures.length;
+            }
+            return nextIndex;
         });
-
-        // Efecto al salir del hover
-        button.addEventListener('mouseout', () => {
-            button.style.transform = 'scale(1)';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-            button.style.textShadow = `0 0 3px ${color}`;
-        });
-
-        // Efecto al hacer clic
-        button.addEventListener('click', () => {
-            button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
-            setTimeout(() => {
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-            }, 200);
-            onClick();
-        });
-
-        return button;
     };
 
     useEffect(() => {
@@ -96,136 +89,74 @@ export default function EsferaTexturizada() {
 
         camera.position.set(0, 0, 18);
 
-        const resizeHandler = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        };
-        window.addEventListener('resize', resizeHandler);
+        // Configurar el AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
 
-        // Contenedor principal
-        const mainDiv = document.createElement('div');
-        mainDiv.style.position = 'absolute';
-        mainDiv.style.top = '0';
-        mainDiv.style.left = '0';
-        mainDiv.style.width = '100%';
-        mainDiv.style.height = '100%';
-        mainDiv.style.display = 'flex';
-        mainDiv.style.flexDirection = 'column';
-        mainDiv.style.alignItems = 'center';
-        mainDiv.style.justifyContent = 'center';
-        mainDiv.style.color = 'white';
-        mainDiv.style.pointerEvents = 'none';
-        document.body.appendChild(mainDiv);
+        // Cargar el sonido de clic
+        const clickSound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/assets/sounds/click-space.mp3', (buffer) => {
+            clickSound.setBuffer(buffer);
+            clickSound.setLoop(false);
+            clickSound.setVolume(0.5);
+        });
+        clickSoundRef.current = clickSound;
 
-        // Texto principal
-        const title = document.createElement('h1');
-        title.textContent = 'Bienvenidos a la sección de Salud Social';
-        title.style.fontSize = '40px';
-        title.style.textAlign = 'center';
-        title.style.pointerEvents = 'auto';
-        title.style.position = 'absolute';
-        title.style.left = '50%';
-        title.style.top = '5%';
-        title.style.transform = 'translate(-50%, 0%)';
-        mainDiv.appendChild(title);
-
-        // Contenedor de texto
-        const textContainer = document.createElement('div');
-        textContainer.style.fontSize = '20px';
-        textContainer.style.backgroundColor = 'rgba(252, 107, 102, 0.32)';
-        textContainer.style.padding = '24px';
-        textContainer.style.margin = '32px';
-        textContainer.style.borderRadius = '10px';
-        textContainer.style.pointerEvents = 'auto';
-        textContainer.innerHTML = texts[currentTextureIndex].replace(/\n/g, '<br />');
-        mainDiv.appendChild(textContainer);
-
-        // Contenedor de los botones
-        const controlsDiv = document.createElement('div');
-        controlsDiv.style.display = 'flex';
-        controlsDiv.style.gap = '32px';
-        controlsDiv.style.pointerEvents = 'auto';
-        controlsDiv.style.position = 'absolute';
-        controlsDiv.style.bottom = '50px'; // Ajusta la posición de los botones
-        controlsDiv.style.left = '50%';
-        controlsDiv.style.transform = 'translateX(-50%)';
-        mainDiv.appendChild(controlsDiv);
-
-        const changeTexture = (direction) => {
-            setCurrentTextureIndex((prevIndex) => {
-                let nextIndex = prevIndex;
-                if (direction === 'next') {
-                    nextIndex = (prevIndex + 1) % textures.length;
-                } else if (direction === 'prev') {
-                    nextIndex = (prevIndex - 1 + textures.length) % textures.length;
-                }
-
-                // Cargar nueva textura antes de actualizar el estado
-                const newTexture = new THREE.TextureLoader().load(textures[nextIndex]);
-                sphere.material.map = newTexture;
-                sphere.material.needsUpdate = true;
-
-                // Actualizar el texto del contenedor
-                textContainer.innerHTML = texts[nextIndex].replace(/\n/g, '<br />');
-
-                return nextIndex; // Retorna el nuevo índice para actualizar el estado correctamente
-            });
-        };
-
-        controlsDiv.appendChild(createButton('⟵', () => changeTexture('prev')));
-        controlsDiv.appendChild(createButton('Ver más', () => {
-            // Inicia la animación de acercamiento
-            setIsZooming(true);
-
-            // Llamar a la función de animación de acercamiento
-            setTimeout(() => {
-                setIsZooming(false);  // Detener la animación después de 1 segundo
-                window.location.href = planetUrls[currentTextureIndex];  // Redirige a la URL en la misma ventana
-            }, 1000);  // Espera 1 segundo antes de redirigir
-        }));
-        controlsDiv.appendChild(createButton('⟶', () => changeTexture('next')));
-
-        // Función para manejar la animación de acercamiento de la cámara
-        const zoomIn = () => {
-            if (isZooming && camera.position.z > 7) {
-                camera.position.z -= 0.07;  // Ajusta la velocidad de acercamiento
-            }
-        };
+        // Cargar el sonido de "Planeta.mp3"
+        const planetSound = new THREE.Audio(listener);
+        audioLoader.load('/assets/sounds/Planeta.mp3', (buffer) => {
+            planetSound.setBuffer(buffer);
+            planetSound.setLoop(false);
+            planetSound.setVolume(0.5);
+        });
+        planetSoundRef.current = planetSound;
 
         const animate = () => {
             requestAnimationFrame(animate);
-            zoomIn();  // Llama a la función de acercamiento en cada frame
+
+            // Animación de zoom
+            if (isZooming && camera.position.z > 7) {
+                camera.position.z -= 0.1; // Ajusta la velocidad del zoom
+            }
+
             sphere.rotation.y += 0.0005;
             renderer.render(scene, camera);
         };
         animate();
 
         return () => {
-            window.removeEventListener('resize', resizeHandler);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            document.body.removeChild(mainDiv);
         };
-    }, [currentTextureIndex, textures, texts, planetUrls, isZooming]);
+    }, [currentTextureIndex, textures, isZooming]); // Añade isZooming como dependencia
 
-    // Crear el botón "Back" fuera del useEffect para evitar múltiples instancias
-    useEffect(() => {
-        const backButton = createButton('← Back', () => {
-            window.history.back();
-        });
-
-        backButton.style.position = 'absolute';
-        backButton.style.left = '20px';
-        backButton.style.top = '20px';
-        backButton.style.zIndex = '1000'; // para que el botón esté por encima de todo
-
-        document.body.appendChild(backButton);
-
-        return () => {
-            document.body.removeChild(backButton);
-        };
-    }, []);
-
-    return null;
+    return (
+        <div
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100vh',
+                overflow: 'hidden',
+            }}
+        >
+            <BackButton redirectUrl="/ninos" /> {/* Pasa la URL dinámica */}
+            <DivCentral title="Bienvenidos a la sección de Salud Social">
+                <InfoBox text={texts[currentTextureIndex]} />
+            </DivCentral>
+            <ControlButtons
+                onPrev={() => changeTexture('prev')}
+                onNext={() => changeTexture('next')}
+                onViewMore={() => {
+                    setIsZooming(true); // Activa la animación de zoom
+                    setTimeout(() => {
+                        setIsZooming(false); // Desactiva la animación
+                        window.location.href = planetUrls[currentTextureIndex]; // Redirige
+                    }, 1000); // Ajusta el tiempo según la duración de la animación
+                }}
+                clickSoundRef={clickSoundRef}
+                planetSoundRef={planetSoundRef}
+            />
+        </div>
+    );
 }
