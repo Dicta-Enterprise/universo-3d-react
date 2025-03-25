@@ -17,6 +17,9 @@ export default function Ninos() {
     const galaxiesRef = useRef([]); // Referencia para almacenar las galaxias
     const cameraRef = useRef(null); // Referencia para la cámara
     const isAnimatingRef = useRef(false); // Referencia para controlar la animación
+    const audioListenerRef = useRef(null); // Referencia para el AudioListener
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const magicSoundRef = useRef(null); // Referencia para el sonido de animación
 
     useEffect(() => {
         const handleResize = () => {
@@ -51,6 +54,33 @@ export default function Ninos() {
         document.body.appendChild(renderer.domElement);
     
         cameraRef.current = camera;
+
+        //---------------------------------------------------------
+        //---------------------S O N I D O ------------------------
+        //---------------------------------------------------------
+        // Configurar el AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        audioListenerRef.current = listener;
+
+        // Cargar el sonido de clic
+        const clickSound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/assets/sounds/click.mp3', (buffer) => {
+            clickSound.setBuffer(buffer);
+            clickSound.setLoop(false);
+            clickSound.setVolume(0.5);
+        });
+        clickSoundRef.current = clickSound;
+
+        // Cargar el sonido de animación (magic.mp3)
+        const magicSound = new THREE.Audio(listener);
+        audioLoader.load('/assets/sounds/magic.mp3', (buffer) => {
+            magicSound.setBuffer(buffer);
+            magicSound.setLoop(false);
+            magicSound.setVolume(0.5);
+        });
+        magicSoundRef.current = magicSound;
     
         scene.background = new THREE.Color(0x001833);
         // -------------------------
@@ -183,7 +213,7 @@ export default function Ninos() {
         ];
         const galaxyPositionsMobile = [
             new THREE.Vector3(0, 11, 0),
-            new THREE.Vector3(0, 5, 0),
+            new THREE.Vector3(0, 6, 0),
             new THREE.Vector3(0, -6, 0),
             new THREE.Vector3(0, -11, 0),
         ];
@@ -288,8 +318,44 @@ export default function Ninos() {
     
         // Posicionar las galaxias según el tamaño de la pantalla inicial
         const initialPositions = isMobile ? galaxyPositionsMobile : galaxyPositionsPC;
+        const colors = ['#FE797B', '#A587CA', '#36CEDC', '#8FE968'];
+
+        function obtenerRotacionResponsive(){
+            if (isMobile){
+                return [
+                    { x: Math.PI / 1.3, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                    { x: Math.PI / 4, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                ];
+            }
+            else{
+                return [
+                    { x: Math.PI / 2.4, y: 0, z: 0},
+                    { x: Math.PI / 2.4, y: 0, z: 0 },
+                    { x: Math.PI / 4, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                ];
+            }
+        };
+
+        const rotations = obtenerRotacionResponsive();
+
+        const updateGalaxyRotations = () => {
+            const newRotations = obtenerRotacionResponsive();
+            galaxies.forEach((galaxy, index) => {
+                galaxy.rotation.set(newRotations[index].x, newRotations[index].y, newRotations[index].z);
+            });
+        };
+
         initialPositions.forEach((pos, index) => {
-            const colors = ['#FE797B', '#A587CA', '#36CEDC', '#8FE968'];
+            createGalaxy(pos, colors[index], rotations[index]);
+        });
+
+        // Escuchar cambios de tamaño de ventana y actualizar rotación
+        window.addEventListener('resize', updateGalaxyRotations);
+
+        /*initialPositions.forEach((pos, index) => {
             const rotations = [
                 { x: 0.8 * Math.PI, y: 0, z: 0 }, //rojo
                 { x: Math.PI / 2.5, y: 0, z: 0 }, //morado
@@ -297,7 +363,7 @@ export default function Ninos() {
                 { x: -1.5 * Math.PI, y: 0, z: 0 }, //verde
             ];
             createGalaxy(pos, colors[index], rotations[index]);
-        });
+        });*/
     
         galaxiesRef.current = galaxies;
     
@@ -328,6 +394,11 @@ export default function Ninos() {
                         url: galaxyUrls[galaxyIndex],
                         index: galaxyIndex,
                     });
+                    
+                    // Reproducir el sonido de clic  <-------
+                    if (clickSoundRef.current) {
+                        clickSoundRef.current.play();
+                    }
                 }
             } else {
                 setSelectedGalaxy(null);
@@ -616,6 +687,11 @@ export default function Ninos() {
 
             // Iniciar la animación de acercamiento
             isAnimatingRef.current = true;
+
+            // Reproducir el sonido de animación (magic.mp3)
+            if (magicSoundRef.current) {
+                magicSoundRef.current.play();
+            }
 
             const duration = 1.5; // Duración de la animación
             const distance = 9; // Distancia a la que se acerca la cámara

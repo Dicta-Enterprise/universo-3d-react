@@ -404,10 +404,10 @@ export default function Padres() {
                 ];
             } else {
                 return [
-                    { position: new THREE.Vector3(-15, 1, 0), rotation: { x: Math.PI / 4, y: 0, z: 0 } },
-                    { position: new THREE.Vector3(15, 1, 0), rotation: { x: Math.PI / 4, y: Math.PI / 2, z: 0 } },
-                    { position: new THREE.Vector3(0, -7, 0), rotation: { x: Math.PI / 17, y: Math.PI, z: 0 } },
-                    { position: new THREE.Vector3(0, 7, 0), rotation: { x: Math.PI / 4, y: -Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(-15, 1, 0), rotation: { x: Math.PI / 6, y: 0, z: 0 } },
+                    { position: new THREE.Vector3(15, 1, 0), rotation: { x: Math.PI / 6, y: Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(0, -7, 0), rotation: { x: Math.PI / 40, y: Math.PI, z: 0 } },
+                    { position: new THREE.Vector3(0, 7, 0), rotation: { x: Math.PI / 5, y: -Math.PI / 2, z: 0 } },
                 ];
             }
         }

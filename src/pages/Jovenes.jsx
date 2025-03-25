@@ -603,8 +603,8 @@ function updateShootingStars() {
             return isMobile
                 ? [
                     new THREE.Vector3(0, 10, 0),
-                    new THREE.Vector3(0, 4, 0),
-                    new THREE.Vector3(0, -3, 0),
+                    new THREE.Vector3(0, 5, 0),
+                    new THREE.Vector3(0, -4, 0),
                     new THREE.Vector3(0, -10, 0),
                 ]
                 : [
@@ -738,7 +738,7 @@ function updateShootingStars() {
             const particles = 15000;
             const spiralArms = 2;
             const radius = 5;
-            const spread = 0.5;
+            const spread = 0.4;
             const positions = new Float32Array(particles * 3);
             const colors = new Float32Array(particles * 3);
             const color = new THREE.Color(baseColor);
@@ -788,22 +788,55 @@ function updateShootingStars() {
         // Crear las galaxias iniciales
         const initialPositions = getGalaxyPositions();
         const colors = ['#ff3366', '#7b2fdd', '#00ffff', '#4CAF50'];
-        const rotations = [
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-            { x: Math.PI / 4, y: 0, z: 0 },
-        ];
+
+        function obtenerRotacionResponsive(){
+            if (window.innerWidth > 768){
+                return [
+                    { x: Math.PI / 10, y: 0, z: 0 },
+                    { x: Math.PI / 10, y: 0, z: 0 },
+                    { x: Math.PI / 15, y: 0, z: 0 },
+                    { x: Math.PI / 8, y: 0, z: 0 },
+                ];
+            }
+            else{
+                return [
+                    { x: Math.PI / 6, y: 0, z: 0 },
+                    { x: Math.PI / 8, y: 0, z: 0 },
+                    { x: Math.PI / 12, y: 0, z: 0 },
+                    { x: Math.PI / 15, y: 0, z: 0 },
+                ];
+            }
+        };
+
+        const rotations = obtenerRotacionResponsive();
+
+        /*const rotations = [
+            { x: Math.PI / 10, y: 0, z: 0 },
+            { x: Math.PI / 10, y: 0, z: 0 },
+            { x: Math.PI / 15, y: 0, z: 0 },
+            { x: Math.PI / 8, y: 0, z: 0 },
+        ];*/
+        // Función para actualizar la rotación de las galaxias
+        const updateGalaxyRotations = () => {
+            const newRotations = obtenerRotacionResponsive();
+            galaxies.forEach((galaxy, index) => {
+                galaxy.rotation.set(newRotations[index].x, newRotations[index].y, newRotations[index].z);
+            });
+        };
+
         initialPositions.forEach((pos, index) => {
             createGalaxy(pos, colors[index], rotations[index]);
         });
+
+        // Escuchar cambios de tamaño de ventana y actualizar rotación
+        window.addEventListener('resize', updateGalaxyRotations);
 
         // Escuchar cambios de tamaño de pantalla para actualizar las posiciones de las galaxias
         window.addEventListener('resize', updateGalaxyPositions);
 
         camera.position.set(0, 0, 36);
         //camera.position.set(0, 0, 18);
-     //   camera.position.z = 30;  // Coloca la cámara más lejos de los planetas si es necesario
+        //camera.position.z = 30;  // Coloca la cámara más lejos de los planetas si es necesario
 
 
         const moveToGalaxy = (galaxy, title, url) => {
