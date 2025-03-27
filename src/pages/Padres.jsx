@@ -5,7 +5,7 @@ import BackButton from '../components/BackButton';
 export default function Padres() {
     useEffect(() => {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -85,20 +85,20 @@ export default function Padres() {
         
         // Crear múltiples estrellas
         const starsData = [
-            [0.8, 0, 0, -5], [0.3, 30, 13, -5], [0.5, 28, -12, -5], [0.8, 26, 7, -5],
-            [0.6, 24, -5, -5], [0.8, 34, 0, -6], [0.6, 15, 8, -7], [0.9, 10, -8, -8],
-            [0.6, 5, 15, -6], [0.6, 3, -5, -7], [0.6, 2, -16, -6], [0.5, 0, 8, -9],
-            [0.6, -3, 18, -8], [0.4, -7, 10, -7], [0.8, -9, -12, -5], [0.9, -12, 10, -8],
-            [1.0, -14, -1, -6], [0.9, -18, 15, -9], [0.4, -19, 3, -7], [0.4, -20, -12, -8],
-            [0.6, -39, -9, -8], [0.5, -31, -15, -8], [0.9, -32, 10, -8], [0.6, -37, 1, -8]
+            [0.8, 0, 0, -20], [0.3, 30, 13, -20], [0.5, 28, -12, -20], [0.8, 26, 7, -20],
+            [0.6, 24, -5, -20], [0.8, 34, 0, -20], [0.6, 15, 8, -20], [0.9, 10, -8, -20],
+            [0.6, 5, 15, -20], [0.6, 3, -5, -20], [0.6, 2, -16, -20], [0.5, 0, 8, -20],
+            [0.6, -3, 18, -20], [0.4, -7, 10, -20], [0.8, -9, -12, -20], [0.9, -12, 10, -20],
+            [1.0, -14, -1, -20], [0.9, -18, 15, -20], [0.4, -19, 3, -20], [0.4, -20, -12, -20],
+            [0.6, -39, -9, -20], [0.5, -31, -15, -20], [0.9, -32, 10, -20], [0.6, -37, 1, -20]
         ];
 
         const starsDataResponsive = [
-            [0.8, 0, 0, -5], [0.3, 10, 13, -5],[0.6, 10, 5, -5], [0.8, 8, 0, -6], 
-            [0.6, 15, 8, -7], [0.9, 10, -8, -8], [0.6, 5, 15, -6], [0.6, 3, -5, -7], 
-            [0.6, 2, -13, -6], [0.5, 0, 8, -9], [0.6, -3, 18, -8], [0.4, -7, 10, -7], 
-            [0.8, -9, -12, -5], [0.9, -12, 10, -8], [1.0, -10, -1, -6], [0.9, -11, 17, -9],
-            [0.6, -8, -6, -8],
+            [0.8, 0, 0, -11], [0.3, 10, 13, -11],[0.6, 10, 5, -11], [0.8, 8, 0, -11], 
+            [0.6, 15, 8, -11], [0.9, 10, -8, -11], [0.6, 5, 15, -11], [0.6, 3, -5, -11], 
+            [0.6, 2, -13, -11], [0.5, 0, 8, -11], [0.6, -3, 18, -11], [0.4, -7, 10, -11], 
+            [0.8, -9, -12, -11], [0.9, -12, 10, -11], [1.0, -10, -1, -11], [0.9, -11, 17, -11],
+            [0.6, -8, -6, -11],
         ];
 
         //starsData.forEach(star => createStar(...star));
@@ -290,31 +290,22 @@ export default function Padres() {
                 createPlanet(0.4, 0xFFD700, { x: -5, y: -5, z: -25});
             }
             else{
-                createPlanet(0.6, 0xFFD700, { x: 32, y: 17, z: -15});
-                createPlanet(0.4, 0xC3E4F5, { x: 16, y: -14, z: -15});
+                createPlanet(0.4, 0xC3E4F5, { x: 16, y: -10, z: -15});
                 createPlanet(0.8, 0xC3E4F5, { x: 16, y: 0, z: -15});
-                createPlanet(0.4, 0xFFD700, { x: -32, y: -10, z: -15});  
                 createPlanet(0.6, 0xC3E4F5, { x: 10, y: 7, z: -15});
                 createPlanet(0.8, 0xFFD700, { x: -5, y: -7, z: -15});
                 createPlanet(0.4, 0xC3E4F5, { x: -10, y: 5, z: -15});
-                createPlanet(0.8, 0xFFD700, { x: -30, y: 8, z: -15});
-                createPlanet(0.2, 0xC3E4F5, { x: -30, y: 15, z: -15});
-                createPlanet(0.15, 0xC3E4F5, { x: -40, y: 0, z: -15});
+                createPlanet(0.8, 0xFFD700, { x: -20, y: 8, z: -15});
                 createPlanet(0.5, 0xC3E4F5, { x: -25, y: -20, z: -15});
                 createPlanet(0.7, 0xC3E4F5, { x: -18, y: -10, z: -15});
-                createPlanet(0.4, 0xFFD700, { x: -10, y: 19, z: -15});
-                createPlanet(0.2, 0xFFD700, { x: 0, y: 18, z: -15});
-                createPlanet(0.4, 0xFFD700, { x: 12, y: -20, z: -15});
-                createPlanet(0.6, 0xC3E4F5, { x: 20, y: 15, z: -15});
-                createPlanet(0.6, 0xC3E4F5, { x: 28, y: 7, z: -15});
-                createPlanet(0.6, 0xC3E4F5, { x: 27, y: -10, z: -15});
+                createPlanet(0.6, 0xC3E4F5, { x: 20, y: 10, z: -15});
             }
         }
 
         responsivePlanets();
         window.addEventListener("resize", responsivePlanets);
         
-        // Termina lo del Fondo
+        // Termina lo del Fondo --------------------------------------------------
         
         const galaxies = [];
         const galaxyMaterials = [];
@@ -397,17 +388,17 @@ export default function Padres() {
         
             if (isMobile) {
                 return [
-                    { position: new THREE.Vector3(0, 10, 0), rotation: { x: Math.PI / 4, y: 0, z: 0 } },
-                    { position: new THREE.Vector3(0, 5, 0), rotation: { x: Math.PI / 4, y: Math.PI / 2, z: 0 } },
-                    { position: new THREE.Vector3(0, -4, 0), rotation: { x: Math.PI / 17, y: Math.PI, z: 0 } },
-                    { position: new THREE.Vector3(0, -10, 0), rotation: { x: Math.PI / 20, y: -Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(0, 10, -4), rotation: { x: Math.PI / 5, y: 0, z: 0 } },
+                    { position: new THREE.Vector3(0, 5, -4), rotation: { x: Math.PI / 5, y: Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(0, -4, -4), rotation: { x: Math.PI / 17, y: Math.PI, z: 0 } },
+                    { position: new THREE.Vector3(0, -10, -4), rotation: { x: Math.PI / 20, y: -Math.PI / 2, z: 0 } },
                 ];
             } else {
                 return [
-                    { position: new THREE.Vector3(-15, 1, 0), rotation: { x: Math.PI / 6, y: 0, z: 0 } },
-                    { position: new THREE.Vector3(15, 1, 0), rotation: { x: Math.PI / 6, y: Math.PI / 2, z: 0 } },
-                    { position: new THREE.Vector3(0, -7, 0), rotation: { x: Math.PI / 40, y: Math.PI, z: 0 } },
-                    { position: new THREE.Vector3(0, 7, 0), rotation: { x: Math.PI / 5, y: -Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(-15, 1, -4), rotation: { x: Math.PI / 6, y: 0, z: 0 } },
+                    { position: new THREE.Vector3(15, 1, -4), rotation: { x: Math.PI / 6, y: Math.PI / 2, z: 0 } },
+                    { position: new THREE.Vector3(0, -7, -4), rotation: { x: Math.PI / 40, y: Math.PI, z: 0 } },
+                    { position: new THREE.Vector3(0, 8, -4), rotation: { x: Math.PI / 5, y: -Math.PI / 2, z: 0 } },
                 ];
             }
         }
@@ -450,7 +441,7 @@ export default function Padres() {
         ];
         galaxyPositions.forEach((pos, index) => createGalaxy(pos, colors[index], rotations[index]));*/
 
-        camera.position.set(0, 0, 18);
+        camera.position.set(0, 0, 24);
 
         const highlightGalaxy = (galaxy) => {
             if (!galaxy) return;
