@@ -349,59 +349,64 @@ export default function ThreeScene({ onLoad }) {
         const rockets = [];
 
         function createRocket(position, index) {
+            const loader = new GLTFLoader();
             const rocketGroup = new THREE.Group();
 
-            // Geometría y material del cuerpo del cohete
-            const bodyGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-            rocketGroup.add(body);
+            loader.load(
+                '/assets/cohete_rocket/scene.gltf',
+                function (gltf) {
+                    const rocket = gltf.scene;
+                    
+                    // Ajustar la escala del cohete
+                    rocket.scale.set(0.1, 0.1, 0.1);
+                    
+                    // Ajustar la rotación inicial
+                    rocket.rotation.y = Math.PI;
 
-            // Nariz del cohete
-            const noseGeometry = new THREE.ConeGeometry(0.1, 0.3, 32);
-            const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
-            nose.position.y = 0.65;
-            rocketGroup.add(nose);
+                    // Agregar efecto de resplandor blanco
+                    rocket.traverse((child) => {
+                        if (child.isMesh) {
+                            // Crear un material con emisión blanca
+                            const material = new THREE.MeshStandardMaterial({
+                                ...child.material,
+                                emissive: new THREE.Color(0xffffff),
+                                emissiveIntensity: 0.5
+                            });
+                            child.material = material;
+                        }
+                    });
+                    
+                    // Ajustar posición de los cohetes según el dispositivo
+                    const isMobile = window.innerWidth <= 712;
+                    if (isMobile) {
+                        const yOffset = 0.4; // Ajuste progresivo en Y
+                        rocketGroup.position.set(
+                            0, // X fijo para móvil
+                            position.y - index * yOffset, // Ajuste progresivo en Y basado en el índice
+                            position.z + index * 1.5 // Z ajustado para espaciamiento
+                        );
+                    } else {
+                        rocketGroup.position.set(position.x, position.y, position.z);
+                    }
 
-            // Aletas del cohete
-            const finGeometry = new THREE.BoxGeometry(0.05, 0.2, 0.05);
-            const finMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
-            for (let i = 0; i < 3; i++) {
-                const fin = new THREE.Mesh(finGeometry, finMaterial);
-                fin.position.set(
-                    Math.cos((i * Math.PI * 2) / 3) * 0.2,
-                    -0.5,
-                    Math.sin((i * Math.PI * 2) / 3) * 0.2
-                );
-                fin.rotation.y = (i * Math.PI * 2) / 3;
-                rocketGroup.add(fin);
-            }
-
-            // Ajustar posición de los cohetes según el dispositivo
-            const isMobile = window.innerWidth <= 712;
-            if (isMobile) {
-                const yOffset = 0.4; // Ajuste progresivo en Y
-                rocketGroup.position.set(
-                    0, // X fijo para móvil
-                    position.y - index * yOffset, // Ajuste progresivo en Y basado en el índice
-                    position.z + index * 1.5 // Z ajustado para espaciamiento
-                );
-            } else {
-                rocketGroup.position.set(position.x, position.y, position.z);
-            }
-
+                    rocketGroup.add(rocket);
+                    scene.add(rocketGroup);
+                    rockets.push(rocketGroup);
+                },
+                undefined,
+                function (error) {
+                    console.error('Error al cargar el modelo del cohete:', error);
+                }
+            );
 
             // Asociar URL y agregar al grupo
             rocketGroup.userData.url = position.url;
-            scene.add(rocketGroup);
-            rockets.push(rocketGroup);
         }
 
         // Crear cohetes con posiciones específicas
         createRocket({ x: -1.5, y: -0.6, z: 5, url: '/ninos' }, 0);
         createRocket({ x: 0, y: -0.6, z: 5, url: '/jovenes' }, 1);
-        createRocket({ x: 1.5, y: -0.6, z: 5, url: '/padres' }, 2);
+        createRocket({ x: 0, y: -0.6, z: 5, url: '/padres' }, 2);
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -526,18 +531,12 @@ export default function ThreeScene({ onLoad }) {
                 const yOffset = 0.4; // Ajuste progresivo en Y
                 if (isMobile) {
                     rocket.position.set(
-                        0, // X fijo para móvil
+                        0, // X centrado
                         -0.6 - index * yOffset, // Ajuste progresivo en Y basado en el índice
                         5 + index * 1.5 // Z ajustado para espaciamiento
                     );
                 } else {
-                    const positions = [
-                        { x: -1.5, y: -0.6, z: 5 },
-                        { x: 0, y: -0.6, z: 5 },
-                        { x: 1.5, y: -0.6, z: 5 },
-                    ];
-                    const position = positions[index];
-                    rocket.position.set(position.x, position.y, position.z);
+                    rocket.position.set(0, -0.6, 5); // Todos centrados en X
                 }
             });
         });

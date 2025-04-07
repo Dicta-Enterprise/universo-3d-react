@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cohete Rocket
+* source:	https://sketchfab.com/3d-models/cohete-rocket-69b47e5e4a874a4a9c96b79faed66767
+* author:	pablosanco (https://sketchfab.com/pablosanco)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cohete Rocket" (https://sketchfab.com/3d-models/cohete-rocket-69b47e5e4a874a4a9c96b79faed66767) by pablosanco (https://sketchfab.com/pablosanco) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
