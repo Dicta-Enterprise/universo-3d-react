@@ -1,9 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
+import BackButton from '../../components/BackButton';
+import DivCentral from '../../components/Planetas/DivCentral';
+import ControlButtons from '../../components/Planetas/ControlButtons';
+import InfoBox from '../../components/Planetas/InfoBox';
+import CrearEstrellas3D from '../../components/FondoNIños/CrearEstrellas3D';
+import crearLineaVertical from '../../components/FondoNIños/CrearLineaVerticalEstrella';
+import crearCirculo from '../../components/FondoNIños/CrearCirculo';
+import CreaCruzRedonda from '../../components/FondoNIños/CrearCruzRedonda';
+import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
+import CrearNube from '../../components/FondoNIños/CrearNube';
+import CrearLuna from '../../components/FondoNIños/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
-    const [isZooming, setIsZooming] = useState(false);  // Estado para controlar la animación de acercamiento
+    const [isZooming, setIsZooming] = useState(false);
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
         '/assets/2k_makemake_fictional.jpg',
@@ -11,6 +25,11 @@ export default function EsferaTexturizada() {
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
         '/assets/2k_venus_surface.jpg',
+        '/assets/2k_uranus.jpg',
+        '/assets/2k_venus_atmosphere.jpg',
+        '/assets/2k_earth_clouds.jpg',
+        '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
     ];
 
     const texts = [
@@ -19,54 +38,36 @@ export default function EsferaTexturizada() {
         "TERCER PLANETA - - - ",
         "CUARTO PLANETA - - - - ",
         "QUINTO PLANETA - - - - - ",
+        "SEXTO PLANETA - - - - - ",
+        "SEPTIMO PLANETA - - - - - ",
+        "OCTAVO PLANETA - - - - - ",
+        "NOVENO PLANETA - - - - - ",
+        "DECIMO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_2',
-        '/ninos/salud_social/planeta_3',
+        '/ninos/salud_social/planeta_mer',
+        '/ninos/salud_social/planeta_ven',
         '/ninos/salud_social/planeta_4',
         '/ninos/salud_social/planeta_5',
+        '/ninos/salud_social/planeta_6',
+        '/ninos/salud_social/planeta_7',
+        '/ninos/salud_social/planeta_8',
+        '/ninos/salud_social/planeta_9',
+        '/ninos/salud_social/planeta_10',
     ];
 
-    const createButton = (text, onClick, color = '#ff0000') => {
-        const button = document.createElement('button');
-        button.innerHTML = text;
-        button.style.fontSize = '24px';
-        button.style.background = 'none'; // Fondo transparente
-        button.style.border = `2px solid ${color}`; // Borde con color personalizado
-        button.style.color = color; // Color del texto
-        button.style.cursor = 'pointer';
-        button.style.padding = '12px 20px';
-        button.style.borderRadius = '20px';
-        button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
-        button.style.transition = 'all 0.3s ease';
-        button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-
-        // Efecto hover
-        button.addEventListener('mouseover', () => {
-            button.style.transform = 'scale(1.05)';
-            button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-            button.style.textShadow = `0 0 5px ${color}`;
+    const changeTexture = (direction) => {
+        setCurrentTextureIndex((prevIndex) => {
+            let nextIndex = prevIndex;
+            if (direction === 'next') {
+                nextIndex = (prevIndex + 1) % textures.length;
+            } else if (direction === 'prev') {
+                nextIndex = (prevIndex - 1 + textures.length) % textures.length;
+            }
+            return nextIndex;
         });
-
-        // Efecto al salir del hover
-        button.addEventListener('mouseout', () => {
-            button.style.transform = 'scale(1)';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-            button.style.textShadow = `0 0 3px ${color}`;
-        });
-
-        // Efecto al hacer clic
-        button.addEventListener('click', () => {
-            button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
-            setTimeout(() => {
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-            }, 200);
-            onClick();
-        });
-
-        return button;
     };
 
     useEffect(() => {
@@ -80,8 +81,318 @@ export default function EsferaTexturizada() {
         document.body.style.padding = '0';
         document.body.appendChild(renderer.domElement);
 
-        const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
-        scene.background = spaceTexture;
+        /*const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
+        scene.background = spaceTexture;*/
+
+        // Fondo de Niños ----------------------------------
+
+        scene.background = new THREE.Color(0x001833);
+        
+        // Agregar 2 luz ambiental y una luz puntual
+        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Luz suave
+        scene.add(ambientLight);
+
+        const pointLight5 = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight5.position.set(50, 0, 30);
+        scene.add(pointLight5);
+
+        const pointLight2 = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight2.position.set(-50, 0, 30);
+        scene.add(pointLight2);
+
+        const pointLight3 = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight2.position.set(-60, -30, 30);
+        scene.add(pointLight3);
+
+        // Uso en la escena
+        const lunaCreciente = CrearLuna(0.3);
+        scene.add(lunaCreciente);
+        lunaCreciente.position.set(-13,17,-10);
+
+        const lunaCreciente2 = CrearLuna(0.05);
+        scene.add(lunaCreciente2);
+        lunaCreciente2.position.set(10,0,-10);
+        lunaCreciente2.scale.set(1.5,1.5,1.5);
+        
+        const lunaCreciente3 = CrearLuna(0.4);
+        scene.add(lunaCreciente3);
+        lunaCreciente3.position.set(-20,-10,-10);
+        lunaCreciente3.scale.set(0.8,0.8,0.8);
+
+        const estrellas = [];
+        const cruces = [];
+        const termometros = [];
+        const circulos = [];
+        const nubes = [];
+        const lineas = [];
+
+        nubeconfig.forEach(config => {
+            const nube = CrearNube();
+            nube.position.set(config.x, config.y, config.z);
+            nube.scale.set(config.escalado, config.escalado, config.escalado);
+            scene.add(nube);
+            nubes.push(nube);
+        });
+
+        // Crear y posicionar estrellas con colores fijos
+        TermometroConfig.forEach(config => {
+            const termometro = CrearTermometro();
+            termometro.position.set(config.x, config.y, config.z);
+            termometro.rotation.set(config.rotationx, config.rotationy, config.rotationz);
+            termometro.scale.set(0.5,0.5,0.5);
+        
+            scene.add(termometro);
+            termometros.push(termometro);
+
+            // Animación de oscilación
+            termometro.userData = { angle: Math.random() * Math.PI * 2 }; // Guardamos un ángulo inicial aleatorio
+
+            const swingSpeed = 0.005; // Velocidad de oscilación
+
+            termometro.animation = () => {
+                termometro.userData.angle += swingSpeed; // Aumentamos el ángulo en cada frame
+                termometro.rotation.z = Math.sin(termometro.userData.angle) * 0.2; // Aplicamos el movimiento de oscilación
+            };
+        });
+        
+        // Crear y posicionar estrellas con colores fijos
+        estrellasConfig.forEach(config => {
+            const estrella = CrearEstrellas3D(config.color)
+            estrella.position.set(config.x, config.y, config.z);
+
+            estrella.rotation.set(config.rotationX, config.rotationY, config.rotationZ);
+            estrella.scale.set(config.escalado,config.escalado,config.escalado);
+
+            scene.add(estrella);
+            estrellas.push(estrella);
+        });
+
+        // Crear y agregar líneas a la escena
+        lineasConfig.forEach((config) => {
+            const linea = crearLineaVertical(config.altura);
+            linea.position.set(config.x, config.y, config.z);
+            scene.add(linea);
+            lineas.push(linea);
+            
+        });
+
+        // Crear y posicionar círculos con colores fijos
+        circulosConfig.forEach(config => {
+            const circulo = crearCirculo(config.color,config.radio);
+            circulo.position.set(config.x, config.y, config.z);
+            scene.add(circulo);
+            circulos.push(circulo);
+        });
+
+        // Crear y posicionar cruces redondas con colores fijos
+        crucesConfig.forEach(config => {
+            const cruz = CreaCruzRedonda(config.color, config.altura, config.ancho, config.grosor);
+            cruz.position.set(config.x, config.y, config.z);
+            cruz.rotation.set(config.rotx, config.roty, config.rotz);
+            scene.add(cruz);
+            cruces.push(cruz);
+        });
+        
+        let velocidadMovimiento = 0.00003; // Velocidad de la oscilación
+        let rangoOscilacion = 25; // El rango máximo de oscilación en el eje X
+        
+        // Función para actualizar la velocidad y el rango de oscilación en función del tamaño de la pantalla
+        const actualizarParametrosAnimacion = () => {
+            const isMobile = window.innerWidth < 768;
+
+            // Ajustar la velocidad y el rango de oscilación para pantallas pequeñas (móviles)
+            if (isMobile) {
+                velocidadMovimiento = 0.00005;  // Menor velocidad en móviles
+                rangoOscilacion = 5;            // Menor rango en móviles
+            } else {
+                velocidadMovimiento = 0.00005;  // Velocidad normal en pantallas grandes
+                rangoOscilacion = 25;            // Rango normal en pantallas grandes
+            }
+        };
+
+        // Creamos las nubes con direcciones iniciales
+        nubes.forEach((nube, index) => {
+            // Asignamos la dirección de inicio a cada nube
+            nube.direccion = (index % 2 === 0) ? -1 : 1;  // Primera nube izquierda (-1), segunda nube derecha (+1)
+        });
+
+        function moverNubes() {
+            nubes.forEach(nube => {
+                // Usamos Math.sin para crear un movimiento oscilante
+                let posicionX = rangoOscilacion * Math.sin(velocidadMovimiento * performance.now());
+        
+                // Modificamos la dirección de la nube según la asignada
+                nube.position.x = posicionX * nube.direccion;
+            });
+        }
+
+        const onWindowResizeNube = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            nubeconfig.forEach((config, index) => {
+                const nube = nubes[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index === 0) {
+                        nube.scale.set(0.4, 0.4, 0.4); // Primera nube más pequeña
+                    } else {
+                        nube.scale.set(0.2, 0.2, 0.2); // Segunda nube más pequeña
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    nube.scale.set(config.escalado, config.escalado, config.escalado);
+                }
+            });
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        
+        const onWindowResizeEstrella = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            estrellasConfig.forEach((config, index) => {
+                const estrella = estrellas[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        estrella.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        estrella.scale.set(config.escalado/1.7,config.escalado/1.7,config.escalado/1.7);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    estrella.position.set(config.x, config.y, config.z);
+                    estrella.scale.set(config.escalado,config.escalado,config.escalado);
+                }
+            });
+        };
+
+        const onWindowResizeLineas = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            lineasConfig.forEach((config, index) => {
+                const linea = lineas[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        linea.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    linea.position.set(config.x, config.y, config.z);
+                }
+            });
+        };
+
+        const onWindowResizeTermometro = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            TermometroConfig.forEach((config, index) => {
+                const termometro = termometros[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        termometro.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    termometro.position.set(config.x, config.y, config.z);
+                }
+            });
+        };
+
+        const onWindowResizeCruces = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            crucesConfig.forEach((config, index) => {
+                const cruz = cruces[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= 19) {
+                        cruz.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        cruz.scale.set(0.7,0.7,0.7);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    cruz.position.set(config.x, config.y, config.z);
+                    cruz.scale.set(1,1,1);
+                }
+            });
+        };
+
+        const onWindowResizeLuna = () => {
+            const isMobile = window.innerWidth < 768;
+            
+            lunaCreciente.position.set(isMobile ? -10 : -13, isMobile ? 15 : 17, -10);
+            lunaCreciente.scale.set(isMobile ? 0.7 : 1, isMobile ? 0.7 : 1, isMobile ? 0.7 : 1);
+            lunaCreciente2.position.set(isMobile ? 6 : 10, isMobile ? 0 : 0, -10);
+            lunaCreciente2.scale.set(isMobile ? 1.2 : 1.5, isMobile ? 1.2 : 1.5, isMobile ? 1.2 : 1.5);
+            lunaCreciente3.position.set(isMobile ? -10 : -20, isMobile ? -6 : -10, -10);
+            lunaCreciente3.scale.set(isMobile ? 0.6 : 0.8, isMobile ? 0.6 : 0.8, isMobile ? 0.6 : 0.8);
+        };
+
+        const onWindowResizeCirculos = () => {
+            // Determina si es una pantalla pequeña (móvil)
+            const isMobile = window.innerWidth < 768;
+            
+            // Ajustar escala de las nubes según el tamaño de la pantalla
+            circulosConfig.forEach((config, index) => {
+                const circulo = circulos[index];
+                
+                // Si es móvil, reducimos la escala de la primera y segunda nube
+                if (isMobile) {
+                    if (index <= circulos.length - 1) {
+                        circulo.position.set(config.responsiveposicionx, config.responsiveposiciony, config.z);
+                        circulo.scale.set(0.5,0.5,0.5);
+                    }
+                } else {
+                    // Si es una pantalla grande, mantenemos el escalado original
+                    circulo.position.set(config.x, config.y, config.z);
+                    circulo.scale.set(1,1,1);
+                }
+            });
+        };
+
+        window.addEventListener('resize', onWindowResizeNube);
+        window.addEventListener('resize', actualizarParametrosAnimacion);
+        window.addEventListener('resize', onWindowResizeEstrella);
+        window.addEventListener('resize', onWindowResizeLineas);
+        window.addEventListener('resize', onWindowResizeTermometro);
+        window.addEventListener('resize', onWindowResizeCruces);
+        window.addEventListener('resize', onWindowResizeLuna);
+        window.addEventListener('resize', onWindowResizeCirculos);
+
+        onWindowResizeNube();
+        actualizarParametrosAnimacion();
+        onWindowResizeEstrella();
+        onWindowResizeLineas();
+        onWindowResizeTermometro();
+        onWindowResizeCruces();
+        onWindowResizeLuna();
+        onWindowResizeCirculos();
+
+        let time = 0;
+        let scaleDirection = 1; // 1 para agrandar, -1 para achicar
+        let scaleSpeed = 0.002; // Velocidad de cambio de escala
+        let minScale = 0.3; // Límite de escala mínimo
+
+        // --------------------------------------------------
 
         const sphereGeometry = new THREE.SphereGeometry(6, 64, 64);
         const sphereMaterial = new THREE.MeshStandardMaterial({
@@ -90,142 +401,137 @@ export default function EsferaTexturizada() {
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
 
-        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        /*const pointLight = new THREE.PointLight(0xffffff, 1, 100);
         pointLight.position.set(2, 5, 10);
-        scene.add(pointLight);
+        scene.add(pointLight);*/
 
         camera.position.set(0, 0, 18);
 
-        const resizeHandler = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        };
-        window.addEventListener('resize', resizeHandler);
+        // Configurar el AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
 
-        // Contenedor principal
-        const mainDiv = document.createElement('div');
-        mainDiv.style.position = 'absolute';
-        mainDiv.style.top = '0';
-        mainDiv.style.left = '0';
-        mainDiv.style.width = '100%';
-        mainDiv.style.height = '100%';
-        mainDiv.style.display = 'flex';
-        mainDiv.style.flexDirection = 'column';
-        mainDiv.style.alignItems = 'center';
-        mainDiv.style.justifyContent = 'center';
-        mainDiv.style.color = 'white';
-        mainDiv.style.pointerEvents = 'none';
-        document.body.appendChild(mainDiv);
+        // Cargar el sonido de clic
+        const clickSound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/assets/sounds/click-space.mp3', (buffer) => {
+            clickSound.setBuffer(buffer);
+            clickSound.setLoop(false);
+            clickSound.setVolume(0.5);
+        });
+        clickSoundRef.current = clickSound;
 
-        // Texto principal
-        const title = document.createElement('h1');
-        title.textContent = 'Bienvenidos a la sección de Salud Social';
-        title.style.fontSize = '40px';
-        title.style.textAlign = 'center';
-        title.style.pointerEvents = 'auto';
-        title.style.position = 'absolute';
-        title.style.left = '50%';
-        title.style.top = '5%';
-        title.style.transform = 'translate(-50%, 0%)';
-        mainDiv.appendChild(title);
-
-        // Contenedor de texto
-        const textContainer = document.createElement('div');
-        textContainer.style.fontSize = '20px';
-        textContainer.style.backgroundColor = 'rgba(252, 107, 102, 0.32)';
-        textContainer.style.padding = '24px';
-        textContainer.style.margin = '32px';
-        textContainer.style.borderRadius = '10px';
-        textContainer.style.pointerEvents = 'auto';
-        textContainer.innerHTML = texts[currentTextureIndex].replace(/\n/g, '<br />');
-        mainDiv.appendChild(textContainer);
-
-        // Contenedor de los botones
-        const controlsDiv = document.createElement('div');
-        controlsDiv.style.display = 'flex';
-        controlsDiv.style.gap = '32px';
-        controlsDiv.style.pointerEvents = 'auto';
-        controlsDiv.style.position = 'absolute';
-        controlsDiv.style.bottom = '50px'; // Ajusta la posición de los botones
-        controlsDiv.style.left = '50%';
-        controlsDiv.style.transform = 'translateX(-50%)';
-        mainDiv.appendChild(controlsDiv);
-
-        const changeTexture = (direction) => {
-            setCurrentTextureIndex((prevIndex) => {
-                let nextIndex = prevIndex;
-                if (direction === 'next') {
-                    nextIndex = (prevIndex + 1) % textures.length;
-                } else if (direction === 'prev') {
-                    nextIndex = (prevIndex - 1 + textures.length) % textures.length;
-                }
-
-                // Cargar nueva textura antes de actualizar el estado
-                const newTexture = new THREE.TextureLoader().load(textures[nextIndex]);
-                sphere.material.map = newTexture;
-                sphere.material.needsUpdate = true;
-
-                // Actualizar el texto del contenedor
-                textContainer.innerHTML = texts[nextIndex].replace(/\n/g, '<br />');
-
-                return nextIndex; // Retorna el nuevo índice para actualizar el estado correctamente
-            });
-        };
-
-        controlsDiv.appendChild(createButton('⟵', () => changeTexture('prev')));
-        controlsDiv.appendChild(createButton('Ver más', () => {
-            // Inicia la animación de acercamiento
-            setIsZooming(true);
-
-            // Llamar a la función de animación de acercamiento
-            setTimeout(() => {
-                setIsZooming(false);  // Detener la animación después de 1 segundo
-                window.location.href = planetUrls[currentTextureIndex];  // Redirige a la URL en la misma ventana
-            }, 1000);  // Espera 1 segundo antes de redirigir
-        }));
-        controlsDiv.appendChild(createButton('⟶', () => changeTexture('next')));
-
-        // Función para manejar la animación de acercamiento de la cámara
-        const zoomIn = () => {
-            if (isZooming && camera.position.z > 7) {
-                camera.position.z -= 0.07;  // Ajusta la velocidad de acercamiento
-            }
-        };
+        // Cargar el sonido de "Planeta.mp3"
+        const planetSound = new THREE.Audio(listener);
+        audioLoader.load('/assets/sounds/Planeta.mp3', (buffer) => {
+            planetSound.setBuffer(buffer);
+            planetSound.setLoop(false);
+            planetSound.setVolume(0.5);
+        });
+        planetSoundRef.current = planetSound;
 
         const animate = () => {
             requestAnimationFrame(animate);
-            zoomIn();  // Llama a la función de acercamiento en cada frame
+
+            // Animación de zoom
+            if (isZooming && camera.position.z > 7) {
+                camera.position.z -= 0.1; // Ajusta la velocidad del zoom
+            }
+
+            // del Fondo Niños ---------------
+                        
+            let scaleLimit = window.innerWidth < 768 ? 0.7 : 1.5; // Límite de escala máximo
+            
+            time += 0.02;
+            console.log(time);
+            
+            cruces.forEach(cruz => {
+                cruz.rotation.z += 0.005;  // Rotación en el eje X
+            });
+
+            const tiempoBase = Date.now() * 0.001;
+
+            estrellas.forEach((estrella, index) => {
+                const velocidad = 1; // Ajusta la velocidad del rebote
+                const amplitud = 0.03; // Ajusta la altura del rebote
+                const tiempo = tiempoBase + index * 0.3; // Desfase entre estrellas
+                
+
+                estrella.position.y += Math.cos(tiempo * velocidad) * amplitud * 0.5 ;
+                estrella.rotation.z += 0.005; // Rotación continua
+            });
+
+            circulos.forEach((circulo, index) => {
+                const velocidad = 0.5; // Ajusta la velocidad del rebote
+                const amplitud = 0.01; // Ajusta la altura del rebote
+                const tiempo = tiempoBase + index * 0.3; // Desfase entre círculos
+            
+            
+                circulo.position.y += Math.cos(tiempo * velocidad) * amplitud;
+            
+                // Efecto de escala pulsante
+                if (scaleDirection === 1) {
+                    circulo.scale.set(
+                        circulo.scale.x + scaleSpeed,
+                        circulo.scale.y + scaleSpeed,
+                        circulo.scale.z + scaleSpeed
+                    );
+                } else {
+                    circulo.scale.set(
+                        circulo.scale.x - scaleSpeed,
+                        circulo.scale.y - scaleSpeed,
+                        circulo.scale.z - scaleSpeed
+                    );
+                }
+            
+                if (circulo.scale.x >= scaleLimit || circulo.scale.x <= minScale) {
+                    scaleDirection *= -1;
+                }
+            });
+
+            termometros.forEach(termometro => {
+                termometro.animation(); // Llamamos a la animación de cada termómetro
+            });
+
+            moverNubes();
+
             sphere.rotation.y += 0.0005;
             renderer.render(scene, camera);
         };
         animate();
 
         return () => {
-            window.removeEventListener('resize', resizeHandler);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            document.body.removeChild(mainDiv);
         };
-    }, [currentTextureIndex, textures, texts, planetUrls, isZooming]);
+    }, [currentTextureIndex, textures, isZooming]); // Añade isZooming como dependencia
 
-    // Crear el botón "Back" fuera del useEffect para evitar múltiples instancias
-    useEffect(() => {
-        const backButton = createButton('← Back', () => {
-            window.history.back();
-        });
-
-        backButton.style.position = 'absolute';
-        backButton.style.left = '20px';
-        backButton.style.top = '20px';
-        backButton.style.zIndex = '1000'; // para que el botón esté por encima de todo
-
-        document.body.appendChild(backButton);
-
-        return () => {
-            document.body.removeChild(backButton);
-        };
-    }, []);
-
-    return null;
+    return (
+        <div
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100vh',
+                overflow: 'hidden',
+            }}
+        >
+            <BackButton redirectUrl="/ninos" color={'#FF746C'} background= {'none'}/> {/* Pasa la URL dinámica */}
+            <DivCentral title="Bienvenidos a la sección de Salud Social">
+                <InfoBox text={texts[currentTextureIndex]} />
+            </DivCentral>
+            <ControlButtons
+                onPrev={() => changeTexture('prev')}
+                onNext={() => changeTexture('next')}
+                onViewMore={() => {
+                    setIsZooming(true); // Activa la animación de zoom
+                    setTimeout(() => {
+                        setIsZooming(false); // Desactiva la animación
+                        window.location.href = planetUrls[currentTextureIndex]; // Redirige
+                    }, 1000); // Ajusta el tiempo según la duración de la animación
+                }}
+                clickSoundRef={clickSoundRef}
+                planetSoundRef={planetSoundRef}
+            />
+        </div>
+    );
 }

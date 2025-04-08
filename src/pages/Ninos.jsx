@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
+import CentralText from '../components/Galaxias/CentralText';
+import BackButton from '../components/BackButton';
 import CrearEstrellas3D from '../components/FondoNIños/CrearEstrellas3D';
 import crearLineaVertical from '../components/FondoNIños/CrearLineaVerticalEstrella';
 import crearCirculo from '../components/FondoNIños/CrearCirculo';
@@ -9,16 +11,35 @@ import CrearNube from '../components/FondoNIños/CrearNube';
 import CrearLuna from '../components/FondoNIños/CrearLuna';
 import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoNIños/ArregloObjetos';
 
-export default function Galaxias() {
+export default function Ninos() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [selectedGalaxy, setSelectedGalaxy] = useState(null);
+    const galaxiesRef = useRef([]); // Referencia para almacenar las galaxias
+    const cameraRef = useRef(null); // Referencia para la cámara
+    const isAnimatingRef = useRef(false); // Referencia para controlar la animación
+    const audioListenerRef = useRef(null); // Referencia para el AudioListener
+    const clickSoundRef = useRef(null); // Referencia para el sonido de clic
+    const magicSoundRef = useRef(null); // Referencia para el sonido de animación
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
+            const newIsMobile = window.innerWidth < 768;
+            setIsMobile(newIsMobile);
+    
+            // Actualizar el tamaño del renderer
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+    
+            // Actualizar las posiciones de las galaxias
+            galaxiesRef.current.forEach((galaxy, index) => {
+                const newPosition = newIsMobile ? galaxyPositionsMobile[index] : galaxyPositionsPC[index];
+                galaxy.position.copy(newPosition);
+            });
         };
-
+    
         window.addEventListener('resize', handleResize);
-
+    
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -31,12 +52,41 @@ export default function Galaxias() {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
+    
+        cameraRef.current = camera;
 
+        //---------------------------------------------------------
+        //---------------------S O N I D O ------------------------
+        //---------------------------------------------------------
+        // Configurar el AudioListener
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        audioListenerRef.current = listener;
+
+        // Cargar el sonido de clic
+        const clickSound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/assets/sounds/click.mp3', (buffer) => {
+            clickSound.setBuffer(buffer);
+            clickSound.setLoop(false);
+            clickSound.setVolume(0.5);
+        });
+        clickSoundRef.current = clickSound;
+
+        // Cargar el sonido de animación (magic.mp3)
+        const magicSound = new THREE.Audio(listener);
+        audioLoader.load('/assets/sounds/magic.mp3', (buffer) => {
+            magicSound.setBuffer(buffer);
+            magicSound.setLoop(false);
+            magicSound.setVolume(0.5);
+        });
+        magicSoundRef.current = magicSound;
+    
         scene.background = new THREE.Color(0x001833);
         // -------------------------
 
         // Agregar 2 luz ambiental y una luz puntual
-        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Luz suave
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Luz suave
         scene.add(ambientLight);
 
         const pointLight = new THREE.PointLight(0xffffff, 1, 100);
@@ -140,8 +190,223 @@ export default function Galaxias() {
             cruces.push(cruz);
         });
 
-        camera.position.set(0, 0, 18);
+    
+        const galaxies = [];
+        const galaxyMaterials = [];
+        const galaxyTitles = [
+            "Peligros de Salud Social [R]",
+            "Peligros Digitales [M]",
+            "Peligros de Salud Física [C]",
+            "Peligros de Salud Mental [V]"
+        ];
+        const galaxyUrls = [
+            "/ninos/salud_social",
+            "/ninos/peligros_digitales",
+            "/ninos/salud_fisica",
+            "/ninos/salud_mental"
+        ];
+        const galaxyPositionsPC = [
+            new THREE.Vector3(-13, 1, 0),
+            new THREE.Vector3(13, 1, 0),
+            new THREE.Vector3(0, -7, 0),
+            new THREE.Vector3(0, 8, 0),
+        ];
+        const galaxyPositionsMobile = [
+            new THREE.Vector3(0, 11, 0),
+            new THREE.Vector3(0, 6, 0),
+            new THREE.Vector3(0, -6, 0),
+            new THREE.Vector3(0, -11, 0),
+        ];
+    
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+    
+        /*const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
+            const particles = 10000;
+            const spiralArms = 7;
+            const radius = 5;
+            const spread = 0.5;
+            const positions = new Float32Array(particles * 3);
+            const colors = new Float32Array(particles * 3);
+            const color = new THREE.Color(baseColor);
+    
+            for (let i = 0; i < particles; i++) {
+                const i3 = i * 3;
+                const r = Math.random() * radius;
+                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.5 + Math.random() * spread;
+    
+                const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
+                const y = (Math.random() - 0.5) * spread;
+                const z = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
+    
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+    
+                const variation = Math.random() * 0.4 - 0.2;
+                const adjustedColor = color.clone().offsetHSL(0, 0, variation);
+    
+                colors[i3] = adjustedColor.r;
+                colors[i3 + 1] = adjustedColor.g;
+                colors[i3 + 2] = adjustedColor.b;
+            }
+    
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+            const material = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+            });
+    
+            const galaxy = new THREE.Points(geometry, material);
+            galaxy.position.copy(position);
+            galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
+    
+            scene.add(galaxy);
+            galaxies.push(galaxy);
+            galaxyMaterials.push(material);
+        };*/
 
+        const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
+            const particles = 10000;
+            const radius = 5;
+            const spread = 0.5; // Reducir el spread para una línea más definida
+            const positions = new Float32Array(particles * 3);
+            const colors = new Float32Array(particles * 3);
+            const color = new THREE.Color(baseColor);
+
+            for (let i = 0; i < particles; i++) {
+                const i3 = i * 3;
+                const r = (i / particles) * radius; // Aumentar el radio gradualmente
+                const angle = r * 5; // Aumentar el ángulo para crear una espiral
+
+                const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
+                const y = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
+                const z = (Math.random() - 0.5) * spread;
+
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+
+                const variation = Math.random() * 0.4 - 0.2;
+                const adjustedColor = color.clone().offsetHSL(0, 0, variation);
+
+                colors[i3] = adjustedColor.r;
+                colors[i3 + 1] = adjustedColor.g;
+                colors[i3 + 2] = adjustedColor.b;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+            });
+
+            const galaxy = new THREE.Points(geometry, material);
+            galaxy.position.copy(position);
+            galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
+
+            scene.add(galaxy);
+            galaxies.push(galaxy);
+            galaxyMaterials.push(material);
+        };
+    
+        // Posicionar las galaxias según el tamaño de la pantalla inicial
+        const initialPositions = isMobile ? galaxyPositionsMobile : galaxyPositionsPC;
+        const colors = ['#FE797B', '#A587CA', '#36CEDC', '#8FE968'];
+
+        function obtenerRotacionResponsive(){
+            if (isMobile){
+                return [
+                    { x: Math.PI / 1.3, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                    { x: Math.PI / 4, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                ];
+            }
+            else{
+                return [
+                    { x: Math.PI / 2.4, y: 0, z: 0},
+                    { x: Math.PI / 2.4, y: 0, z: 0 },
+                    { x: Math.PI / 4, y: 0, z: 0 },
+                    { x: Math.PI / 2, y: 0, z: 0 },
+                ];
+            }
+        };
+
+        const rotations = obtenerRotacionResponsive();
+
+        const updateGalaxyRotations = () => {
+            const newRotations = obtenerRotacionResponsive();
+            galaxies.forEach((galaxy, index) => {
+                galaxy.rotation.set(newRotations[index].x, newRotations[index].y, newRotations[index].z);
+            });
+        };
+
+        initialPositions.forEach((pos, index) => {
+            createGalaxy(pos, colors[index], rotations[index]);
+        });
+
+        // Escuchar cambios de tamaño de ventana y actualizar rotación
+        window.addEventListener('resize', updateGalaxyRotations);
+
+        /*initialPositions.forEach((pos, index) => {
+            const rotations = [
+                { x: 0.8 * Math.PI, y: 0, z: 0 }, //rojo
+                { x: Math.PI / 2.5, y: 0, z: 0 }, //morado
+                { x: Math.PI / 4, y: 0, z: 0 }, //celeste
+                { x: -1.5 * Math.PI, y: 0, z: 0 }, //verde
+            ];
+            createGalaxy(pos, colors[index], rotations[index]);
+        });*/
+    
+        galaxiesRef.current = galaxies;
+    
+        camera.position.set(0, 0, 18);
+    
+        const onClick = (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(galaxies);
+    
+            galaxyMaterials.forEach((material) => {
+                material.size = 0.05;
+                material.color.setHex(0xffffff);
+            });
+    
+            if (intersects.length > 0) {
+                const targetGalaxy = intersects[0].object;
+                const galaxyIndex = galaxies.indexOf(targetGalaxy);
+    
+                if (galaxyIndex !== -1) {
+                    galaxyMaterials[galaxyIndex].size = 0.1;
+                    galaxyMaterials[galaxyIndex].color.setHex(0xffffff);
+    
+                    setSelectedGalaxy({
+                        title: galaxyTitles[galaxyIndex],
+                        url: galaxyUrls[galaxyIndex],
+                        index: galaxyIndex,
+                    });
+                    
+                    // Reproducir el sonido de clic  <-------
+                    if (clickSoundRef.current) {
+                        clickSoundRef.current.play();
+                    }
+                }
+            } else {
+                setSelectedGalaxy(null);
+            }
+        };
+    
+        renderer.domElement.addEventListener('click', onClick);
+        
         let velocidadMovimiento = 0.00003; // Velocidad de la oscilación
         let rangoOscilacion = 25; // El rango máximo de oscilación en el eje X
         
@@ -175,7 +440,6 @@ export default function Galaxias() {
             });
         }
 
-        // Función para manejar el redimensionamiento de la ventana
         const onWindowResizeNube = () => {
             // Determina si es una pantalla pequeña (móvil)
             const isMobile = window.innerWidth < 768;
@@ -201,7 +465,7 @@ export default function Galaxias() {
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         };
-
+        
         const onWindowResizeEstrella = () => {
             // Determina si es una pantalla pequeña (móvil)
             const isMobile = window.innerWidth < 768;
@@ -319,7 +583,6 @@ export default function Galaxias() {
             });
         };
 
-        // Escuchar el evento de redimensionamiento de la ventana
         window.addEventListener('resize', onWindowResizeNube);
         window.addEventListener('resize', actualizarParametrosAnimacion);
         window.addEventListener('resize', onWindowResizeEstrella);
@@ -328,7 +591,7 @@ export default function Galaxias() {
         window.addEventListener('resize', onWindowResizeCruces);
         window.addEventListener('resize', onWindowResizeLuna);
         window.addEventListener('resize', onWindowResizeCirculos);
-        
+
         onWindowResizeNube();
         actualizarParametrosAnimacion();
         onWindowResizeEstrella();
@@ -345,6 +608,10 @@ export default function Galaxias() {
 
         const animate = () => {
             requestAnimationFrame(animate);
+            galaxies.forEach((galaxy, index) => {
+                const speed = 0.0002 + index * 0.0002;
+                galaxy.rotation.z += speed;
+            });
             
             let scaleLimit = window.innerWidth < 768 ? 0.7 : 1.5; // Límite de escala máximo
             
@@ -402,70 +669,62 @@ export default function Galaxias() {
             moverNubes();
             
             renderer.render(scene, camera);
+            
         };
-        
         animate();
-
-        updateGalaxyPositions();
-
-        // Crear botón de regresar
-        const createButton = (text, onClick, color = '#ff0000') => {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.style.fontSize = '24px';
-            button.style.background = 'none'; // Fondo transparente
-            button.style.border = `2px solid ${color}`; // Borde con color personalizado
-            button.style.color = color; // Color del texto
-            button.style.cursor = 'pointer';
-            button.style.padding = '12px 20px';
-            button.style.borderRadius = '20px';
-            button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`; // Sombra más suave
-            button.style.transition = 'all 0.3s ease';
-            button.style.textShadow = `0 0 3px ${color}`; // Brillo en el texto más tenue
-        
-            // Efecto hover
-            button.addEventListener('mouseover', () => {
-                button.style.transform = 'scale(1.05)';
-                button.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-                button.style.textShadow = `0 0 5px ${color}`;
-            });
-        
-            // Efecto al salir del hover
-            button.addEventListener('mouseout', () => {
-                button.style.transform = 'scale(1)';
-                button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                button.style.textShadow = `0 0 3px ${color}`;
-            });
-        
-            // Efecto al hacer clic
-            button.addEventListener('click', () => {
-                button.style.boxShadow = `0 0 3px ${color}, 0 0 5px ${color}`;
-                setTimeout(() => {
-                    button.style.boxShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
-                }, 200);
-                onClick();
-            });
-        
-            return button;
-        };
-
-        const backButton = createButton('← Regresar', () => {
-            window.history.back();
-        });
-        
-        backButton.style.position = 'absolute';
-        backButton.style.left = '20px';
-        backButton.style.top = '20px'; 
-        backButton.style.zIndex = '1000'; // para que el boton este por encima de todo
-        
-        document.body.appendChild(backButton);
-
+    
         return () => {
-            window.removeEventListener('resize', onWindowResize);
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
         };
     }, [isMobile]);
 
-    return null;
+    const handleConfirm = () => {
+        if (selectedGalaxy && !isAnimatingRef.current) {
+            const selectedGalaxyIndex = selectedGalaxy.index;
+            const galaxy = galaxiesRef.current[selectedGalaxyIndex];
+            const url = selectedGalaxy.url;
+
+            // Iniciar la animación de acercamiento
+            isAnimatingRef.current = true;
+
+            // Reproducir el sonido de animación (magic.mp3)
+            if (magicSoundRef.current) {
+                magicSoundRef.current.play();
+            }
+
+            const duration = 1.5; // Duración de la animación
+            const distance = 9; // Distancia a la que se acerca la cámara
+            const direction = new THREE.Vector3().subVectors(cameraRef.current.position, galaxy.position).normalize();
+            const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
+            const startPosition = new THREE.Vector3().copy(cameraRef.current.position);
+            let elapsed = 0;
+
+            const animateMove = () => {
+                elapsed += 0.01;
+                const t = Math.min(elapsed / duration, 1);
+
+                // ANIMACION DE ACERCAMINETO DE GALAXIA
+                cameraRef.current.position.lerpVectors(startPosition, targetPosition, t);
+                cameraRef.current.lookAt(galaxy.position);
+
+                if (t < 1) {
+                    requestAnimationFrame(animateMove);
+                } else {
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1000);//DURACION DE ANIMACION DE ACERCAMIENTO -------------- 
+                }
+            };
+
+            animateMove();
+        }
+    };
+
+    return (
+        <>
+            <CentralText selectedGalaxy={selectedGalaxy} onConfirm={handleConfirm} />
+            <BackButton color={'#FF746C'} background= {'none'}/>
+        </>
+    );
 }

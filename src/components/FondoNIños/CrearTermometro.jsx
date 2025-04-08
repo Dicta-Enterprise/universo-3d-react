@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export default function CrearTermometro(){
-    const material = new THREE.MeshStandardMaterial({ color: 0xC493C3, roughness: 0.5 });
+    const material = new THREE.MeshStandardMaterial({ color: 0xA587CA, roughness: 0.5 });
 
     // Crear el cilindro (tubo del termómetro)
     const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 2.5, 32);
