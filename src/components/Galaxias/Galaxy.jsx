@@ -1,9 +1,8 @@
-//Este componente es para las galaxias
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 export default function Galaxy({ position, color, rotation }) {
-    const mountRef = useRef(null);
+    const galaxyRef = useRef();
 
     useEffect(() => {
         const particles = 10000;
@@ -48,25 +47,14 @@ export default function Galaxy({ position, color, rotation }) {
         galaxy.position.copy(position);
         galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
 
-        const scene = new THREE.Scene();
-        scene.add(galaxy);
-
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        mountRef.current.appendChild(renderer.domElement);
-
-        const animate = () => {
-            requestAnimationFrame(animate);
-            galaxy.rotation.y += 0.0002;
-            renderer.render(scene, new THREE.PerspectiveCamera());
-        };
-        animate();
+        galaxyRef.current = galaxy;
 
         return () => {
-            renderer.dispose();
-            mountRef.current.removeChild(renderer.domElement);
+            // Limpiar la galaxia al desmontar el componente
+            geometry.dispose();
+            material.dispose();
         };
     }, [position, color, rotation]);
 
-    return <div ref={mountRef} />;
+    return null; // No renderizamos nada directamente en el DOM
 }

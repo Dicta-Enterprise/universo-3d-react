@@ -1,81 +1,46 @@
-//Este componente es para las galaxias
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import Galaxy from './Galaxy';
 
-export default function GalaxyScene({ isMobile, galaxiesData, onGalaxyClick }) {
+export default function GalaxyScene({ isMobile, galaxiesData, onGalaxyClick, selectedGalaxy }) {
     const mountRef = useRef(null);
+    const sceneRef = useRef(new THREE.Scene());
+    const cameraRef = useRef(new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
+    const rendererRef = useRef(null);
+    const galaxiesRef = useRef([]);
+    const raycasterRef = useRef(new THREE.Raycaster());
+    const mouseRef = useRef(new THREE.Vector2());
 
     useEffect(() => {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const scene = sceneRef.current;
+        const camera = cameraRef.current;
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        mountRef.current.appendChild(renderer.domElement);
 
+        if (mountRef.current) {
+            mountRef.current.appendChild(renderer.domElement);
+        }
+        rendererRef.current = renderer;
+
+        // Configurar la textura de fondo
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
         scene.background = spaceTexture;
 
-        const galaxies = [];
-        const galaxyMaterials = [];
-
-        const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
-            const particles = 10000;
-            const spiralArms = 7;
-            const radius = 5;
-            const spread = 0.5;
-            const positions = new Float32Array(particles * 3);
-            const colors = new Float32Array(particles * 3);
-            const color = new THREE.Color(baseColor);
-
-            for (let i = 0; i < particles; i++) {
-                const i3 = i * 3;
-                const r = Math.random() * radius;
-                const angle = (i % spiralArms) * (Math.PI * 2 / spiralArms) + r * 0.5 + Math.random() * spread;
-
-                const x = Math.cos(angle) * r + (Math.random() - 0.5) * spread;
-                const y = (Math.random() - 0.5) * spread;
-                const z = Math.sin(angle) * r + (Math.random() - 0.5) * spread;
-
-                positions[i3] = x;
-                positions[i3 + 1] = y;
-                positions[i3 + 2] = z;
-
-                const variation = Math.random() * 0.4 - 0.2;
-                const adjustedColor = color.clone().offsetHSL(0, 0, variation);
-
-                colors[i3] = adjustedColor.r;
-                colors[i3 + 1] = adjustedColor.g;
-                colors[i3 + 2] = adjustedColor.b;
-            }
-
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const material = new THREE.PointsMaterial({
-                size: 0.05,
-                vertexColors: true,
-            });
-
-            const galaxy = new THREE.Points(geometry, material);
-            galaxy.position.copy(position);
-            galaxy.rotation.set(rotation.x, rotation.y, rotation.z);
-
-            scene.add(galaxy);
-            galaxies.push(galaxy);
-            galaxyMaterials.push(material);
-        };
-
-        galaxiesData.forEach((data, index) => {
-            createGalaxy(data.position, data.color, data.rotation);
-        });
-
+        // Posicionar la cámara
         camera.position.set(0, 0, 18);
 
+        // Crear las galaxias
+        galaxiesData.forEach((data) => {
+            const galaxy = <Galaxy key={data.id} position={data.position} color={data.color} rotation={data.rotation} />;
+            scene.add(galaxy);
+            galaxiesRef.current.push(galaxy);
+        });
+
+        // Animación
         const animate = () => {
             requestAnimationFrame(animate);
-            galaxies.forEach((galaxy, index) => {
+            galaxiesRef.current.forEach((galaxy, index) => {
                 const speed = 0.0002 + index * 0.0002;
                 galaxy.rotation.y += speed;
             });
@@ -83,11 +48,37 @@ export default function GalaxyScene({ isMobile, galaxiesData, onGalaxyClick }) {
         };
         animate();
 
-        return () => {
-            renderer.dispose();
-            mountRef.current.removeChild(renderer.domElement);
+        // Manejar clics en las galaxias
+        const handleClick = (event) => {
+            const mouse = mouseRef.current;
+            const raycaster = raycasterRef.current;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(galaxiesRef.current);
+
+            if (intersects.length > 0) {
+                const galaxy = intersects[0].object;
+                const galaxyIndex = galaxiesRef.current.indexOf(galaxy);
+                onGalaxyClick(galaxyIndex);
+            }
         };
-    }, [isMobile, galaxiesData]);
+
+        renderer.domElement.addEventListener('click', handleClick);
+
+        // Limpieza al desmontar el componente
+        return () => {
+            if (rendererRef.current) {
+                rendererRef.current.dispose();
+                if (mountRef.current && rendererRef.current.domElement) {
+                    mountRef.current.removeChild(rendererRef.current.domElement);
+                }
+            }
+            renderer.domElement.removeEventListener('click', handleClick);
+        };
+    }, [galaxiesData, onGalaxyClick]);
 
     return <div ref={mountRef} />;
 }
