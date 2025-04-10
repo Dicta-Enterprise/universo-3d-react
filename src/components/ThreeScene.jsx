@@ -346,6 +346,8 @@ export default function ThreeScene({ onLoad }) {
         }
         
         */
+        
+        
         const rockets = [];
 
         function createRocket(position, index) {
@@ -353,60 +355,143 @@ export default function ThreeScene({ onLoad }) {
             const rocketGroup = new THREE.Group();
 
             loader.load(
-                '/assets/cohete_rocket/scene.gltf',
+                '/assets/cohete/scene.gltf',
                 function (gltf) {
                     const rocket = gltf.scene;
                     
                     // Ajustar la escala del cohete
-                    rocket.scale.set(0.1, 0.1, 0.1);
+                    rocket.scale.set(5, 5, 5);
                     
                     // Ajustar la rotación inicial
                     rocket.rotation.y = Math.PI;
 
-                    // Agregar efecto de resplandor blanco
+                    // Agregar efecto de resplandor y materiales interactivos
                     rocket.traverse((child) => {
                         if (child.isMesh) {
-                            // Crear un material con emisión blanca
                             const material = new THREE.MeshStandardMaterial({
                                 ...child.material,
-                                emissive: new THREE.Color(0xffffff),
-                                emissiveIntensity: 0.5
+                                emissive: new THREE.Color(0x000000),
+                                emissiveIntensity: 0
                             });
                             child.material = material;
+                            child.userData.originalColor = material.color.clone();
                         }
                     });
                     
                     // Ajustar posición de los cohetes según el dispositivo
                     const isMobile = window.innerWidth <= 712;
                     if (isMobile) {
-                        const yOffset = 0.4; // Ajuste progresivo en Y
+                        const yOffset = 0.4;
                         rocketGroup.position.set(
-                            0, // X fijo para móvil
-                            position.y - index * yOffset, // Ajuste progresivo en Y basado en el índice
-                            position.z + index * 1.5 // Z ajustado para espaciamiento
+                            0,
+                            position.y - index * yOffset,
+                            position.z + index * 1.5
                         );
                     } else {
                         rocketGroup.position.set(position.x, position.y, position.z);
                     }
 
+                    // Agregar un bounding box para mejorar la detección de clics
+                    const box = new THREE.Box3().setFromObject(rocket);
+                    const helper = new THREE.Box3Helper(box, 0xffff00);
+                    helper.visible = false; // Ocultar el helper en producción
+                    rocketGroup.add(helper);
+
                     rocketGroup.add(rocket);
                     scene.add(rocketGroup);
                     rockets.push(rocketGroup);
+
+                    // Asociar URL y agregar al grupo
+                    rocketGroup.userData.url = position.url;
+                    rocketGroup.userData.isHovered = false;
                 },
                 undefined,
                 function (error) {
                     console.error('Error al cargar el modelo del cohete:', error);
                 }
             );
-
-            // Asociar URL y agregar al grupo
-            rocketGroup.userData.url = position.url;
         }
 
         // Crear cohetes con posiciones específicas
-        createRocket({ x: -1.5, y: -0.6, z: 5, url: '/ninos' }, 0);
+        createRocket({ x: -1, y: -0.6, z: 5, url: '/ninos' }, 0);
         createRocket({ x: 0, y: -0.6, z: 5, url: '/jovenes' }, 1);
-        createRocket({ x: 0, y: -0.6, z: 5, url: '/padres' }, 2);
+        createRocket({ x: 1, y: -0.6, z: 5, url: '/padres' }, 2);
+
+        // Raycaster para detección de clics
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Función para manejar el hover
+        function handleHover(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(rockets, true);
+
+            // Resetear todos los cohetes
+            rockets.forEach(rocket => {
+                if (rocket.userData.isHovered) {
+                    rocket.traverse(child => {
+                        if (child.isMesh && child.userData.originalColor) {
+                            child.material.color.copy(child.userData.originalColor);
+                            child.material.emissiveIntensity = 0;
+                        }
+                    });
+                    rocket.userData.isHovered = false;
+                }
+            });
+
+            // Resaltar el cohete hover
+            if (intersects.length > 0) {
+                const rocket = intersects[0].object.parent;
+                rocket.traverse(child => {
+                    if (child.isMesh && child.userData.originalColor) {
+                        child.material.color.setHex(0xffff00);
+                        child.material.emissiveIntensity = 0.5;
+                    }
+                });
+                rocket.userData.isHovered = true;
+                document.body.style.cursor = 'pointer';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        // Función para manejar clics
+        function handleClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(rockets, true);
+
+            if (intersects.length > 0) {
+                const rocket = intersects[0].object.parent;
+                
+                // Efecto visual al hacer clic
+                rocket.traverse(child => {
+                    if (child.isMesh) {
+                        const originalScale = child.scale.clone();
+                        child.scale.multiplyScalar(1.2);
+                        setTimeout(() => {
+                            child.scale.copy(originalScale);
+                        }, 200);
+                    }
+                });
+
+                // Navegar a la URL después de un breve retraso para mostrar la animación
+                setTimeout(() => {
+                    if (rocket.userData.url) {
+                        window.location.href = rocket.userData.url;
+                    }
+                }, 300);
+            }
+        }
+
+        // Agregar event listeners
+        window.addEventListener('mousemove', handleHover);
+        window.addEventListener('click', handleClick);
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -486,25 +571,6 @@ export default function ThreeScene({ onLoad }) {
             }
         });
         
-
-        // Manejar clics en los cohetes
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        window.addEventListener('click', (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-
-            const intersects = raycaster.intersectObjects(rockets, true);
-            if (intersects.length > 0) {
-                const clickedRocket = intersects[0].object.parent;
-                if (clickedRocket.userData.url) {
-                    window.location.href = clickedRocket.userData.url;
-                }
-            }
-        });
 
         // Animación general
         function animate() {
