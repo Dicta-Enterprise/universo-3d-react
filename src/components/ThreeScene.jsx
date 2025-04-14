@@ -359,8 +359,17 @@ export default function ThreeScene({ onLoad }) {
                 function (gltf) {
                     const rocket = gltf.scene;
                     
-                    // Ajustar la escala del cohete
-                    rocket.scale.set(5, 5, 5);
+                    // Ajustar la escala del cohete según el dispositivo
+                    const isMobile = window.innerWidth <= 768;
+                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                    
+                    if (isMobile) {
+                        rocket.scale.set(5, 5, 5);
+                    } else if (isTablet) {
+                        rocket.scale.set(4, 4, 4);
+                    } else {
+                        rocket.scale.set(5, 5, 5);
+                    }
                     
                     // Ajustar la rotación inicial
                     rocket.rotation.y = Math.PI;
@@ -379,13 +388,19 @@ export default function ThreeScene({ onLoad }) {
                     });
                     
                     // Ajustar posición de los cohetes según el dispositivo
-                    const isMobile = window.innerWidth <= 712;
                     if (isMobile) {
                         const yOffset = 0.4;
                         rocketGroup.position.set(
                             0,
                             position.y - index * yOffset,
                             position.z + index * 1.5
+                        );
+                    } else if (isTablet) {
+                        const xOffset = 1.5;
+                        rocketGroup.position.set(
+                            position.x * xOffset,
+                            position.y,
+                            position.z
                         );
                     } else {
                         rocketGroup.position.set(position.x, position.y, position.z);
@@ -394,14 +409,13 @@ export default function ThreeScene({ onLoad }) {
                     // Agregar un bounding box para mejorar la detección de clics
                     const box = new THREE.Box3().setFromObject(rocket);
                     const helper = new THREE.Box3Helper(box, 0xffff00);
-                    helper.visible = false; // Ocultar el helper en producción
+                    helper.visible = false;
                     rocketGroup.add(helper);
 
                     rocketGroup.add(rocket);
                     scene.add(rocketGroup);
                     rockets.push(rocketGroup);
 
-                    // Asociar URL y agregar al grupo
                     rocketGroup.userData.url = position.url;
                     rocketGroup.userData.isHovered = false;
                 },
@@ -423,6 +437,8 @@ export default function ThreeScene({ onLoad }) {
 
         // Función para manejar el hover
         function handleHover(event) {
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -448,7 +464,7 @@ export default function ThreeScene({ onLoad }) {
                 rocket.traverse(child => {
                     if (child.isMesh && child.userData.originalColor) {
                         child.material.color.setHex(0xffff00);
-                        child.material.emissiveIntensity = 0.5;
+                        child.material.emissiveIntensity = isMobile ? 0.8 : (isTablet ? 0.6 : 0.5);
                     }
                 });
                 rocket.userData.isHovered = true;
@@ -460,6 +476,8 @@ export default function ThreeScene({ onLoad }) {
 
         // Función para manejar clics
         function handleClick(event) {
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -473,14 +491,14 @@ export default function ThreeScene({ onLoad }) {
                 rocket.traverse(child => {
                     if (child.isMesh) {
                         const originalScale = child.scale.clone();
-                        child.scale.multiplyScalar(1.2);
+                        const scaleFactor = isMobile ? 1.3 : (isTablet ? 1.25 : 1.2);
+                        child.scale.multiplyScalar(scaleFactor);
                         setTimeout(() => {
                             child.scale.copy(originalScale);
                         }, 200);
                     }
                 });
 
-                // Navegar a la URL después de un breve retraso para mostrar la animación
                 setTimeout(() => {
                     if (rocket.userData.url) {
                         window.location.href = rocket.userData.url;
@@ -492,6 +510,15 @@ export default function ThreeScene({ onLoad }) {
         // Agregar event listeners
         window.addEventListener('mousemove', handleHover);
         window.addEventListener('click', handleClick);
+        // Agregar soporte para toques en dispositivos móviles
+        window.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            const clickEvent = new MouseEvent('click', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            handleClick(clickEvent);
+        });
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -510,10 +537,14 @@ export default function ThreeScene({ onLoad }) {
             camera.position.y = cameraStartY + progress * (cameraEndY - cameraStartY);
         
             // Mostrar los cohetes progresivamente
-            const isMobile = window.innerWidth <= 712;
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
                     const threshold = maxScrollY * (0.3 + index * 0.1); // Más escalonado en móvil
+                    rocket.visible = scrollY > threshold;
+                } else if (isTablet) {
+                    const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
                     rocket.visible = scrollY > threshold;
                 } else {
                     const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
@@ -592,17 +623,30 @@ export default function ThreeScene({ onLoad }) {
             camera.updateProjectionMatrix();
         
             // Recalcular posiciones de los cohetes
-            const isMobile = width <= 712; // Verificar si es móvil
+            const isMobile = width <= 768;
+            const isTablet = width > 768 && width <= 1024;
+            
             rockets.forEach((rocket, index) => {
-                const yOffset = 0.4; // Ajuste progresivo en Y
                 if (isMobile) {
+                    const yOffset = 0.4;
                     rocket.position.set(
-                        0, // X centrado
-                        -0.6 - index * yOffset, // Ajuste progresivo en Y basado en el índice
-                        5 + index * 1.5 // Z ajustado para espaciamiento
+                        0,
+                        -0.6 - index * yOffset,
+                        5 + index * 1.5
+                    );
+                } else if (isTablet) {
+                    const xOffset = 1.5;
+                    rocket.position.set(
+                        (index - 1) * xOffset,
+                        -0.6,
+                        5
                     );
                 } else {
-                    rocket.position.set(0, -0.6, 5); // Todos centrados en X
+                    rocket.position.set(
+                        index - 1,
+                        -0.6,
+                        5
+                    );
                 }
             });
         });
