@@ -751,9 +751,9 @@ const animateShootingStar = (index) => {
                 overflow: 'hidden',
             }}
         >
-            <BackButton redirectUrl="/jovenes" background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="Bienvenidos a la sección de Salud Social">
-                <InfoBox text={texts[currentTextureIndex]} />
+            <BackButton redirectUrl="/jovenes" color={'#00ffff'} background= {'none'}/> {/* Pasa la URL dinámica */}
+            <DivCentral title="Bienvenidos a la sección de Salud Fisica">
+                <InfoBox text={texts[currentTextureIndex]} color={'#00ffff'}/>
             </DivCentral>
             <ControlButtons
                 onPrev={() => changeTexture('prev')}
@@ -767,7 +767,7 @@ const animateShootingStar = (index) => {
                 }}
                 clickSoundRef={clickSoundRef}
                 planetSoundRef={planetSoundRef}
-                
+                color={'#00ffff'}
             />
         </div>
     );

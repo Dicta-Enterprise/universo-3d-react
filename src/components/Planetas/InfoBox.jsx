@@ -5,7 +5,7 @@ export default function InfoBox({ text, color = '#ff0000' }) {
         <div
             style={{
                 fontSize: '20px',
-                backgroundColor: 'rgba(252, 107, 102, 0.32)', // Fondo semitransparente
+                backgroundColor: 'rgba(0, 0, 0, 0.3)', // Fondo semitransparente
                 padding: '24px',
                 margin: '32px',
                 borderRadius: '10px',

@@ -2,7 +2,7 @@
 import React from 'react';
 
 export default function CentralText({ selectedGalaxy, onConfirm }) {
-    const colors = ['#FF746C', '#cc99ff', '#69b6d9', '#55DDBB'];
+    const colors = ['#FF746C', '#cc99ff', '#69b6d9', '#55dd84'];
     const galaxyIndex = selectedGalaxy ? selectedGalaxy.index : -1;
 
     return (

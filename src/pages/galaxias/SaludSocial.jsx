@@ -517,7 +517,7 @@ export default function EsferaTexturizada() {
         >
             <BackButton redirectUrl="/ninos" color={'#FF746C'} background= {'none'}/> {/* Pasa la URL dinámica */}
             <DivCentral title="Bienvenidos a la sección de Salud Social">
-                <InfoBox text={texts[currentTextureIndex]} />
+                <InfoBox text={texts[currentTextureIndex]} color={'#FF746C'} />
             </DivCentral>
             <ControlButtons
                 onPrev={() => changeTexture('prev')}
@@ -531,6 +531,7 @@ export default function EsferaTexturizada() {
                 }}
                 clickSoundRef={clickSoundRef}
                 planetSoundRef={planetSoundRef}
+                color={'#FF746C'}
             />
         </div>
     );
