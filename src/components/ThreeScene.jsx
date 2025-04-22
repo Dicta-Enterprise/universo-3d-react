@@ -606,11 +606,98 @@ export default function ThreeScene({ onLoad }) {
                     }
                 });
 
-                setTimeout(() => {
-                    if (rocket.userData.url) {
-                        window.location.href = rocket.userData.url;
-                    }
-                }, 300);
+                // Remover cualquier popup existente
+                const existingPopup = document.querySelector('.rocket-popup');
+                if (existingPopup) {
+                    document.body.removeChild(existingPopup);
+                }
+
+                // Crear y mostrar el popup
+                const popup = document.createElement('div');
+                popup.className = 'rocket-popup';
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 80%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.95);
+                    padding: 30px;
+                    border: 3px solid white;
+                    border-radius: 15px;
+                    color: white;
+                    text-align: center;
+                    z-index: 1000;
+                    min-width: 300px;
+                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+                    font-family: Arial, sans-serif;
+                `;
+
+                const message = document.createElement('p');
+                message.textContent = `¿Deseas ir a ${rocket.userData.url === '/ninos' ? 'Niños' : rocket.userData.url === '/jovenes' ? 'Jóvenes' : 'Padres'}?`;
+                message.style.cssText = `
+                    margin-bottom: 25px;
+                    font-size: 1.2em;
+                    color: #FF746C;
+                `;
+                popup.appendChild(message);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.cssText = `
+                    display: flex;
+                    justify-content: center;
+                    gap: 15px;
+                `;
+
+                const acceptButton = document.createElement('button');
+                acceptButton.textContent = 'Aceptar';
+                acceptButton.style.cssText = `
+                    padding: 10px 25px;
+                    background: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background 0.3s;
+                `;
+                acceptButton.onmouseover = () => {
+                    acceptButton.style.background = '#45a049';
+                };
+                acceptButton.onmouseout = () => {
+                    acceptButton.style.background = '#4CAF50';
+                };
+                acceptButton.onclick = () => {
+                    document.body.removeChild(popup);
+                    window.location.href = rocket.userData.url;
+                };
+
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancelar';
+                cancelButton.style.cssText = `
+                    padding: 10px 25px;
+                    background: #f44336;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background 0.3s;
+                `;
+                cancelButton.onmouseover = () => {
+                    cancelButton.style.background = '#da190b';
+                };
+                cancelButton.onmouseout = () => {
+                    cancelButton.style.background = '#f44336';
+                };
+                cancelButton.onclick = () => {
+                    document.body.removeChild(popup);
+                };
+
+                buttonContainer.appendChild(acceptButton);
+                buttonContainer.appendChild(cancelButton);
+                popup.appendChild(buttonContainer);
+
+                document.body.appendChild(popup);
             }
         }
 
