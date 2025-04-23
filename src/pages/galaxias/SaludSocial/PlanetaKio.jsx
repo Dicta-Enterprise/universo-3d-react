@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BackButton from '../../../components/BackButton';
 import ThreeScene from '../../../components/Landing/ThreeScene';
 import MainContent from '../../../components/Landing/MainContent';
@@ -7,6 +7,12 @@ import ResizeHandler from '../../../components/Landing/ResizeHandler';
 const PlanetaKio = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showCarousel, setShowCarousel] = useState(false);
+    const [activeSection, setActiveSection] = useState('resumen');
+
+    // Referencias para las secciones
+    const resumenRef = useRef(null);
+    const peligrosRef = useRef(null);
+    const beneficiosRef = useRef(null);
 
     // Texturas para el carrusel de planetas
     const textures = [
@@ -125,6 +131,19 @@ const PlanetaKio = () => {
         console.log("Botón Comprar clickeado");
     };
 
+    const scrollToSection = (section) => {
+        setActiveSection(section);
+        const ref = {
+            'resumen': resumenRef,
+            'peligros': peligrosRef,
+            'beneficios': beneficiosRef
+        }[section];
+
+        if (ref && ref.current) {
+            ref.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         document.body.style.margin = '0';
@@ -145,7 +164,64 @@ const PlanetaKio = () => {
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
+            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background={'none'}/>
+            
+            {/* Menú de navegación */}
+            <div style={{
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                zIndex: 1000,
+                display: 'flex',
+                gap: '10px',
+                background: 'rgba(0, 0, 0, 0.7)',
+                padding: '10px',
+                borderRadius: '8px',
+            }}>
+                <button
+                    onClick={() => scrollToSection('resumen')}
+                    style={{
+                        background: activeSection === 'resumen' ? '#4CAF50' : 'transparent',
+                        color: 'white',
+                        border: '1px solid white',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                    }}
+                >
+                    Resumen
+                </button>
+                <button
+                    onClick={() => scrollToSection('peligros')}
+                    style={{
+                        background: activeSection === 'peligros' ? '#4CAF50' : 'transparent',
+                        color: 'white',
+                        border: '1px solid white',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                    }}
+                >
+                    Peligros
+                </button>
+                <button
+                    onClick={() => scrollToSection('beneficios')}
+                    style={{
+                        background: activeSection === 'beneficios' ? '#4CAF50' : 'transparent',
+                        color: 'white',
+                        border: '1px solid white',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                    }}
+                >
+                    Beneficios
+                </button>
+            </div>
+
             <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
             <MainContent
                 isMobile={isMobile}
@@ -157,6 +233,11 @@ const PlanetaKio = () => {
                 imagenResumen={imagenResumen}
                 imagenBeneficios={imagenBeneficios}
                 setShowCarousel={setShowCarousel}
+                refs={{
+                    resumen: resumenRef,
+                    peligros: peligrosRef,
+                    beneficios: beneficiosRef
+                }}
             />
             <ResizeHandler setIsMobile={setIsMobile} />
         </div>

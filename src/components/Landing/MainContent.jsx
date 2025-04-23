@@ -10,7 +10,8 @@ const MainContent = ({
   peligros, 
   imagenResumen, 
   imagenBeneficios, 
-  setShowCarousel 
+  setShowCarousel,
+  refs
 }) => {
     const [showCarouselLocal, setShowCarouselLocal] = useState(false);
 
@@ -65,7 +66,7 @@ const MainContent = ({
             </h1>
 
             {/* Primer bloque: Resumen del Curso + Imagen */}
-            <div style={{
+            <div ref={refs.resumen} style={{
                 display: 'flex',
                 flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'center',
@@ -104,7 +105,7 @@ const MainContent = ({
             </div>
 
             {/* Segundo bloque: Riesgos */}
-            <div style={{
+            <div ref={refs.peligros} style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -207,7 +208,7 @@ const MainContent = ({
             </div>
 
             {/* Tercer bloque: Imagen + Beneficios */}
-            <div style={{
+            <div ref={refs.beneficios} style={{
                 display: 'flex',
                 flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'center',
