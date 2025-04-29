@@ -34,15 +34,15 @@ export default function EsferaTexturizada() {
 
     const texts = [
         "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA - - ",
-        "TERCER PLANETA - - - ",
-        "CUARTO PLANETA - - - - ",
-        "QUINTO PLANETA - - - - - ",
-        "SEXTO PLANETA - - - - - ",
-        "SEPTIMO PLANETA - - - - - ",
-        "OCTAVO PLANETA - - - - - ",
-        "NOVENO PLANETA - - - - - ",
-        "DECIMO PLANETA - - - - - ",
+        "SEGUNDO PLANETA Tipo de Riesgo - - o",
+        "TERCER PLANETA Tipo de Riesgo- - - ",
+        "CUARTO PLANETA Tipo de Riesgo- - - - ",
+        "QUINTO PLANETA Tipo de Riesgo- - - - - ",
+        "SEXTO PLANETA Tipo de Riesgo- - - - - ",
+        "SEPTIMO PLANETA Tipo de Riesgo- - - - - ",
+        "OCTAVO PLANETA Tipo de Riesgo- - - - - ",
+        "NOVENO PLANETA Tipo de Riesgo- - - - - ",
+        "DECIMO PLANETA Tipo de Riesgo- - - - - ",
     ];
 
     const planetUrls = [
@@ -151,7 +151,7 @@ export default function EsferaTexturizada() {
 
             termometro.animation = () => {
                 termometro.userData.angle += swingSpeed; // Aumentamos el ángulo en cada frame
-                termometro.rotation.z = Math.sin(termometro.userData.angle) * 0.2; // Aplicamos el movimiento de oscilación
+                termometro.rotation.z = Math.sin(termometro.userData.angle) * 10; // Aplicamos el movimiento de oscilación
             };
         });
         
@@ -193,7 +193,7 @@ export default function EsferaTexturizada() {
             cruces.push(cruz);
         });
         
-        let velocidadMovimiento = 0.00003; // Velocidad de la oscilación
+        let velocidadMovimiento = 10; // Velocidad de la oscilación
         let rangoOscilacion = 25; // El rango máximo de oscilación en el eje X
         
         // Función para actualizar la velocidad y el rango de oscilación en función del tamaño de la pantalla
@@ -462,9 +462,9 @@ export default function EsferaTexturizada() {
             });
 
             circulos.forEach((circulo, index) => {
-                const velocidad = 0.5; // Ajusta la velocidad del rebote
+                const velocidad = 0.1; // Ajusta la velocidad del rebote
                 const amplitud = 0.01; // Ajusta la altura del rebote
-                const tiempo = tiempoBase + index * 0.3; // Desfase entre círculos
+                const tiempo = tiempoBase + index * 0.1; // Desfase entre círculos
             
             
                 circulo.position.y += Math.cos(tiempo * velocidad) * amplitud;
@@ -490,12 +490,12 @@ export default function EsferaTexturizada() {
             });
 
             termometros.forEach(termometro => {
-                termometro.animation(); // Llamamos a la animación de cada termómetro
+                termometro.animation(); // Llamamos a la animación de cada termómetro 
             });
 
             moverNubes();
 
-            sphere.rotation.y += 0.0005;
+            sphere.rotation.y += 0.00010; // Rotación de la esfera
             renderer.render(scene, camera);
         };
         animate();
@@ -523,11 +523,11 @@ export default function EsferaTexturizada() {
                 onPrev={() => changeTexture('prev')}
                 onNext={() => changeTexture('next')}
                 onViewMore={() => {
-                    setIsZooming(true); // Activa la animación de zoom
+                    setIsZooming(false); // Activa la animación de zoom
                     setTimeout(() => {
-                        setIsZooming(false); // Desactiva la animación
+                        setIsZooming(true); // Desactiva la animación
                         window.location.href = planetUrls[currentTextureIndex]; // Redirige
-                    }, 1000); // Ajusta el tiempo según la duración de la animación
+                    }, 100); // Ajusta el tiempo según la duración de la animación
                 }}
                 clickSoundRef={clickSoundRef}
                 planetSoundRef={planetSoundRef}
