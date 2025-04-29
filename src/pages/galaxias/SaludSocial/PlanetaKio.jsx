@@ -166,62 +166,6 @@ const PlanetaKio = () => {
         }}>
             <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background={'none'}/>
             
-            {/* Menú de navegación */}
-            <div style={{
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                zIndex: 1000,
-                display: 'flex',
-                gap: '10px',
-                background: 'rgba(0, 0, 0, 0.7)',
-                padding: '10px',
-                borderRadius: '8px',
-            }}>
-                <button
-                    onClick={() => scrollToSection('resumen')}
-                    style={{
-                        background: activeSection === 'resumen' ? '#4CAF50' : 'transparent',
-                        color: 'white',
-                        border: '1px solid white',
-                        padding: '8px 16px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    Resumen
-                </button>
-                <button
-                    onClick={() => scrollToSection('peligros')}
-                    style={{
-                        background: activeSection === 'peligros' ? '#4CAF50' : 'transparent',
-                        color: 'white',
-                        border: '1px solid white',
-                        padding: '8px 16px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    Peligros
-                </button>
-                <button
-                    onClick={() => scrollToSection('beneficios')}
-                    style={{
-                        background: activeSection === 'beneficios' ? '#4CAF50' : 'transparent',
-                        color: 'white',
-                        border: '1px solid white',
-                        padding: '8px 16px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    Beneficios
-                </button>
-            </div>
-
             <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
             <MainContent
                 isMobile={isMobile}
@@ -235,7 +179,7 @@ const PlanetaKio = () => {
                 setShowCarousel={setShowCarousel}
                 refs={{
                     resumen: resumenRef,
-                    peligros: peligrosRef,
+                    peligros: peligrosRef,  
                     beneficios: beneficiosRef
                 }}
             />
