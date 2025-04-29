@@ -55,6 +55,7 @@ const MainContent = ({
         if (isMobile) {
             setNavCollapsed(true);
         }
+        setActiveSection(section);
     }, [isMobile, sectionRefs]);
 
     // Efecto para detectar el scroll
@@ -71,7 +72,7 @@ const MainContent = ({
                     const sectionBottom = sectionTop + ref.current.offsetHeight;
                     
                     if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
-                        setActiveSection(section);
+                        
                         break;
                     }
                 }
