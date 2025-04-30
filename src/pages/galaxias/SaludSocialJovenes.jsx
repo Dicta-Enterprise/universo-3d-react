@@ -26,7 +26,7 @@ export default function EsferaTexturizada() {
 
     const texts = [
         "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA hola- - ",
+        "SEGUNDO PLANETA - - ",
         "TERCER PLANETA - - - ",
         "CUARTO PLANETA - - - - ",
         "QUINTO PLANETA - - - - - ",
@@ -65,7 +65,7 @@ export default function EsferaTexturizada() {
     useEffect(() => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.style.overflow = 'hidden';
@@ -134,8 +134,8 @@ export default function EsferaTexturizada() {
 
             // Agregar luz sutil al planeta (para destacar más)
             const planetLight = new THREE.PointLight(color, 0.6, 50); // Luz con el mismo color
-            planetLight.position.copy(position);
-            scene.add(planetLight);
+            // planetLight.position.copy(position);
+            // scene.add(planetLight);
 
             // Si el planeta tiene anillos, los creamos
             if (rings) {
@@ -161,8 +161,8 @@ export default function EsferaTexturizada() {
 
             // Animación de rotación del planeta sobre su propio eje
             function animatePlanet() {
-                planet.rotation.y += 0.01; // Rota lentamente sobre su eje 0.002
-                planet.rotation.x += 0.01; // Rota lentamente sobre su eje 0.002
+                planet.rotation.y += 0.02; // Rota lentamente sobre su eje 0.002
+                planet.rotation.x += 0.02; // Rota lentamente sobre su eje 0.002
                 requestAnimationFrame(animatePlanet);
             }
             animatePlanet();
@@ -434,110 +434,110 @@ export default function EsferaTexturizada() {
     const ringNebula = createRingNebula(new THREE.Vector3(20, 0, -200), 0x00ff88);
     const vortexNebula = createVortexNebula(new THREE.Vector3(0, 15, -200), 0xff5500);
 
-    // Parámetros modificables para la posición inicial de cada estrella
-    const initialPositionsDesktop = [
-        { x: -17, y: 22, z: -10 }, { x: 12, y: 22, z: -10 }, { x: -12, y: 22, z: -10 },
-        { x: 14, y: 22, z: -10 }, { x: -15, y: 22, z: -10 }, { x: 2, y: 22, z: -10 },
-        { x: -10, y: 22, z: -10 }, { x: 5, y: 22, z: -10 }, { x: -3, y: 22, z: -10 },
-        { x: 8, y: 22, z: -10 }, { x: -6, y: 22, z: -10 }, { x: 17, y: 22, z: -10 }
-    ];
+// Parámetros modificables para la posición inicial de cada estrella
+const initialPositionsDesktop = [
+    { x: -17, y: 22, z: -10 }, { x: 12, y: 22, z: -10 }, { x: -12, y: 22, z: -10 },
+    { x: 14, y: 22, z: -10 }, { x: -15, y: 22, z: -10 }, { x: 2, y: 22, z: -10 },
+    { x: -10, y: 22, z: -10 }, { x: 5, y: 22, z: -10 }, { x: -3, y: 22, z: -10 },
+    { x: 8, y: 22, z: -10 }, { x: -6, y: 22, z: -10 }, { x: 17, y: 22, z: -10 }
+];
 
-    // Posiciones ajustadas para pantallas pequeñas
-    const initialPositionsMobile = [
-        { x: -11, y: 30, z: -30 }, { x: 8, y: 30, z: -30 }, { x: -12, y: 30, z: -30 },
-        { x: 10, y: 30, z: -30 }, { x: -7, y: 30, z: -30 }, { x: 13, y: 30, z: -30 },
-        { x: -5, y: 30, z: -30 }, { x: 3, y: 30, z: -30 }, { x: -2, y: 30, z: -30 },
-        { x: 4, y: 30, z: -30 }, { x: -3, y: 30, z: -30 }, { x: 9, y: 30, z: -30 }
-    ];
+// Posiciones ajustadas para pantallas pequeñas
+const initialPositionsMobile = [
+    { x: -11, y: 30, z: -30 }, { x: 8, y: 30, z: -30 }, { x: -12, y: 30, z: -30 },
+    { x: 10, y: 30, z: -30 }, { x: -7, y: 30, z: -30 }, { x: 13, y: 30, z: -30 },
+    { x: -5, y: 30, z: -30 }, { x: 3, y: 30, z: -30 }, { x: -2, y: 30, z: -30 },
+    { x: 4, y: 30, z: -30 }, { x: -3, y: 30, z: -30 }, { x: 9, y: 30, z: -30 }
+];
 
-    // Lista de estrellas fugaces
-    let shootingStars2 = [];
+// Lista de estrellas fugaces
+let shootingStars2 = [];
 
-    // Función para crear estrellas fugaces de forma responsive
-    function createShootingStars() {
-        // Eliminar las estrellas actuales
-        shootingStars2.forEach(star => scene.remove(star.trail));
-        shootingStars2 = [];  // Vaciar el array
+// Función para crear estrellas fugaces de forma responsive
+function createShootingStars() {
+    // Eliminar las estrellas actuales
+    shootingStars2.forEach(star => scene.remove(star.trail));
+    shootingStars2 = [];  // Vaciar el array
 
-        // Seleccionar dataset según el tamaño de la pantalla
-        const data = window.innerWidth <= 768 ? initialPositionsMobile : initialPositionsDesktop;
+    // Seleccionar dataset según el tamaño de la pantalla
+    const data = window.innerWidth <= 768 ? initialPositionsMobile : initialPositionsDesktop;
 
-        // Crear nuevas estrellas fugaces
-        for (let i = 0; i < data.length; i++) {
-            const trailGeometry = new THREE.CylinderGeometry(0.03, 0.03, window.innerWidth <= 768 ? 5 : 6, 50);
-            const trailMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    colorTop: { value: new THREE.Color(1, 1, 1) },  // Blanco en la punta
-                    colorBottom: { value: new THREE.Color(1, 0.7, 1) },  // Magenta degradado
-                    opacityTop: { value: 0.0 },
-                    opacityBottom: { value: 1 }
-                },
-                vertexShader: `
-                    varying float vY;
-                    void main() {
-                        vY = position.y;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 colorTop;
-                    uniform vec3 colorBottom;
-                    uniform float opacityTop;
-                    uniform float opacityBottom;
-                    varying float vY;
-                    void main() {
-                        float factor = (vY + 5.0) / 10.0;
-                        vec3 color = mix(colorBottom, colorTop, factor);  // Mezclar colores según la altura
-                        float opacity = mix(opacityBottom, opacityTop, factor);
-                        gl_FragColor = vec4(color, opacity);
-                    }
-                `,
-                transparent: true
-            });
+    // Crear nuevas estrellas fugaces
+    for (let i = 0; i < data.length; i++) {
+        const trailGeometry = new THREE.CylinderGeometry(0.03, 0.03, window.innerWidth <= 768 ? 5 : 6, 50);
+        const trailMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                colorTop: { value: new THREE.Color(1, 1, 1) },  // Blanco en la punta
+                colorBottom: { value: new THREE.Color(1, 0.7, 1) },  // Magenta degradado
+                opacityTop: { value: 0.0 },
+                opacityBottom: { value: 1 }
+            },
+            vertexShader: `
+                varying float vY;
+                void main() {
+                    vY = position.y;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 colorTop;
+                uniform vec3 colorBottom;
+                uniform float opacityTop;
+                uniform float opacityBottom;
+                varying float vY;
+                void main() {
+                    float factor = (vY + 5.0) / 10.0;
+                    vec3 color = mix(colorBottom, colorTop, factor);  // Mezclar colores según la altura
+                    float opacity = mix(opacityBottom, opacityTop, factor);
+                    gl_FragColor = vec4(color, opacity);
+                }
+            `,
+            transparent: true
+        });
 
-            const trail = new THREE.Mesh(trailGeometry, trailMaterial);
-            trail.position.set(data[i].x, data[i].y, data[i].z);
-            scene.add(trail);
+        const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+        trail.position.set(data[i].x, data[i].y, data[i].z);
+        scene.add(trail);
 
-            shootingStars2.push({ trail, initialPosition: data[i] });
-        }
+        shootingStars2.push({ trail, initialPosition: data[i] });
+    }
+}
+
+// Llamar a la función al cargar la página
+createShootingStars();
+
+// Escuchar cambios de tamaño de pantalla para actualizar las estrellas fugaces
+window.addEventListener('resize', createShootingStars);
+
+let speed = 0.1;
+let currentStarIndex = 0; // Índice de la estrella actual en movimiento
+
+const animateShootingStar = (index) => {
+    if (index >= shootingStars2.length) {
+        currentStarIndex = 0;
+        animateShootingStar(currentStarIndex);
+        return;
     }
 
-    // Llamar a la función al cargar la página
-    createShootingStars();
+    const { trail, initialPosition } = shootingStars2[index];
 
-    // Escuchar cambios de tamaño de pantalla para actualizar las estrellas fugaces
-    window.addEventListener('resize', createShootingStars);
+    const dropStar = () => {
+        trail.position.y -= speed;
 
-    let speed = 0.1;
-    let currentStarIndex = 0; // Índice de la estrella actual en movimiento
+        if (trail.position.y > -20) {
+            requestAnimationFrame(dropStar);
+        } else {
+            trail.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
 
-    const animateShootingStar = (index) => {
-        if (index >= shootingStars2.length) {
-            currentStarIndex = 0;
-            animateShootingStar(currentStarIndex);
-            return;
+            setTimeout(() => {
+                currentStarIndex++;
+                animateShootingStar(currentStarIndex);
+            }, 500);
         }
-
-        const { trail, initialPosition } = shootingStars2[index];
-
-        const dropStar = () => {
-            trail.position.y -= speed;
-
-            if (trail.position.y > -20) {
-                requestAnimationFrame(dropStar);
-            } else {
-                trail.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
-
-                setTimeout(() => {
-                    currentStarIndex++;
-                    animateShootingStar(currentStarIndex);
-                }, 500);
-            }
-        };
-
-        dropStar();
     };
+
+    dropStar();
+};
 
         // Fin de modificado meteoritos
         // Arrays para almacenar las estrellas fugaces y meteoritos
@@ -752,7 +752,7 @@ export default function EsferaTexturizada() {
             }}
         >
             <BackButton redirectUrl="/jovenes" background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="Explora los Planetas de Salud Social">
+            <DivCentral title="Bienvenidos a la sección de Salud Social">
                 <InfoBox text={texts[currentTextureIndex]} />
             </DivCentral>
             <ControlButtons
