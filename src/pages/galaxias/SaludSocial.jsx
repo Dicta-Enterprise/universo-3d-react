@@ -34,7 +34,7 @@ export default function EsferaTexturizada() {
 
     const texts = [
         "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA Tipo de Riesgo - - o",
+        "SEGUNDO PLANETA Tipo de Riesgo ss- - o",
         "TERCER PLANETA Tipo de Riesgo- - - ",
         "CUARTO PLANETA Tipo de Riesgo- - - - ",
         "QUINTO PLANETA Tipo de Riesgo- - - - - ",
@@ -523,9 +523,9 @@ export default function EsferaTexturizada() {
                 onPrev={() => changeTexture('prev')}
                 onNext={() => changeTexture('next')}
                 onViewMore={() => {
-                    setIsZooming(false); // Activa la animación de zoom
+                    setIsZooming(true); // Activa la animación de zoom
                     setTimeout(() => {
-                        setIsZooming(true); // Desactiva la animación
+                        setIsZooming(false); // Desactiva la animación
                         window.location.href = planetUrls[currentTextureIndex]; // Redirige
                     }, 100); // Ajusta el tiempo según la duración de la animación
                 }}
