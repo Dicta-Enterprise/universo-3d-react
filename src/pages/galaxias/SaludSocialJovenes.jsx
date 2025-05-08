@@ -65,7 +65,7 @@ export default function EsferaTexturizada() {
     useEffect(() => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.style.overflow = 'hidden';
@@ -134,8 +134,8 @@ export default function EsferaTexturizada() {
 
             // Agregar luz sutil al planeta (para destacar más)
             const planetLight = new THREE.PointLight(color, 0.6, 50); // Luz con el mismo color
-            planetLight.position.copy(position);
-            scene.add(planetLight);
+            // planetLight.position.copy(position);
+            // scene.add(planetLight);
 
             // Si el planeta tiene anillos, los creamos
             if (rings) {
@@ -161,8 +161,8 @@ export default function EsferaTexturizada() {
 
             // Animación de rotación del planeta sobre su propio eje
             function animatePlanet() {
-                planet.rotation.y += 0.01; // Rota lentamente sobre su eje 0.002
-                planet.rotation.x += 0.01; // Rota lentamente sobre su eje 0.002
+                planet.rotation.y += 0.02; // Rota lentamente sobre su eje 0.002
+                planet.rotation.x += 0.02; // Rota lentamente sobre su eje 0.002
                 requestAnimationFrame(animatePlanet);
             }
             animatePlanet();
