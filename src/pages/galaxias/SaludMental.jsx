@@ -46,16 +46,16 @@ export default function EsferaTexturizada() {
     ];
 
     const planetUrls = [
-        '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_mer',
-        '/ninos/salud_social/planeta_ven',
-        '/ninos/salud_social/planeta_4',
-        '/ninos/salud_social/planeta_5',
-        '/ninos/salud_social/planeta_6',
-        '/ninos/salud_social/planeta_7',
-        '/ninos/salud_social/planeta_8',
-        '/ninos/salud_social/planeta_9',
-        '/ninos/salud_social/planeta_10',
+        '/ninos/salud_mental/planeta_kio',
+        '/ninos/salud_mental/planeta_mer',
+        '/ninos/salud_mental/planeta_ven',
+        '/ninos/salud_mental/planeta_4',
+        '/ninos/salud_mental/planeta_5',
+        '/ninos/salud_mental/planeta_6',
+        '/ninos/salud_mental/planeta_7',
+        '/ninos/salud_mental/planeta_8',
+        '/ninos/salud_mental/planeta_9',
+        '/ninos/salud_mental/planeta_10',
     ];
 
     const changeTexture = (direction) => {

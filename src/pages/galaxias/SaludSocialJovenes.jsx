@@ -39,8 +39,8 @@ export default function EsferaTexturizada() {
 
     const planetUrls = [
         '/jovenes/salud_social/planeta_kio',
-        '/jovenes/salud_social/planeta_2',
-        '/jovenes/salud_social/planeta_3',
+        '/jovenes/salud_social/planeta_mer',
+        '/jovenes/salud_social/planeta_ven',
         '/jovenes/salud_social/planeta_4',
         '/jovenes/salud_social/planeta_5',
         '/jovenes/salud_social/planeta_6',

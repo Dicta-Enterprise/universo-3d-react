@@ -19,7 +19,18 @@ import PeligrosDigitalesPadres from './pages/galaxias/PeligrosDigitalesPadres';
 import PlanetaKio from './pages/galaxias/SaludSocial/PlanetaKio';
 import PlanetaMer from './pages/galaxias/SaludSocial/PlanetaMer';
 import PlanetaVen from './pages/galaxias/SaludSocial/PlanetaVen';
-
+import PlanetaKioSM from './pages/galaxias/SaludMental/PlanetaKioSM';
+import PlanetaMerSM from './pages/galaxias/SaludMental/PlanetaMerSM';
+import PlanetaVenSM from './pages/galaxias/SaludMental/PlanetaVenSM';
+import PlanetaKioSF from './pages/galaxias/SaludFisica/PlanetaKioSF';
+import PlanetaMerSF from './pages/galaxias/SaludFisica/PlanetaMerSF';
+import PlanetaVenSF from './pages/galaxias/SaludFisica/PlanetaVenSF';
+import PlanetaKioPD from './pages/galaxias/PeligrosDigitales/PlanetaKioPD';
+import PlanetaMerPD from './pages/galaxias/PeligrosDigitales/PlanetaMerPD';
+import PlanetaVenPD from './pages/galaxias/PeligrosDigitales/PlanetaVenPD';
+import PlanetaKioPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaKioPadresSS';
+import PlanetaMerPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaMerPadresSS';
+import PlanetaVenPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaVenPadresSS';
 
 function App() {
     return (
@@ -45,6 +56,28 @@ function App() {
                 <Route path="/ninos/salud_social/planeta_kio" element={<PlanetaKio />} />
                 <Route path="/ninos/salud_social/planeta_mer" element={<PlanetaMer />} />
                 <Route path="/ninos/salud_social/planeta_ven" element={<PlanetaVen />} />
+
+                <Route path="/ninos/salud_mental/planeta_kio" element={<PlanetaKioSM />} />
+                <Route path="/ninos/salud_mental/planeta_mer" element={<PlanetaMerSM />} />
+                <Route path="/ninos/salud_mental/planeta_ven" element={<PlanetaVenSM />} />
+
+                <Route path="/ninos/salud_fisica/planeta_kio" element={<PlanetaKioSF />} />
+                <Route path="/ninos/salud_fisica/planeta_mer" element={<PlanetaMerSF />} />
+                <Route path="/ninos/salud_fisica/planeta_ven" element={<PlanetaVenSF />} />
+
+                <Route path="/ninos/peligros_digitales/planeta_kio" element={<PlanetaKioPD />} />
+                <Route path="/ninos/peligros_digitales/planeta_mer" element={<PlanetaMerPD />} />
+                <Route path="/ninos/peligros_digitales/planeta_ven" element={<PlanetaVenPD />} />
+
+
+
+
+
+
+                <Route path="/padres/salud_social/planeta_kio" element={<PlanetaKioPadresSS />} />
+                <Route path="/padres/salud_social/planeta_mer" element={<PlanetaMerPadresSS />} />
+                <Route path="/padres/salud_social/planeta_ven" element={<PlanetaVenPadresSS />} />
+
 
 
 

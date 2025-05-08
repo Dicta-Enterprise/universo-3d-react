@@ -24,16 +24,16 @@ const PlanetaKio = () => {
 
     // URLs de los planetas
     const planetUrls = [
-        '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_mer',
-        '/ninos/salud_social/planeta_ven',
-        '/ninos/salud_social/planeta_4',
-        '/ninos/salud_social/planeta_5',
-        '/ninos/salud_social/planeta_6',
-        '/ninos/salud_social/planeta_7',
-        '/ninos/salud_social/planeta_8',
-        '/ninos/salud_social/planeta_9',
-        '/ninos/salud_social/planeta_10',
+        '/ninos/salud_fisica/planeta_kio',
+        '/ninos/salud_fisica/planeta_mer',
+        '/ninos/salud_fisica/planeta_ven',
+        '/ninos/salud_fisica/planeta_4',
+        '/ninos/salud_fisica/planeta_5',
+        '/ninos/salud_fisica/planeta_6',
+        '/ninos/salud_fisica/planeta_7',
+        '/ninos/salud_fisica/planeta_8',
+        '/ninos/salud_fisica/planeta_9',
+        '/ninos/salud_fisica/planeta_10',
     ];
 
     // Rutas de las imágenes
@@ -145,7 +145,7 @@ const PlanetaKio = () => {
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
+            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_fisica" background= {'none'}/>
             <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
             <MainContent
                 isMobile={isMobile}
