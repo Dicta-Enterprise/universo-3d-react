@@ -38,16 +38,16 @@ export default function EsferaTexturizada() {
     ];
 
     const planetUrls = [
-        '/padres/salud_social/planeta_kio',
-        '/padres/salud_social/planeta_2',
-        '/padres/salud_social/planeta_3',
-        '/padres/salud_social/planeta_4',
-        '/padres/salud_social/planeta_5',
-        '/ninos/salud_social/planeta_6',
-        '/ninos/salud_social/planeta_7',
-        '/ninos/salud_social/planeta_8',
-        '/ninos/salud_social/planeta_9',
-        '/ninos/salud_social/planeta_10',
+        '/padres/peligros_digitales/planeta_kio',
+        '/padres/peligros_digitales/planeta_2',
+        '/padres/peligros_digitales/planeta_3',
+        '/padres/peligros_digitales/planeta_4',
+        '/padres/peligros_digitales/planeta_5',
+        '/padres/peligros_digitales/planeta_6',
+        '/padres/peligros_digitales/planeta_7',
+        '/padres/peligros_digitales/planeta_8',
+        '/padres/peligros_digitales/planeta_9',
+        '/padres/peligros_digitales/planeta_10',
     ];
 
     const changeTexture = (direction) => {
