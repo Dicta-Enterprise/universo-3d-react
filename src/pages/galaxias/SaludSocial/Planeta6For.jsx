@@ -41,10 +41,10 @@ const Planeta6For = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "SEXUS";
+  const planetaNombre = "FORS";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta SEXUS, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta FORS, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
