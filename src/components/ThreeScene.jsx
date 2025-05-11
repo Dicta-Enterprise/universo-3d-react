@@ -4,12 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+
+
 
 export default function ThreeScene({ onLoad }) {
     const navigate = useNavigate();
 
     useEffect(() => {
- 
+
         // Crea la escena, cámara y renderizador
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -17,46 +20,46 @@ export default function ThreeScene({ onLoad }) {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
-        
+
         // Fondo espacial
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
         scene.background = spaceTexture;
-        
+
         // Crea la esfera (planeta) con la textura de la Tierra
         const planetTexture = new THREE.TextureLoader().load('/assets/earthx5400x2700.jpg');
         const planetGeometry = new THREE.SphereGeometry(1, 32, 32);
         const planetMaterial = new THREE.MeshStandardMaterial({ map: planetTexture });
         const planet = new THREE.Mesh(planetGeometry, planetMaterial);
         scene.add(planet);
-        
+
         // Añade luz para que el planeta sea visible
-        
+
         // const light = new THREE.PointLight(0xffffff, 1.5, 150); // Aumenta la intensidad y el alcance
-        
+
         // Luz principal (simula el sol)
-        
+
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5); // Aumenta la intensidad y el alcance
         directionalLight.position.set(3, 3, 3); // Ubica la luz en una posición lejana y diagonal al planeta
         scene.add(directionalLight);
-        
+
         // Luz ambiental para rellenar sombras
-         const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Luz suave en todo el ambiente
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Luz suave en todo el ambiente
         // scene.add(ambientLight);
-        
-         const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x333333, 0.9); // Azul cielo y gris oscuro para el suelo
+
+        const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x333333, 0.9); // Azul cielo y gris oscuro para el suelo
         // scene.add(hemisphereLight);
-        
+
         // Posición inicial de la cámara
         camera.position.z = 3;
 
         // Función de animación para rotar el planeta
         //function animate() {
-          //  requestAnimationFrame(animate);
-           // planet.rotation.y += 0.004;  // Rotación del planeta sobre su eje Y
-            //renderer.render(scene, camera);
+        //  requestAnimationFrame(animate);
+        // planet.rotation.y += 0.004;  // Rotación del planeta sobre su eje Y
+        //renderer.render(scene, camera);
         //}
-        
-        
+
+
         // Cargar el modelo del astronauta (usando GLTFLoader)
         /*const loader = new GLTFLoader();
         let astronaut;
@@ -98,7 +101,7 @@ export default function ThreeScene({ onLoad }) {
             }
         }
         */
-        
+
         /*// Crear el platillo volador
         const ufoGroup = new THREE.Group();
         
@@ -154,16 +157,16 @@ export default function ThreeScene({ onLoad }) {
                 ufoGroup.position.set(0, 1, -10); // Reiniciar posición
             }
         }*/
-        
+
         const loader2 = new OBJLoader();
         let ufo; // Variable para el platillo
-        
+
         // Cargar el modelo del platillo
         loader2.load(
             '/assets/platillo/UFO.obj', // Ruta del modelo
             function (object) {
                 ufo = object;
-        
+
                 // Posición inicial del platillo fuera de la cámara, en el lado derecho
                 ufo.position.set(30, 0, -50); // Posición inicial: a la derecha (X positivo) y lejos en Z
                 ufo.scale.set(0.5, 0.5, 0.5); // Ajustar el tamaño si es necesario
@@ -179,7 +182,7 @@ export default function ThreeScene({ onLoad }) {
                 console.error('Error cargando el platillo:', error);
             }
         );
-        
+
         // Variables para el movimiento y escala del platillo
         let ufoSpeedZ = 0.1;     // Velocidad en Z (hacia adelante)
         let ufoSpeedX = -0.05;   // Velocidad en X (hacia el centro)
@@ -189,21 +192,21 @@ export default function ThreeScene({ onLoad }) {
         const endZUFO = 10;      // Posición final en Z (cerca de la cámara)
         let startScaleUFO = 0.2; // Escala inicial del platillo
         let endScaleUFO = 1.0;   // Escala final del platillo
-        
+
         // Animación del platillo
         function animateUFO() {
             if (ufo) {
                 // Mover el platillo hacia adelante en el eje Z
                 ufo.position.z += ufoSpeedZ;
-        
+
                 // Mover el platillo desde la derecha hacia el centro en el eje X
                 ufo.position.x += ufoSpeedX;
-        
+
                 // Interpolación para hacer que la escala crezca a medida que el platillo se acerca
                 let progressZ = (ufo.position.z - startZUFO) / (endZUFO - startZUFO);
                 let scale = startScaleUFO + (endScaleUFO - startScaleUFO) * progressZ;
                 ufo.scale.set(scale, scale, scale); // Ajustar la escala en todos los ejes
-        
+
                 // Si el platillo pasa la posición final, reiniciar su posición y escala
                 if (ufo.position.z > endZUFO) {
                     ufo.position.set(startXUFO, 0, startZUFO); // Reiniciar posición (derecha y lejos)
@@ -211,15 +214,15 @@ export default function ThreeScene({ onLoad }) {
                 }
             }
         }
-        
-        
-        
-        
+
+
+
+
         // **Partículas**
         const particlesGroup = new THREE.Group(); // Crear un grupo para las partículas
         const sphereCount = 900; // Número de partículas
         const particles = []; // Arreglo para almacenar las partículas
-        
+
         for (let i = 0; i < sphereCount; i++) {
             const geometry = new THREE.SphereGeometry(0.1, 8, 8); // Pequeñas esferas como partículas
             const material = new THREE.MeshBasicMaterial({
@@ -236,9 +239,9 @@ export default function ThreeScene({ onLoad }) {
             particles.push(particle); // Agregar la partícula al arreglo
             particlesGroup.add(particle); // Agregar al grupo de partículas
         }
-        
+
         scene.add(particlesGroup); // Agregar las partículas a la escena principal
-        
+
         // **Animación de las Partículas**
         function animateParticles() {
             particles.forEach((particle) => {
@@ -253,53 +256,53 @@ export default function ThreeScene({ onLoad }) {
                 particle.material.opacity = Math.random() * 0.7 + 0.3;
             });
         }
-        
-        
+
+
         // Cargar el modelo 3D del meteorito
         const loader1 = new GLTFLoader();
         let meteorite;
-        
+
         // Cargar el modelo del meteorito
-        loader1.load('/assets/meteor/meteor.glb', function(gltf) {
+        loader1.load('/assets/meteor/meteor.glb', function (gltf) {
             meteorite = gltf.scene;
-            
+
             // Posición inicial del meteorito fuera de la cámara, en el lado izquierdo
             meteorite.position.set(-30, 0, -50);  // Lejos de la cámara en Z
             scene.add(meteorite);
-        }, 
-        function (xhr) {
-            // Monitoreo del progreso de carga
-            console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-        }, 
-        function (error) {
-            // Muestra cualquier error que ocurra
-            console.error('Error cargando el meteorito: ', error);
-        });
-        
+        },
+            function (xhr) {
+                // Monitoreo del progreso de carga
+                console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+            },
+            function (error) {
+                // Muestra cualquier error que ocurra
+                console.error('Error cargando el meteorito: ', error);
+            });
+
         // Posición inicial de la cámara
         camera.position.z = 3;
-        
+
         // Velocidades de movimiento
         let meteoriteSpeed = 0.1;  // Velocidad del meteorito
-        
+
         // Rango del movimiento en el eje Z
         const startZ = -50;  // Posición inicial en Z (lejos de la cámara)
         const endZ = 10;     // Posición final en Z (cerca de la cámara)
-        
+
         // Variables para controlar la escala del meteorito
         let startScale = 0.1;  // Escala inicial del meteorito (pequeño)
         let endScale = 5.0;    // Escala final del meteorito (grande)
-        
+
         function animateMeteorite() {
             if (meteorite) {
                 // Mover el meteorito hacia adelante en el eje Z
                 meteorite.position.z += meteoriteSpeed;
-        
+
                 // Interpolación para hacer que la escala crezca a medida que el meteorito se acerca
                 let progress = (meteorite.position.z - startZ) / (endZ - startZ);
                 let scale = startScale + (endScale - startScale) * progress;
                 meteorite.scale.set(scale, scale, scale);  // Ajustar la escala en todos los ejes
-        
+
                 // Si el meteorito pasa la posición final, reiniciar su posición y escala
                 if (meteorite.position.z > endZ) {
                     meteorite.position.z = startZ;
@@ -307,7 +310,7 @@ export default function ThreeScene({ onLoad }) {
                 }
             }
         }
-        
+
         /*Crear la estrella fugaz
         const starGeometry = new THREE.SphereGeometry(0.04, 30, 30);
         const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -347,61 +350,369 @@ export default function ThreeScene({ onLoad }) {
         
         */
         const rockets = [];
+        const moons = []; // Array para almacenar las lunas
 
-        function createRocket(position, index) {
-            const rocketGroup = new THREE.Group();
+        function createMoon(position, index) {
+            const loader = new GLTFLoader();
+            const moonGroup = new THREE.Group();
 
-            // Geometría y material del cuerpo del cohete
-            const bodyGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
-            const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-            rocketGroup.add(body);
+            loader.load(
+                '/assets/moon/scene.gltf',
+                function (gltf) {
+                    const moon = gltf.scene;
+                    
+                    // Ajustar la escala de la luna según el dispositivo
+                    const isMobile = window.innerWidth <= 768;
+                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                    
+                    if (isMobile) {
+                        moon.scale.set(0.3, 0.3, 0.3);
+                    } else if (isTablet) {
+                        moon.scale.set(0.4, 0.4, 0.4);
+                    } else {
+                        moon.scale.set(0.1, 0.1, 0.1);
+                    }
 
-            // Nariz del cohete
-            const noseGeometry = new THREE.ConeGeometry(0.1, 0.3, 32);
-            const noseMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
-            nose.position.y = 0.65;
-            rocketGroup.add(nose);
+                    // Añadir material con efecto de resplandor
+                    moon.traverse((child) => {
+                        if (child.isMesh) {
+                            const material = new THREE.MeshStandardMaterial({
+                                ...child.material,
+                                emissive: new THREE.Color(0xf4e99b), // Color cálido para la luna
+                                emissiveIntensity: 0.2,
+                                roughness: 0.8,
+                                metalness: 0.2
+                            });
+                            child.material = material;
+                        }
+                    });
 
-            // Aletas del cohete
-            const finGeometry = new THREE.BoxGeometry(0.05, 0.2, 0.05);
-            const finMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
-            for (let i = 0; i < 3; i++) {
-                const fin = new THREE.Mesh(finGeometry, finMaterial);
-                fin.position.set(
-                    Math.cos((i * Math.PI * 2) / 3) * 0.2,
-                    -0.5,
-                    Math.sin((i * Math.PI * 2) / 3) * 0.2
-                );
-                fin.rotation.y = (i * Math.PI * 2) / 3;
-                rocketGroup.add(fin);
-            }
+                    // Crear luz para la luna
+                    const moonLight = new THREE.PointLight(0xf4e99b, 1, 10);
+                    moonLight.position.set(0, 0, 0);
+                    moonGroup.add(moonLight);
 
-            // Ajustar posición de los cohetes según el dispositivo
-            const isMobile = window.innerWidth <= 712;
-            if (isMobile) {
-                const yOffset = 0.4; // Ajuste progresivo en Y
-                rocketGroup.position.set(
-                    0, // X fijo para móvil
-                    position.y - index * yOffset, // Ajuste progresivo en Y basado en el índice
-                    position.z + index * 1.5 // Z ajustado para espaciamiento
-                );
-            } else {
-                rocketGroup.position.set(position.x, position.y, position.z);
-            }
+                    moonGroup.add(moon);
+                    scene.add(moonGroup);
+                    moons.push(moonGroup);
 
-
-            // Asociar URL y agregar al grupo
-            rocketGroup.userData.url = position.url;
-            scene.add(rocketGroup);
-            rockets.push(rocketGroup);
+                    // Configurar parámetros de órbita
+                    moonGroup.userData.orbitRadius = 2.5; // Radio de la órbita
+                    moonGroup.userData.orbitSpeed = 0.01; // Velocidad de la órbita
+                    moonGroup.userData.orbitAngle = index * (Math.PI * 2 / 3); // Ángulo inicial (distribuido)
+                    moonGroup.userData.orbitHeight = 0.5; // Altura de la órbita
+                },
+                undefined,
+                function (error) {
+                    console.error('Error al cargar el modelo de la luna:', error);
+                }
+            );
         }
 
-        // Crear cohetes con posiciones específicas
-        createRocket({ x: -1.5, y: -0.6, z: 5, url: '/ninos' }, 0);
+        // Función para animar la órbita de las lunas
+        function animateMoons() {
+            moons.forEach((moon, index) => {
+                if (moon.userData.orbitRadius) {
+                    // Actualizar ángulo de órbita
+                    moon.userData.orbitAngle += moon.userData.orbitSpeed;
+                    
+                    // Calcular nueva posición
+                    const x = Math.cos(moon.userData.orbitAngle) * moon.userData.orbitRadius;
+                    const z = Math.sin(moon.userData.orbitAngle) * moon.userData.orbitRadius;
+                    const y = moon.userData.orbitHeight;
+                    
+                    // Aplicar posición
+                    moon.position.set(x, y, z);
+                    
+                    // Hacer que la luna mire hacia el planeta
+                    moon.lookAt(0, 0, 0);
+                }
+            });
+        }
+
+        function createRocket(position, index) {
+            const loader = new GLTFLoader();
+            const rocketGroup = new THREE.Group();
+
+            loader.load(
+                '/assets/cohete/scene.gltf',
+                function (gltf) {
+                    const rocket = gltf.scene;
+                    
+                    // Ajustar la escala del cohete según el dispositivo
+                    const isMobile = window.innerWidth <= 768;
+                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                    
+                    if (isMobile) {
+                        rocket.scale.set(5, 5, 5);
+                    } else if (isTablet) {
+                        rocket.scale.set(4, 4, 4);
+                    } else {
+                        rocket.scale.set(5, 5, 5);
+                    }
+                    
+                    // Ajustar la rotación inicial
+                    rocket.rotation.y = Math.PI;
+
+                    // Agregar efecto de resplandor y materiales interactivos
+                    rocket.traverse((child) => {
+                        if (child.isMesh) {
+                            const material = new THREE.MeshStandardMaterial({
+                                ...child.material,
+                                emissive: new THREE.Color(0x000000),
+                                emissiveIntensity: 0
+                            });
+                            child.material = material;
+                            child.userData.originalColor = material.color.clone();
+                        }
+                    });
+                    
+                    // Ajustar posición de los cohetes según el dispositivo
+                    if (isMobile) {
+                        const yOffset = 0.4;
+                        rocketGroup.position.set(
+                            0,
+                            position.y - index * yOffset,
+                            position.z + index * 1.5
+                        );
+                    } else if (isTablet) {
+                        const xOffset = 1.5;
+                        rocketGroup.position.set(
+                            position.x * xOffset,
+                            position.y,
+                            position.z
+                        );
+                    } else {
+                        rocketGroup.position.set(position.x, position.y, position.z);
+                    }
+
+                    // Agregar un bounding box para mejorar la detección de clics
+                    const box = new THREE.Box3().setFromObject(rocket);
+                    const helper = new THREE.Box3Helper(box, 0xffff00);
+                    helper.visible = false;
+                    rocketGroup.add(helper);
+
+                    rocketGroup.add(rocket);
+                    scene.add(rocketGroup);
+                    rockets.push(rocketGroup);
+
+                    rocketGroup.userData.url = position.url;
+                    rocketGroup.userData.isHovered = false;
+                },
+                undefined,
+                function (error) {
+                    console.error('Error al cargar el modelo del cohete:', error);
+                }
+            );
+        }
+
+        // Crear cohetes y sus lunas correspondientes
+        createRocket({ x: -1, y: -0.6, z: 5, url: '/ninos' }, 0);
+        //createMoon({ x: -1, y: -0.6, z: 5 }, 0);
+        
         createRocket({ x: 0, y: -0.6, z: 5, url: '/jovenes' }, 1);
-        createRocket({ x: 1.5, y: -0.6, z: 5, url: '/padres' }, 2);
+        createMoon({ x: 0, y: -0.6, z: 5 }, 1);
+        
+        createRocket({ x: 1, y: -0.6, z: 5, url: '/padres' }, 2);
+        //createMoon({ x: 1, y: -0.6, z: 5 }, 2);
+
+        // Raycaster para detección de clics
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Función para manejar el hover
+        function handleHover(event) {
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects([...rockets, ...moons], true);
+
+            // Resetear todos los cohetes y lunas
+            rockets.forEach(rocket => {
+                if (rocket.userData.isHovered) {
+                    rocket.traverse(child => {
+                        if (child.isMesh && child.userData.originalColor) {
+                            child.material.color.copy(child.userData.originalColor);
+                            child.material.transparent = false;
+                            child.material.opacity = 1;
+                            child.material.emissiveIntensity = 0;
+                        }
+                    });
+                    rocket.userData.isHovered = false;
+                }
+            });
+
+            moons.forEach(moon => {
+                moon.traverse(child => {
+                    if (child.isMesh) {
+                        child.material.emissiveIntensity = 0.2;
+                    }
+                });
+            });
+
+            // Resaltar el objeto hover
+            if (intersects.length > 0) {
+                const object = intersects[0].object.parent;
+                if (rockets.includes(object)) {
+                    // Es un cohete
+                    object.traverse(child => {
+                        if (child.isMesh && child.userData.originalColor) {
+                            child.material.color.setHex(0xffffff);
+                            child.material.transparent = true;
+                            child.material.opacity = 1;
+                            child.material.emissiveIntensity = isMobile ? 0.8 : (isTablet ? 0.6 : 0.5);
+                        }
+                    });
+                    object.userData.isHovered = true;
+                } else if (moons.includes(object)) {
+                    // Es una luna
+                    object.traverse(child => {
+                        if (child.isMesh) {
+                            child.material.emissiveIntensity = 0.8;
+                        }
+                    });
+                }
+                document.body.style.cursor = 'pointer';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        // Función para manejar clics
+        function handleClick(event) {
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(rockets, true);
+
+            if (intersects.length > 0) {
+                const rocket = intersects[0].object.parent;
+                
+                // Efecto visual al hacer clic
+                rocket.traverse(child => {
+                    if (child.isMesh) {
+                        const originalScale = child.scale.clone();
+                        const scaleFactor = isMobile ? 1.3 : (isTablet ? 1.25 : 1.2);
+                        child.scale.multiplyScalar(scaleFactor);
+                        setTimeout(() => {
+                            child.scale.copy(originalScale);
+                        }, 200);
+                    }
+                });
+
+                // Remover cualquier popup existente
+                const existingPopup = document.querySelector('.rocket-popup');
+                if (existingPopup) {
+                    document.body.removeChild(existingPopup);
+                }
+
+                // Crear y mostrar el popup
+                const popup = document.createElement('div');
+                popup.className = 'rocket-popup';
+                popup.style.cssText = `
+                    position: fixed;
+                    top: 80%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.95);
+                    padding: 30px;
+                    border: 3px solid white;
+                    border-radius: 15px;
+                    color: white;
+                    text-align: center;
+                    z-index: 1000;
+                    min-width: 300px;
+                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+                    font-family: Arial, sans-serif;
+                `;
+
+                const message = document.createElement('p');
+                message.textContent = `¿Deseas ir a ${rocket.userData.url === '/ninos' ? 'Niños' : rocket.userData.url === '/jovenes' ? 'Jóvenes' : 'Padres'}?`;
+                message.style.cssText = `
+                    margin-bottom: 25px;
+                    font-size: 1.2em;
+                    color: #FF746C;
+                `;
+                popup.appendChild(message);
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.cssText = `
+                    display: flex;
+                    justify-content: center;
+                    gap: 15px;
+                `;
+
+                const acceptButton = document.createElement('button');
+                acceptButton.textContent = 'Aceptar';
+                acceptButton.style.cssText = `
+                    padding: 10px 25px;
+                    background: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background 0.3s;
+                `;
+                acceptButton.onmouseover = () => {
+                    acceptButton.style.background = '#45a049';
+                };
+                acceptButton.onmouseout = () => {
+                    acceptButton.style.background = '#4CAF50';
+                };
+                acceptButton.onclick = () => {
+                    document.body.removeChild(popup);
+                    window.location.href = rocket.userData.url;
+                };
+
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancelar';
+                cancelButton.style.cssText = `
+                    padding: 10px 25px;
+                    background: #f44336;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 1em;
+                    transition: background 0.3s;
+                `;
+                cancelButton.onmouseover = () => {
+                    cancelButton.style.background = '#da190b';
+                };
+                cancelButton.onmouseout = () => {
+                    cancelButton.style.background = '#f44336';
+                };
+                cancelButton.onclick = () => {
+                    document.body.removeChild(popup);
+                };
+
+                buttonContainer.appendChild(acceptButton);
+                buttonContainer.appendChild(cancelButton);
+                popup.appendChild(buttonContainer);
+
+                document.body.appendChild(popup);
+            }
+        }
+
+        // Agregar event listeners
+        window.addEventListener('mousemove', handleHover);
+        window.addEventListener('click', handleClick);
+        // Agregar soporte para toques en dispositivos móviles
+        window.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            const clickEvent = new MouseEvent('click', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            handleClick(clickEvent);
+        });
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -420,10 +731,14 @@ export default function ThreeScene({ onLoad }) {
             camera.position.y = cameraStartY + progress * (cameraEndY - cameraStartY);
         
             // Mostrar los cohetes progresivamente
-            const isMobile = window.innerWidth <= 712;
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
                     const threshold = maxScrollY * (0.3 + index * 0.1); // Más escalonado en móvil
+                    rocket.visible = scrollY > threshold;
+                } else if (isTablet) {
+                    const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
                     rocket.visible = scrollY > threshold;
                 } else {
                     const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
@@ -435,42 +750,146 @@ export default function ThreeScene({ onLoad }) {
             isScrolling = false;
         }
         
+        // Escuchar el evento de scroll
+        let isInRocketSection = false;
 
-        // Escuchar el evento de scroll// Variable para saber si ya se ha desplazado a la sección de las naves
-    let isInRocketSection = false;
-
-    // Función para ocultar el planeta y mostrar los cohetes
-    function handleScroll() {
-        const scrollY = window.scrollY;
-
-        // Verifica si el scroll ha llegado a la sección de las naves
-        if (scrollY > 500 && !isInRocketSection) {  // Ajusta el valor de scrollY según tu página
-            isInRocketSection = true;
-
-            // Inicia la desaparición del planeta
-            planet.material.transparent = true;
-            planet.material.opacity = 1;
-
-            const fadeOutPlanet = () => {
-                if (planet.material.opacity > 0) {
-                    planet.material.opacity -= 0.05;
-                    requestAnimationFrame(fadeOutPlanet);
-                } else {
-                    planet.visible = false;
+        // Modificar handleScroll para ocultar/mostrar el sol y las lunas igual que el planeta
+        function handleScroll() {
+            const scrollY = window.scrollY;
+            // Verifica si el scroll ha llegado a la sección de las naves
+            if (scrollY > 500 && !isInRocketSection) {
+                isInRocketSection = true;
+                // Inicia la desaparición del planeta
+                planet.material.transparent = true;
+                planet.material.opacity = 1;
+                const fadeOutPlanet = () => {
+                    if (planet.material.opacity > 0) {
+                        planet.material.opacity -= 0.05;
+                        requestAnimationFrame(fadeOutPlanet);
+                    } else {
+                        planet.visible = false;
+                    }
+                };
+                fadeOutPlanet();
+                // --- Fade out del sol ---
+                if (sunGroup) {
+                    sunGroup.traverse((child) => {
+                        if (child.material && 'opacity' in child.material) {
+                            child.material.transparent = true;
+                            child.material.opacity = 1;
+                        }
+                    });
+                    const fadeOutSun = () => {
+                        let anyVisible = false;
+                        sunGroup.traverse((child) => {
+                            if (child.material && 'opacity' in child.material) {
+                                if (child.material.opacity > 0) {
+                                    child.material.opacity -= 0.05;
+                                    anyVisible = true;
+                                } else {
+                                    child.material.opacity = 0;
+                                }
+                            }
+                        });
+                        if (anyVisible) {
+                            requestAnimationFrame(fadeOutSun);
+                        } else {
+                            sunGroup.visible = false;
+                        }
+                    };
+                    fadeOutSun();
                 }
-            };
-
-            fadeOutPlanet();
+                // --- Fade out de las lunas ---
+                moons.forEach((moonGroup) => {
+                    moonGroup.traverse((child) => {
+                        if (child.material && 'opacity' in child.material) {
+                            child.material.transparent = true;
+                            child.material.opacity = 1;
+                        }
+                    });
+                    const fadeOutMoon = () => {
+                        let anyVisible = false;
+                        moonGroup.traverse((child) => {
+                            if (child.material && 'opacity' in child.material) {
+                                if (child.material.opacity > 0) {
+                                    child.material.opacity -= 0.05;
+                                    anyVisible = true;
+                                } else {
+                                    child.material.opacity = 0;
+                                }
+                            }
+                        });
+                        if (anyVisible) {
+                            requestAnimationFrame(fadeOutMoon);
+                        } else {
+                            moonGroup.visible = false;
+                        }
+                    };
+                    fadeOutMoon();
+                });
+            }
+            // Restaurar el planeta, el sol y las lunas cuando el scroll vuelva a la parte superior
+            if (scrollY < 500 && isInRocketSection) {
+                isInRocketSection = false;
+                planet.visible = true;
+                planet.material.opacity = 1;
+                // --- Fade in del sol ---
+                if (sunGroup) {
+                    sunGroup.visible = true;
+                    sunGroup.traverse((child) => {
+                        if (child.material && 'opacity' in child.material) {
+                            child.material.opacity = 0;
+                            child.material.transparent = true;
+                        }
+                    });
+                    const fadeInSun = () => {
+                        let anyFading = false;
+                        sunGroup.traverse((child) => {
+                            if (child.material && 'opacity' in child.material) {
+                                if (child.material.opacity < 1) {
+                                    child.material.opacity += 0.05;
+                                    anyFading = true;
+                                } else {
+                                    child.material.opacity = 1;
+                                }
+                            }
+                        });
+                        if (anyFading) {
+                            requestAnimationFrame(fadeInSun);
+                        }
+                    };
+                    fadeInSun();
+                }
+                // --- Fade in de las lunas ---
+                moons.forEach((moonGroup) => {
+                    moonGroup.visible = true;
+                    moonGroup.traverse((child) => {
+                        if (child.material && 'opacity' in child.material) {
+                            child.material.opacity = 0;
+                            child.material.transparent = true;
+                        }
+                    });
+                    const fadeInMoon = () => {
+                        let anyFading = false;
+                        moonGroup.traverse((child) => {
+                            if (child.material && 'opacity' in child.material) {
+                                if (child.material.opacity < 1) {
+                                    child.material.opacity += 0.05;
+                                    anyFading = true;
+                                } else {
+                                    child.material.opacity = 1;
+                                }
+                            }
+                        });
+                        if (anyFading) {
+                            requestAnimationFrame(fadeInMoon);
+                        }
+                    };
+                    fadeInMoon();
+                });
+            }
         }
-
-        // Restaurar el planeta cuando el scroll vuelva a la parte superior (opcional)
-        if (scrollY < 500 && isInRocketSection) {
-            isInRocketSection = false;
-            planet.visible = true;
-            planet.material.opacity = 1;  // Restaurar la visibilidad
-        }
-    }
-    
+        
         window.addEventListener('scroll', () => {
             scrollY = window.scrollY;
             handleScroll();
@@ -480,34 +899,79 @@ export default function ThreeScene({ onLoad }) {
                 requestAnimationFrame(updateOnScroll);
             }
         });
-        
 
-        // Manejar clics en los cohetes
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        // Crear el sol
+        let sunGroup = null; // Referencia global al grupo del sol
+        function createSun() {
+            sunGroup = new THREE.Group();
+            const loader = new GLTFLoader();
 
-        window.addEventListener('click', (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            loader.load(
+                '/assets/sun/scene.gltf',
+                function (gltf) {
+                    const sun = gltf.scene;
+                    
+                    // Ajustar la escala del sol según el dispositivo
+                    const isMobile = window.innerWidth <= 768;
+                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                    
+                    if (isMobile) {
+                        sun.scale.set(0.05, 0.05, 0.05);
+                    } else if (isTablet) {
+                        sun.scale.set(0.1, 0.1, 0.1);
+                    } else {
+                        sun.scale.set(0.2, 0.2, 0.2);
+                    }
 
-            raycaster.setFromCamera(mouse, camera);
+                    // Añadir material con efecto de resplandor
+                    sun.traverse((child) => {
+                        if (child.isMesh) {
+                            const material = new THREE.MeshStandardMaterial({
+                                ...child.material,
+                                emissive: new THREE.Color(0xffd700), // Color dorado
+                                emissiveIntensity: 1.0,
+                                roughness: 0.2,
+                                metalness: 0.8,
+                                transparent: true,
+                                opacity: 1
+                            });
+                            child.material = material;
+                        }
+                    });
 
-            const intersects = raycaster.intersectObjects(rockets, true);
-            if (intersects.length > 0) {
-                const clickedRocket = intersects[0].object.parent;
-                if (clickedRocket.userData.url) {
-                    window.location.href = clickedRocket.userData.url;
+                    // Crear luz para el sol
+                    const sunLight = new THREE.PointLight(0xffd700, 2, 50);
+                    sunLight.position.set(0, 0, 0);
+                    sunGroup.add(sunLight);
+
+                    // Posicionar el sol en la esquina superior derecha
+                    if (isMobile) {
+                        sunGroup.position.set(5, 3, -10);
+                    } else if (isTablet) {
+                        sunGroup.position.set(8, 4, -15);
+                    } else {
+                        sunGroup.position.set(10, 5, -20);
+                    }
+
+                    sunGroup.add(sun);
+                    scene.add(sunGroup);
+                },
+                undefined,
+                function (error) {
+                    console.error('Error al cargar el modelo del sol:', error);
                 }
-            }
-        });
+            );
+        }
 
-        // Animación general
+        // Crear el sol
+        createSun();
+
+        // Modificar la función animate para eliminar la animación del sol
         function animate() {
             requestAnimationFrame(animate);
             planet.rotation.y += 0.004;
-
+            animateMoons();
             animateUFO();
-
             animateParticles();
             animateMeteorite();
             renderer.render(scene, camera);
@@ -520,31 +984,42 @@ export default function ThreeScene({ onLoad }) {
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
         
-            // Recalcular posiciones de los cohetes
-            const isMobile = width <= 712; // Verificar si es móvil
+            // Recalcular posiciones de los cohetes y lunas
+            const isMobile = width <= 768;
+            const isTablet = width > 768 && width <= 1024;
+            
             rockets.forEach((rocket, index) => {
-                const yOffset = 0.4; // Ajuste progresivo en Y
                 if (isMobile) {
+                    const yOffset = 0.4;
                     rocket.position.set(
-                        0, // X fijo para móvil
-                        -0.6 - index * yOffset, // Ajuste progresivo en Y basado en el índice
-                        5 + index * 1.5 // Z ajustado para espaciamiento
+                        0,
+                        -0.6 - index * yOffset,
+                        5 + index * 1.5
+                    );
+                } else if (isTablet) {
+                    const xOffset = 1.5;
+                    rocket.position.set(
+                        (index - 1) * xOffset,
+                        -0.6,
+                        5
                     );
                 } else {
-                    const positions = [
-                        { x: -1.5, y: -0.6, z: 5 },
-                        { x: 0, y: -0.6, z: 5 },
-                        { x: 1.5, y: -0.6, z: 5 },
-                    ];
-                    const position = positions[index];
-                    rocket.position.set(position.x, position.y, position.z);
+                    rocket.position.set(
+                        index - 1,
+                        -0.6,
+                        5
+                    );
+                }
+                // Actualizar posición de la luna correspondiente
+                if (moons[index]) {
+                    updateMoonPosition(moons[index], index);
                 }
             });
         });
         
         // Llamamos a onLoad para indicar que Three.js ha cargado y la animación ha comenzado
         if (onLoad) {
-            onLoad();  // Esto notificará a Home que Three.js está listo
+            onLoad();
         }
 
         // Iniciar la animación
@@ -554,7 +1029,7 @@ export default function ThreeScene({ onLoad }) {
         return () => {
             document.body.removeChild(renderer.domElement);
         };
-        
+
     }, [navigate, onLoad]); // Dependencia de onLoad para asegurarnos de que funcione correctamente
 
     return null;
