@@ -27,13 +27,13 @@ const PlanetaKio = () => {
         '/ninos/salud_social/planeta_kio',
         '/ninos/salud_social/planeta_mer',
         '/ninos/salud_social/planeta_ven',
-        '/ninos/salud_social/planeta_4',
-        '/ninos/salud_social/planeta_5',
-        '/ninos/salud_social/planeta_6',
-        '/ninos/salud_social/planeta_7',
-        '/ninos/salud_social/planeta_8',
-        '/ninos/salud_social/planeta_9',
-        '/ninos/salud_social/planeta_10',
+        '/ninos/salud_social/planeta_amo',
+        '/ninos/salud_social/planeta_sexu',
+        '/ninos/salud_social/planeta_for',
+        '/ninos/salud_social/planeta_util',
+        '/ninos/salud_social/planeta_pro',
+        '/ninos/salud_social/planeta_sen',
+        '/ninos/salud_social/planeta_dir',
     ];
 
     // Rutas de las imágenes
@@ -41,14 +41,14 @@ const PlanetaKio = () => {
     const imagenBeneficios = 'https://tn.com.ar/resizer/v2/cual-es-el-sueldo-de-un-astronauta-de-la-nasa-foto-adobestock-OVP5HZHY7NHB3PWLAVL5ARG66A.png?auth=a3e77c7ff1be7c62dfc79ca3276dbc43d99ec81620644ed5637f4993c154dad4&width=767';
 
     // Información específica del Planeta Kio
-    const planetaNombre = "Kio";
+    const planetaNombre = "COMPANIO";
     const resumenCurso = (
         <div>
-            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta Kio, explorando:</p>
+            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta COMPANIO, explorando:</p>
             <ul>
                 <li><strong>Geografía única:</strong> Montañas cristalinas, océanos de lava y biomas impresionantes.</li>
                 <li><strong>Clima extremo:</strong> Tormentas de arena eléctricas y lluvias ácidas.</li>
-                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar Kio.</li>
+                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar COMPANIO.</li>
             </ul>
         </div>
     );

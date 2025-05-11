@@ -19,6 +19,13 @@ import PeligrosDigitalesPadres from './pages/galaxias/PeligrosDigitalesPadres';
 import PlanetaKio from './pages/galaxias/SaludSocial/PlanetaKio';
 import PlanetaMer from './pages/galaxias/SaludSocial/PlanetaMer';
 import PlanetaVen from './pages/galaxias/SaludSocial/PlanetaVen';
+import Planeta4Amo from './pages/galaxias/SaludSocial/Planeta4Amo';
+import Planeta5Sexu from './pages/galaxias/SaludSocial/Planeta5Sexu';
+import Planeta6For from './pages/galaxias/SaludSocial/Planeta6For';
+import Planeta7Util from './pages/galaxias/SaludSocial/Planeta7Util';
+import Planeta8Pro from './pages/galaxias/SaludSocial/Planeta8Pro';
+import Planeta9Sen from './pages/galaxias/SaludSocial/Planeta9Sen';
+import Planeta10Dir from './pages/galaxias/SaludSocial/Planeta10Dir';
 import PlanetaKioSM from './pages/galaxias/SaludMental/PlanetaKioSM';
 import PlanetaMerSM from './pages/galaxias/SaludMental/PlanetaMerSM';
 import PlanetaVenSM from './pages/galaxias/SaludMental/PlanetaVenSM';
@@ -56,6 +63,13 @@ function App() {
                 <Route path="/ninos/salud_social/planeta_kio" element={<PlanetaKio />} />
                 <Route path="/ninos/salud_social/planeta_mer" element={<PlanetaMer />} />
                 <Route path="/ninos/salud_social/planeta_ven" element={<PlanetaVen />} />
+                <Route path="/ninos/salud_social/planeta_amo" element={<Planeta4Amo />} />
+                <Route path="/ninos/salud_social/planeta_sexu" element={<Planeta5Sexu />} />
+                <Route path="/ninos/salud_social/planeta_for" element={<Planeta6For />} />
+                <Route path="/ninos/salud_social/planeta_util" element={<Planeta7Util />} />
+                <Route path="/ninos/salud_social/planeta_pro" element={<Planeta8Pro />} />
+                <Route path="/ninos/salud_social/planeta_sen" element={<Planeta9Sen />} />
+                <Route path="/ninos/salud_social/planeta_dir" element={<Planeta10Dir />} />
 
                 <Route path="/ninos/salud_mental/planeta_kio" element={<PlanetaKioSM />} />
                 <Route path="/ninos/salud_mental/planeta_mer" element={<PlanetaMerSM />} />

@@ -33,29 +33,29 @@ export default function EsferaTexturizada() {
     ];
 
     const texts = [
-        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA Tipo de Riesgo ss- - o",
-        "TERCER PLANETA Tipo de Riesgo- - - ",
-        "CUARTO PLANETA Tipo de Riesgo- - - - ",
-        "QUINTO PLANETA Tipo de Riesgo- - - - - ",
-        "SEXTO PLANETA Tipo de Riesgo- - - - - ",
-        "SEPTIMO PLANETA Tipo de Riesgo- - - - - ",
-        "OCTAVO PLANETA Tipo de Riesgo- - - - - ",
-        "NOVENO PLANETA Tipo de Riesgo- - - - - ",
-        "DECIMO PLANETA Tipo de Riesgo- - - - - ",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta COMPANIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Asociales-Hikikomori\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Solitarius",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta COMMUNIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Comunicativas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Distorsionarus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta EMOTIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Emocionales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Alterius",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta AMORE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Relacionales Nov.\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Manipularus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta SEXUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Sexualidad D.\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Asexualis",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta FORS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Amistades-Influencias\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Perderius",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta UTILIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Domesticas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Inutileus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta PROPIUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Influenciadores\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Mangoneus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta SENSUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciencias de la tierra\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Insensiblus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta DIRECTUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Derechos digitales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Desfavorecius",
     ];
 
     const planetUrls = [
         '/ninos/salud_social/planeta_kio',
         '/ninos/salud_social/planeta_mer',
         '/ninos/salud_social/planeta_ven',
-        '/ninos/salud_social/planeta_4',
-        '/ninos/salud_social/planeta_5',
-        '/ninos/salud_social/planeta_6',
-        '/ninos/salud_social/planeta_7',
-        '/ninos/salud_social/planeta_8',
-        '/ninos/salud_social/planeta_9',
-        '/ninos/salud_social/planeta_10',
+        '/ninos/salud_social/planeta_amo',
+        '/ninos/salud_social/planeta_sexu',
+        '/ninos/salud_social/planeta_for',
+        '/ninos/salud_social/planeta_util',
+        '/ninos/salud_social/planeta_pro',
+        '/ninos/salud_social/planeta_sen',
+        '/ninos/salud_social/planeta_dir',
     ];
 
     const changeTexture = (direction) => {
