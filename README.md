@@ -1,5 +1,10 @@
 # Universo Dictariano 🚀🌌
 
+## Propiedad Intelectual ©
+© 2024 Dicta Colombia. Todos los derechos reservados.
+Este software es propiedad exclusiva de Dicta Colombia y está protegido por las leyes de propiedad intelectual.
+Su uso, reproducción o distribución no autorizada está estrictamente prohibida.
+
 ## Descripción 📜
 **Universo Dictariano** es una plataforma educativa interactiva con temática espacial. En este entorno 3D, los usuarios pueden explorar un planeta central llamado **Universo Dictariano** y acceder a diferentes **cohetes educativos** según su perfil: **niños, jóvenes y padres**. Al seleccionar una nave, los usuarios son transportados a **galaxias** que contienen **planetas-cursos**, donde pueden profundizar en diversas materias. Próximamente, se añadirá la funcionalidad de compra de cursos personalizados según el perfil del usuario.
 
@@ -48,24 +53,27 @@ Una vez el servidor esté en funcionamiento, accede a:
 http://localhost:3000
 ```
 
-## Contribución 🤝
-Si deseas contribuir a **Universo Dictariano**, sigue estos pasos:
-1. Haz un **fork** del repositorio.
-2. Crea una rama para tu nueva funcionalidad:
-   ```sh
-   git checkout -b feature/nueva-funcionalidad
-   ```
-3. Realiza tus cambios y **haz commit**:
-   ```sh
-   git commit -m "Agregada nueva funcionalidad X"
-   ```
-4. Sube los cambios a tu repositorio:
-   ```sh
-   git push origin feature/nueva-funcionalidad
-   ```
-5. Crea un **pull request** en el repositorio original.
+## Desarrollo Interno 🤝
+Este es un proyecto privado de Dicta Colombia. Para el desarrollo interno:
+
+1. Asegúrate de tener los permisos necesarios para acceder al repositorio.
+2. Sigue las guías de desarrollo establecidas por el equipo.
+3. Utiliza las ramas de desarrollo según el flujo de trabajo acordado.
+4. Mantén la confidencialidad del código y la documentación.
+
+## Versiones 📚
+- **v0.2.0-alpha**: Actualización mayor con nuevas características 3D
+- **v0.1.0-alpha**: Versión inicial con funcionalidades básicas
+
+Para más detalles sobre los cambios, consulta el [CHANGELOG.md](./CHANGELOG.md).
 
 ## Contacto 📩
-Si tienes dudas o sugerencias, puedes comunicarte con el equipo de desarrollo a través del [repositorio en GitHub](https://github.com/DictaColomb1a/universo-3d-react.git).
+Para consultas sobre el proyecto, contactar a:
+- Empresa: Dicta Colombia
+- Email: [correo electrónico de contacto]
+- Teléfono: [número de contacto]
+
+## Licencia y Términos de Uso
+Para más información sobre los términos de uso y licencia, consulta el archivo [LICENSE.md](./LICENSE.md).
 
 🚀 ¡Explora el Universo Dictariano y aprende de manera interactiva! 🌠
