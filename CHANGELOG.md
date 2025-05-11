@@ -1,5 +1,9 @@
 # Registro de Cambios
 
+© 2024 Dicta Colombia. Todos los derechos reservados.
+Este software es propiedad exclusiva de Dicta Colombia y está protegido por las leyes de propiedad intelectual.
+Su uso, reproducción o distribución no autorizada está estrictamente prohibida.
+
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 ## [v0.2.0-alpha] - 2025-10-05
