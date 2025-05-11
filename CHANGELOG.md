@@ -2,7 +2,7 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
-## [v0.2.0-alpha] - 2024-03-19
+## [v0.2.0-alpha] - 2025-10-05
 
 ### Añadido
 - Sistema de partículas para efectos visuales espaciales
@@ -28,7 +28,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 - Errores en la detección de colisiones
 - Problemas de visualización en diferentes tamaños de pantalla
 
-## [v0.1.0-alpha] - 2024-03-18
+## [v0.1.0-alpha] - 2025-02-22
 
 ### Añadido
 - Implementación inicial del planeta Tierra
