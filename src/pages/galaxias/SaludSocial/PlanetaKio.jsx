@@ -34,6 +34,8 @@ const PlanetaKio = () => {
         '/ninos/salud_social/planeta_pro',
         '/ninos/salud_social/planeta_sen',
         '/ninos/salud_social/planeta_dir',
+        '/ninos/salud_social/planeta_kri',
+        '/ninos/salud_social/planeta_moy',
     ];
 
     // Rutas de las imágenes

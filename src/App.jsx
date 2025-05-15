@@ -26,6 +26,8 @@ import Planeta7Util from './pages/galaxias/SaludSocial/Planeta7Util';
 import Planeta8Pro from './pages/galaxias/SaludSocial/Planeta8Pro';
 import Planeta9Sen from './pages/galaxias/SaludSocial/Planeta9Sen';
 import Planeta10Dir from './pages/galaxias/SaludSocial/Planeta10Dir';
+import Planeta11Kri from './pages/galaxias/SaludSocial/Planeta11Kri';
+import Planeta12Moy from './pages/galaxias/SaludSocial/Planeta12Moy';
 import PlanetaKioSM from './pages/galaxias/SaludMental/PlanetaKioSM';
 import PlanetaMerSM from './pages/galaxias/SaludMental/PlanetaMerSM';
 import PlanetaVenSM from './pages/galaxias/SaludMental/PlanetaVenSM';
@@ -70,6 +72,8 @@ function App() {
                 <Route path="/ninos/salud_social/planeta_pro" element={<Planeta8Pro />} />
                 <Route path="/ninos/salud_social/planeta_sen" element={<Planeta9Sen />} />
                 <Route path="/ninos/salud_social/planeta_dir" element={<Planeta10Dir />} />
+                <Route path="/ninos/salud_social/planeta_kri" element={<Planeta11Kri />} />
+                <Route path="/ninos/salud_social/planeta_moy" element={<Planeta12Moy />} />
 
                 <Route path="/ninos/salud_mental/planeta_kio" element={<PlanetaKioSM />} />
                 <Route path="/ninos/salud_mental/planeta_mer" element={<PlanetaMerSM />} />
