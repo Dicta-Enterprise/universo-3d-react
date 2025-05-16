@@ -4,7 +4,7 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const PlanetaMer = () => {
+const Planeta2Com = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
@@ -26,8 +26,8 @@ const PlanetaMer = () => {
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/salud_social/planeta_mer",
-    "/ninos/salud_social/planeta_ven",
+    "/ninos/salud_social/planeta_com",
+    "/ninos/salud_social/planeta_emo",
     "/ninos/salud_social/planeta_amo",
     "/ninos/salud_social/planeta_sexu",
     "/ninos/salud_social/planeta_for",
@@ -37,7 +37,7 @@ const PlanetaMer = () => {
     "/ninos/salud_social/planeta_dir",
     "/ninos/salud_social/planeta_kri",
     "/ninos/salud_social/planeta_moy",
-    "/ninos/salud_social/planeta_kio",
+    "/ninos/salud_social/planeta_comp",
   ];
 
   // Rutas de las imágenes
@@ -175,4 +175,4 @@ const PlanetaMer = () => {
   );
 };
 
-export default PlanetaMer;
+export default Planeta2Com;

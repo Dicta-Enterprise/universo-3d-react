@@ -67,9 +67,9 @@ function App() {
                 <Route path="/padres/peligros_digitales" element={<PeligrosDigitalesPadres />} />
                 <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
 
-                <Route path="/ninos/salud_social/planeta_kio" element={<Planeta1Comp />} />
-                <Route path="/ninos/salud_social/planeta_mer" element={<Planeta2Com />} />
-                <Route path="/ninos/salud_social/planeta_ven" element={<Planeta3Emo />} />
+                <Route path="/ninos/salud_social/planeta_comp" element={<Planeta1Comp />} />
+                <Route path="/ninos/salud_social/planeta_com" element={<Planeta2Com />} />
+                <Route path="/ninos/salud_social/planeta_emo" element={<Planeta3Emo />} />
                 <Route path="/ninos/salud_social/planeta_amo" element={<Planeta4Amo />} />
                 <Route path="/ninos/salud_social/planeta_sexu" element={<Planeta5Sexu />} />
                 <Route path="/ninos/salud_social/planeta_for" element={<Planeta6For />} />

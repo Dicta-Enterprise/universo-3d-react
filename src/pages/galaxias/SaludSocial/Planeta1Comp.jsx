@@ -26,9 +26,9 @@ const Planeta1Comp = () => {
 
     // URLs de los planetas
     const planetUrls = [
-        '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_mer',
-        '/ninos/salud_social/planeta_ven',
+        '/ninos/salud_social/planeta_comp',
+        '/ninos/salud_social/planeta_com',
+        '/ninos/salud_social/planeta_emo',
         '/ninos/salud_social/planeta_amo',
         '/ninos/salud_social/planeta_sexu',
         '/ninos/salud_social/planeta_for',

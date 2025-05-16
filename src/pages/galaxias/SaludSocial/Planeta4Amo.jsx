@@ -35,9 +35,9 @@ const Planeta4Amo = () => {
     "/ninos/salud_social/planeta_dir",
     "/ninos/salud_social/planeta_kri",
     "/ninos/salud_social/planeta_moy",
-    "/ninos/salud_social/planeta_kio",
-    "/ninos/salud_social/planeta_mer",
-    "/ninos/salud_social/planeta_ven",
+    "/ninos/salud_social/planeta_comp",
+    "/ninos/salud_social/planeta_com",
+    "/ninos/salud_social/planeta_emo",
   ];
 
   // Rutas de las imágenes
