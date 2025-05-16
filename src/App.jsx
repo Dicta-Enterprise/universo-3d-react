@@ -16,9 +16,9 @@ import SaludSocialPadres from './pages/galaxias/SaludSocialPadres';
 import SaludMentalPadres from './pages/galaxias/SaludMentalPadres';
 import SaludFisicaPadres from './pages/galaxias/SaludFisicaPadres';
 import PeligrosDigitalesPadres from './pages/galaxias/PeligrosDigitalesPadres';
-import PlanetaKio from './pages/galaxias/SaludSocial/PlanetaKio';
-import PlanetaMer from './pages/galaxias/SaludSocial/PlanetaMer';
-import PlanetaVen from './pages/galaxias/SaludSocial/PlanetaVen';
+import Planeta1Comp from './pages/galaxias/SaludSocial/Planeta1Comp';
+import Planeta2Com from './pages/galaxias/SaludSocial/Planeta2Com';
+import Planeta3Emo from './pages/galaxias/SaludSocial/Planeta3Emo';
 import Planeta4Amo from './pages/galaxias/SaludSocial/Planeta4Amo';
 import Planeta5Sexu from './pages/galaxias/SaludSocial/Planeta5Sexu';
 import Planeta6For from './pages/galaxias/SaludSocial/Planeta6For';
@@ -31,9 +31,14 @@ import Planeta12Moy from './pages/galaxias/SaludSocial/Planeta12Moy';
 import PlanetaKioSM from './pages/galaxias/SaludMental/PlanetaKioSM';
 import PlanetaMerSM from './pages/galaxias/SaludMental/PlanetaMerSM';
 import PlanetaVenSM from './pages/galaxias/SaludMental/PlanetaVenSM';
-import PlanetaKioSF from './pages/galaxias/SaludFisica/PlanetaKioSF';
-import PlanetaMerSF from './pages/galaxias/SaludFisica/PlanetaMerSF';
-import PlanetaVenSF from './pages/galaxias/SaludFisica/PlanetaVenSF';
+import Planeta1Man from './pages/galaxias/SaludFisica/Planeta1Man';
+import Planeta2Lev from './pages/galaxias/SaludFisica/Planeta2Lev';
+import Planeta3Ver from './pages/galaxias/SaludFisica/Planeta3Ver';
+import Planeta4Bio from './pages/galaxias/SaludFisica/Planeta4Bio';
+import Planeta5Add from './pages/galaxias/SaludFisica/Planeta5Add';
+import Planeta6Ele from './pages/galaxias/SaludFisica/Planeta6Ele';
+import Planeta7Mel from './pages/galaxias/SaludFisica/Planeta7Mel';
+import Planeta8Aud from './pages/galaxias/SaludFisica/Planeta8Aud';
 import PlanetaKioPD from './pages/galaxias/PeligrosDigitales/PlanetaKioPD';
 import PlanetaMerPD from './pages/galaxias/PeligrosDigitales/PlanetaMerPD';
 import PlanetaVenPD from './pages/galaxias/PeligrosDigitales/PlanetaVenPD';
@@ -62,9 +67,9 @@ function App() {
                 <Route path="/padres/peligros_digitales" element={<PeligrosDigitalesPadres />} />
                 <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
 
-                <Route path="/ninos/salud_social/planeta_kio" element={<PlanetaKio />} />
-                <Route path="/ninos/salud_social/planeta_mer" element={<PlanetaMer />} />
-                <Route path="/ninos/salud_social/planeta_ven" element={<PlanetaVen />} />
+                <Route path="/ninos/salud_social/planeta_kio" element={<Planeta1Comp />} />
+                <Route path="/ninos/salud_social/planeta_mer" element={<Planeta2Com />} />
+                <Route path="/ninos/salud_social/planeta_ven" element={<Planeta3Emo />} />
                 <Route path="/ninos/salud_social/planeta_amo" element={<Planeta4Amo />} />
                 <Route path="/ninos/salud_social/planeta_sexu" element={<Planeta5Sexu />} />
                 <Route path="/ninos/salud_social/planeta_for" element={<Planeta6For />} />
@@ -79,9 +84,15 @@ function App() {
                 <Route path="/ninos/salud_mental/planeta_mer" element={<PlanetaMerSM />} />
                 <Route path="/ninos/salud_mental/planeta_ven" element={<PlanetaVenSM />} />
 
-                <Route path="/ninos/salud_fisica/planeta_kio" element={<PlanetaKioSF />} />
-                <Route path="/ninos/salud_fisica/planeta_mer" element={<PlanetaMerSF />} />
-                <Route path="/ninos/salud_fisica/planeta_ven" element={<PlanetaVenSF />} />
+                <Route path="/ninos/salud_fisica/planeta_man" element={<Planeta1Man />} />
+                <Route path="/ninos/salud_fisica/planeta_lev" element={<Planeta2Lev />} />
+                <Route path="/ninos/salud_fisica/planeta_ver" element={<Planeta3Ver />} />
+                <Route path="/ninos/salud_fisica/planeta_bio" element={<Planeta4Bio />} />
+                <Route path="/ninos/salud_fisica/planeta_add" element={<Planeta5Add />} />
+                <Route path="/ninos/salud_fisica/planeta_ele" element={<Planeta6Ele />} />
+                <Route path="/ninos/salud_fisica/planeta_mel" element={<Planeta7Mel />} />
+                <Route path="/ninos/salud_fisica/planeta_aud" element={<Planeta8Aud />} />
+
 
                 <Route path="/ninos/peligros_digitales/planeta_kio" element={<PlanetaKioPD />} />
                 <Route path="/ninos/peligros_digitales/planeta_mer" element={<PlanetaMerPD />} />

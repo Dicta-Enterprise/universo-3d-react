@@ -10,7 +10,8 @@ const Planeta11Kri = () => {
 
   // Texturas para el carrusel de planetas
   const textures = [
-    '/assets/2k_mars.jpg',
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
     '/assets/2k_makemake_fictional.jpg',
     '/assets/2k_haumea_fictional.jpg',
     '/assets/earthx5400x2700.jpg',
@@ -20,6 +21,7 @@ const Planeta11Kri = () => {
     '/assets/2k_venus_atmosphere.jpg',
     '/assets/2k_earth_clouds.jpg',
     '/assets/2k_jupiter.jpg',
+    '/assets/2k_mars.jpg',
   ];
 
   // URLs de los planetas

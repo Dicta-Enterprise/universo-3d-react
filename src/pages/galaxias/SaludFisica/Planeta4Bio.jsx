@@ -4,40 +4,32 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const Planeta10Dir = () => {
+const Planeta4Bio = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
-    '/assets/2k_mars.jpg',
-    "/assets/textura blanco.jpg",
-    "/assets/textura negro.jpg",
-    '/assets/2k_makemake_fictional.jpg',
-    '/assets/2k_haumea_fictional.jpg',
-    '/assets/earthx5400x2700.jpg',
     '/assets/2k_neptune.jpg',
     '/assets/2k_venus_surface.jpg',
     '/assets/2k_uranus.jpg',
     '/assets/2k_venus_atmosphere.jpg',
     '/assets/2k_earth_clouds.jpg',
-    '/assets/2k_jupiter.jpg',
+    '/assets/2k_makemake_fictional.jpg',
+    '/assets/2k_haumea_fictional.jpg',
+    '/assets/earthx5400x2700.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/salud_social/planeta_dir",
-    "/ninos/salud_social/planeta_kri",
-    "/ninos/salud_social/planeta_moy",
-    "/ninos/salud_social/planeta_comp",
-    "/ninos/salud_social/planeta_com",
-    "/ninos/salud_social/planeta_emo",
-    "/ninos/salud_social/planeta_amo",
-    "/ninos/salud_social/planeta_sexu",
-    "/ninos/salud_social/planeta_for",
-    "/ninos/salud_social/planeta_util",
-    "/ninos/salud_social/planeta_pro",
-    "/ninos/salud_social/planeta_sen",
+    "/ninos/salud_fisica/planeta_bio",
+    "/ninos/salud_fisica/planeta_add",
+    "/ninos/salud_fisica/planeta_ele",
+    "/ninos/salud_fisica/planeta_mel",
+    "/ninos/salud_fisica/planeta_aud",
+    "/ninos/salud_fisica/planeta_man",
+    "/ninos/salud_fisica/planeta_lev",
+    "/ninos/salud_fisica/planeta_ver",
   ];
 
   // Rutas de las imágenes
@@ -45,10 +37,10 @@ const Planeta10Dir = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "DIRECTUS";
+  const planetaNombre = "BIOS";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta DIRECTUS, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta BIOS, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
@@ -153,7 +145,7 @@ const Planeta10Dir = () => {
       overflowY: "auto",
       overflowX: "hidden" 
     }}>
-      <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
+      <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_fisica" background= {'none'}/>
       <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
       <MainContent
         isMobile={isMobile}
@@ -171,4 +163,4 @@ const Planeta10Dir = () => {
   );
 };
 
-export default Planeta10Dir;
+export default Planeta4Bio;

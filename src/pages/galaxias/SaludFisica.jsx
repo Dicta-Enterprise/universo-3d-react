@@ -28,34 +28,28 @@ export default function EsferaTexturizada() {
         '/assets/2k_uranus.jpg',
         '/assets/2k_venus_atmosphere.jpg',
         '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
     ];
 
     const texts = [
-        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA - - ",
-        "TERCER PLANETA - - - ",
-        "CUARTO PLANETA - - - - ",
-        "QUINTO PLANETA - - - - - ",
-        "SEXTO PLANETA - - - - - ",
-        "SEPTIMO PLANETA - - - - - ",
-        "OCTAVO PLANETA - - - - - ",
-        "NOVENO PLANETA - - - - - ",
-        "DECIMO PLANETA - - - - - ",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta MANUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Whatsapitis\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Tendinitius",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta LEVIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Sedentarismo Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sinsalus",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta VERTERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Espolón Óseo- Síndrome de CUSHING \nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Jorobus- Lumbarus",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta BIOS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Cáncer de Tiroides\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Cancerus",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta ADDORMISC\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Síndrome de la Pantalla Azul- Sequedad Ocular\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Invidentius",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta ELEKTRON\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Exposición Electromagnética\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Radioactivus",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta MELIOR\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Enfermedades Gastrointestinales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Microbiotus",
+        "Tipo de riesgo: Salud Física\nPlaneta: Planeta AUDITIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Hipoacusia o Total Cofosis- Sordera\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sorderus",
     ];
 
     const planetUrls = [
-        '/ninos/salud_fisica/planeta_kio',
-        '/ninos/salud_fisica/planeta_mer',
-        '/ninos/salud_fisica/planeta_ven',
-        '/ninos/salud_fisica/planeta_4',
-        '/ninos/salud_fisica/planeta_5',
-        '/ninos/salud_fisica/planeta_6',
-        '/ninos/salud_fisica/planeta_7',
-        '/ninos/salud_fisica/planeta_8',
-        '/ninos/salud_fisica/planeta_9',
-        '/ninos/salud_fisica/planeta_10',
+        '/ninos/salud_fisica/planeta_man',
+        '/ninos/salud_fisica/planeta_lev',
+        '/ninos/salud_fisica/planeta_ver',
+        '/ninos/salud_fisica/planeta_bio',
+        '/ninos/salud_fisica/planeta_add',
+        '/ninos/salud_fisica/planeta_ele',
+        '/ninos/salud_fisica/planeta_mel',
+        '/ninos/salud_fisica/planeta_aud',
     ];
 
     const changeTexture = (direction) => {
@@ -516,7 +510,7 @@ export default function EsferaTexturizada() {
             }}
         >
             <BackButton redirectUrl="/ninos" color={'#69b6d9'} background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="Bienvenidos a la sección de Salud Fisica">
+            <DivCentral title="💪 Bienvenidos a la sección de Salud Fisica 💪">
                 <InfoBox text={texts[currentTextureIndex]} color={'#69b6d9'} />
             </DivCentral>
             <ControlButtons

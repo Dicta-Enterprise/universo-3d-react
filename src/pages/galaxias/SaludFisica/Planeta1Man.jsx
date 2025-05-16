@@ -4,7 +4,7 @@ import ThreeScene from '../../../components/Landing/ThreeScene';
 import MainContent from '../../../components/Landing/MainContent';
 import ResizeHandler from '../../../components/Landing/ResizeHandler';
 
-const PlanetaKio = () => {
+const Planeta1Man = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showCarousel, setShowCarousel] = useState(false);
 
@@ -18,24 +18,18 @@ const PlanetaKio = () => {
         '/assets/2k_uranus.jpg',
         '/assets/2k_venus_atmosphere.jpg',
         '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
     ];
 
     // URLs de los planetas
     const planetUrls = [
-        '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_mer',
-        '/ninos/salud_social/planeta_ven',
-        '/ninos/salud_social/planeta_amo',
-        '/ninos/salud_social/planeta_sexu',
-        '/ninos/salud_social/planeta_for',
-        '/ninos/salud_social/planeta_util',
-        '/ninos/salud_social/planeta_pro',
-        '/ninos/salud_social/planeta_sen',
-        '/ninos/salud_social/planeta_dir',
-        '/ninos/salud_social/planeta_kri',
-        '/ninos/salud_social/planeta_moy',
+        '/ninos/salud_fisica/planeta_man',
+        '/ninos/salud_fisica/planeta_lev',
+        '/ninos/salud_fisica/planeta_ver',
+        '/ninos/salud_fisica/planeta_bio',
+        '/ninos/salud_fisica/planeta_add',
+        '/ninos/salud_fisica/planeta_ele',
+        '/ninos/salud_fisica/planeta_mel',
+        '/ninos/salud_fisica/planeta_aud',
     ];
 
     // Rutas de las imágenes
@@ -43,14 +37,14 @@ const PlanetaKio = () => {
     const imagenBeneficios = 'https://tn.com.ar/resizer/v2/cual-es-el-sueldo-de-un-astronauta-de-la-nasa-foto-adobestock-OVP5HZHY7NHB3PWLAVL5ARG66A.png?auth=a3e77c7ff1be7c62dfc79ca3276dbc43d99ec81620644ed5637f4993c154dad4&width=767';
 
     // Información específica del Planeta Kio
-    const planetaNombre = "COMPANIO";
+    const planetaNombre = "MANUS";
     const resumenCurso = (
         <div>
-            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta COMPANIO, explorando:</p>
+            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta MANUS, explorando:</p>
             <ul>
                 <li><strong>Geografía única:</strong> Montañas cristalinas, océanos de lava y biomas impresionantes.</li>
                 <li><strong>Clima extremo:</strong> Tormentas de arena eléctricas y lluvias ácidas.</li>
-                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar COMPANIO.</li>
+                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar Kio.</li>
             </ul>
         </div>
     );
@@ -147,7 +141,7 @@ const PlanetaKio = () => {
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
+            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_fisica" background= {'none'}/>
             <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
             <MainContent
                 isMobile={isMobile}
@@ -165,4 +159,4 @@ const PlanetaKio = () => {
     );
 };
 
-export default PlanetaKio;
+export default Planeta1Man;

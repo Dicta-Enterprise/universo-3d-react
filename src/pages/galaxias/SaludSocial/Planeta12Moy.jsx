@@ -10,7 +10,7 @@ const Planeta12Moy = () => {
 
   // Texturas para el carrusel de planetas
   const textures = [
-    '/assets/2k_makemake_fictional.jpg',
+    "/assets/textura negro.jpg",
     '/assets/2k_makemake_fictional.jpg',
     '/assets/2k_haumea_fictional.jpg',
     '/assets/earthx5400x2700.jpg',
@@ -20,6 +20,8 @@ const Planeta12Moy = () => {
     '/assets/2k_venus_atmosphere.jpg',
     '/assets/2k_earth_clouds.jpg',
     '/assets/2k_jupiter.jpg',
+    '/assets/2k_mars.jpg',
+    "/assets/textura blanco.jpg",
   ];
 
   // URLs de los planetas
@@ -34,6 +36,7 @@ const Planeta12Moy = () => {
     "/ninos/salud_social/planeta_util",
     "/ninos/salud_social/planeta_pro",
     "/ninos/salud_social/planeta_sen",
+    "/ninos/salud_social/planeta_dir",
     "/ninos/salud_social/planeta_kri",
   ];
 

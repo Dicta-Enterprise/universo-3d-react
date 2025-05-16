@@ -19,21 +19,25 @@ const PlanetaMer = () => {
     "/assets/2k_earth_clouds.jpg",
     "/assets/2k_jupiter.jpg",
     "/assets/2k_mars.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
     "/assets/2k_makemake_fictional.jpg",
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/salud_fisica/planeta_mer",
-    "/ninos/salud_fisica/planeta_ven",
-    "/ninos/salud_fisica/planeta_4",
-    "/ninos/salud_fisica/planeta_5",
-    "/ninos/salud_fisica/planeta_6",
-    "/ninos/salud_fisica/planeta_7",
-    "/ninos/salud_fisica/planeta_8",
-    "/ninos/salud_fisica/planeta_9",
-    "/ninos/salud_fisica/planeta_10",
-    "/ninos/salud_fisica/planeta_kio",
+    "/ninos/salud_social/planeta_mer",
+    "/ninos/salud_social/planeta_ven",
+    "/ninos/salud_social/planeta_amo",
+    "/ninos/salud_social/planeta_sexu",
+    "/ninos/salud_social/planeta_for",
+    "/ninos/salud_social/planeta_util",
+    "/ninos/salud_social/planeta_pro",
+    "/ninos/salud_social/planeta_sen",
+    "/ninos/salud_social/planeta_dir",
+    "/ninos/salud_social/planeta_kri",
+    "/ninos/salud_social/planeta_moy",
+    "/ninos/salud_social/planeta_kio",
   ];
 
   // Rutas de las imágenes
@@ -41,10 +45,10 @@ const PlanetaMer = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
 
   // Información específica del Planeta Mer
-  const planetaNombre = "Mer";
+  const planetaNombre = "COMMUNIS";
   const resumenCurso = (
     <div>
-      <p>Explora los misterios del planeta Mer, un mundo de contrastes extremos donde:</p>
+      <p>Explora los misterios del planeta COMMUNIS, un mundo de contrastes extremos donde:</p>
       <ul>
         <li><strong>Geografía cambiante:</strong> Montañas de hielo que se derriten en lagos de metano.</li>
         <li><strong>Clima impredecible:</strong> Tormentas magnéticas que alteran la percepción del tiempo.</li>
@@ -153,7 +157,7 @@ const PlanetaMer = () => {
       overflowY: "auto",
       overflowX: "hidden" 
     }}>
-      <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_fisica" background= {'none'}/>
+      <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
       <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
       <MainContent
         isMobile={isMobile}

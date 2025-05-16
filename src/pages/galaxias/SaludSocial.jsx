@@ -30,6 +30,8 @@ export default function EsferaTexturizada() {
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
         '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
     ];
 
     const texts = [
@@ -43,12 +45,14 @@ export default function EsferaTexturizada() {
         "Tipo de riesgo: Salud Social\nPlaneta: Planeta PROPIUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Influenciadores\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Mangoneus",
         "Tipo de riesgo: Salud Social\nPlaneta: Planeta SENSUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciencias de la tierra\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Insensiblus",
         "Tipo de riesgo: Salud Social\nPlaneta: Planeta DIRECTUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Derechos digitales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Desfavorecius",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta KRITIKOS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Nega y afirPeteicones\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Facilismus",
+        "Tipo de riesgo: Salud Social\nPlaneta: Planeta MOYSIKO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Música addictive\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Extasius",
     ];
 
     const planetUrls = [
-        '/ninos/salud_social/planeta_kio',
-        '/ninos/salud_social/planeta_mer',
-        '/ninos/salud_social/planeta_ven',
+        '/ninos/salud_social/planeta_comp',
+        '/ninos/salud_social/planeta_com',
+        '/ninos/salud_social/planeta_emo',
         '/ninos/salud_social/planeta_amo',
         '/ninos/salud_social/planeta_sexu',
         '/ninos/salud_social/planeta_for',
@@ -56,6 +60,8 @@ export default function EsferaTexturizada() {
         '/ninos/salud_social/planeta_pro',
         '/ninos/salud_social/planeta_sen',
         '/ninos/salud_social/planeta_dir',
+        '/ninos/salud_social/planeta_kri',
+        '/ninos/salud_social/planeta_moy',
     ];
 
     const changeTexture = (direction) => {
