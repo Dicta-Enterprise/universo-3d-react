@@ -12,16 +12,41 @@ export default function EsferaTexturizada() {
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
+        '/assets/2k_makemake_fictional.jpg',//1
+        '/assets/2k_haumea_fictional.jpg',//2
+        '/assets/earthx5400x2700.jpg',//3
+        '/assets/2k_neptune.jpg',//4
+        '/assets/2k_venus_surface.jpg',//5
+        '/assets/2k_uranus.jpg',//6
+        '/assets/2k_venus_atmosphere.jpg',//7
+        '/assets/2k_earth_clouds.jpg',//8
+        '/assets/2k_jupiter.jpg',//9
+        '/assets/2k_mars.jpg',//10
+        '/assets/2k_mars.jpg',//11
+        '/assets/2k_earth_daymap.jpg',//12
+        '/assets/2k_earth_nightmap.jpg',//13
+        '/assets/2k_earth_specular_map.jpg',//14
+        '/assets/2k_earth_normal_map.jpg',//15
+        '/assets/2k_earth_bump_map.jpg',//16
+        '/assets/2k_earth_clouds.jpg',//17
+        '/assets/2k_earth_clouds.jpg',//18
+        '/assets/2k_earth_clouds.jpg',//19
+        '/assets/2k_earth_clouds.jpg',//20
+        '/assets/2k_earth_clouds.jpg',//21
+        '/assets/2k_earth_clouds.jpg',//22
+        '/assets/2k_earth_clouds.jpg',//23
+        '/assets/2k_earth_clouds.jpg',//24
+        '/assets/2k_earth_clouds.jpg',//25
+        '/assets/2k_earth_clouds.jpg',//26
+        '/assets/2k_earth_clouds.jpg',//27
+        '/assets/2k_earth_clouds.jpg',//28
+        '/assets/2k_earth_clouds.jpg',//29
+        '/assets/2k_earth_clouds.jpg',//30
+        '/assets/2k_earth_clouds.jpg',//31
+        '/assets/2k_earth_clouds.jpg',//32
+        '/assets/2k_earth_clouds.jpg',//33
+        '/assets/2k_earth_clouds.jpg',//34
+        '/assets/2k_earth_clouds.jpg',//35
     ];
 
     const texts = [
@@ -35,6 +60,31 @@ export default function EsferaTexturizada() {
         "OCTAVO PLANETA - - - - - ",
         "NOVENO PLANETA - - - - - ",
         "DECIMO PLANETA - - - - - ",
+        "UNDÉCIMO PLANETA - - - - - ",
+        "DUODÉCIMO PLANETA - - - - - ",
+        "DECIMOTERCER PLANETA - - - - - ",
+        "DECIMOCUARTO PLANETA - - - - - ",
+        "DECIMOQUINTO PLANETA - - - - - ",
+        "DECIMOSEXTO PLANETA - - - - - ",
+        "DECIMOSÉPTIMO PLANETA - - - - - ",
+        "DECIMOCTAVO PLANETA - - - - - ",
+        "DECIMONOVENO PLANETA - - - - - ",
+        "VIGÉSIMO PLANETA - - - - - ",
+        "VIGÉSIMO PRIMER PLANETA - - - - - ",
+        "VIGÉSIMO SEGUNDO PLANETA - - - - - ",
+        "VIGÉSIMO TERCER PLANETA - - - - - ",
+        "VIGÉSIMO CUARTO PLANETA - - - - - ",
+        "VIGÉSIMO QUINTO PLANETA - - - - - ",
+        "VIGÉSIMO SEXTO PLANETA - - - - - ",
+        "VIGÉSIMO SÉPTIMO PLANETA - - - - - ",
+        "VIGÉSIMO OCTAVO PLANETA - - - - - ",
+        "VIGÉSIMO NOVENO PLANETA - - - - - ",
+        "TRIGÉSIMO PLANETA - - - - - ",
+        "TRIGÉSIMO PRIMER PLANETA - - - - - ",
+        "TRIGÉSIMO SEGUNDO PLANETA - - - - - ",
+        "TRIGÉSIMO TERCER PLANETA - - - - - ",
+        "TRIGÉSIMO CUARTO PLANETA - - - - - ",
+        "TRIGÉSIMO QUINTO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
@@ -48,6 +98,31 @@ export default function EsferaTexturizada() {
         '/padres/peligros_digitales/planeta_8',
         '/padres/peligros_digitales/planeta_9',
         '/padres/peligros_digitales/planeta_10',
+        '/padres/peligros_digitales/planeta_11',
+        '/padres/peligros_digitales/planeta_12',
+        '/padres/peligros_digitales/planeta_13',
+        '/padres/peligros_digitales/planeta_14',
+        '/padres/peligros_digitales/planeta_15',
+        '/padres/peligros_digitales/planeta_16',
+        '/padres/peligros_digitales/planeta_17',
+        '/padres/peligros_digitales/planeta_18',
+        '/padres/peligros_digitales/planeta_19',
+        '/padres/peligros_digitales/planeta_20',
+        '/padres/peligros_digitales/planeta_21',
+        '/padres/peligros_digitales/planeta_22',
+        '/padres/peligros_digitales/planeta_23',
+        '/padres/peligros_digitales/planeta_24',
+        '/padres/peligros_digitales/planeta_25',
+        '/padres/peligros_digitales/planeta_26',
+        '/padres/peligros_digitales/planeta_27',
+        '/padres/peligros_digitales/planeta_28',
+        '/padres/peligros_digitales/planeta_29',
+        '/padres/peligros_digitales/planeta_30',
+        '/padres/peligros_digitales/planeta_31',
+        '/padres/peligros_digitales/planeta_32',
+        '/padres/peligros_digitales/planeta_33',
+        '/padres/peligros_digitales/planeta_34',
+        '/padres/peligros_digitales/planeta_35',
     ];
 
     const changeTexture = (direction) => {

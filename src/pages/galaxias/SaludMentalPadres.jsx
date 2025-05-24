@@ -12,16 +12,21 @@ export default function EsferaTexturizada() {
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
+        '/assets/2k_makemake_fictional.jpg',// 1-  2k_makemake_fictional
+        '/assets/2k_haumea_fictional.jpg',// 2- 
+        '/assets/earthx5400x2700.jpg',// 3- 
+        '/assets/2k_neptune.jpg',// 4-
+        '/assets/2k_venus_surface.jpg', // 5-
+        '/assets/2k_uranus.jpg',// 6-
+        '/assets/2k_venus_atmosphere.jpg', // 7-
+        '/assets/2k_earth_clouds.jpg', // 8-
+        '/assets/2k_jupiter.jpg', // 9-
+        '/assets/2k_mars.jpg',// 10-
+        '/assets/2k_haumea_fictional.jpg',// 11-
+        '/assets/2k_haumea_fictional.jpg',// 12- 
+        '/assets/2k_haumea_fictional.jpg',// 13-
+        '/assets/2k_haumea_fictional.jpg',// 14-
+        '/assets/2k_haumea_fictional.jpg',// 15-
     ];
 
     const texts = [
@@ -35,6 +40,11 @@ export default function EsferaTexturizada() {
         "OCTAVO PLANETA - - - - - ",
         "NOVENO PLANETA - - - - - ",
         "DECIMO PLANETA - - - - - ",
+        "UNDÉCIMO PLANETA - - - - - ",
+        "DUODÉCIMO PLANETA - - - - - ",
+        "DECIMOTERCER PLANETA - - - - - ",
+        "DECIMOCUARTO PLANETA - - - - - ",
+        "DECIMOQUINTO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
@@ -48,6 +58,11 @@ export default function EsferaTexturizada() {
         '/padres/salud_mental/planeta_8',
         '/padres/salud_mental/planeta_9',
         '/padres/salud_mental/planeta_10',
+        '/padres/salud_mental/planeta_11',
+        '/padres/salud_mental/planeta_12',
+        '/padres/salud_mental/planeta_13',
+        '/padres/salud_mental/planeta_14',
+        '/padres/salud_mental/planeta_15',
     ];
 
     const changeTexture = (direction) => {

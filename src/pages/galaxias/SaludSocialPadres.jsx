@@ -12,16 +12,18 @@ export default function EsferaTexturizada() {
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
+        '/assets/2k_makemake_fictional.jpg',// 1-  2k_makemake_fictional
+        '/assets/2k_haumea_fictional.jpg',// 2- 
+        '/assets/earthx5400x2700.jpg',// 3- 
+        '/assets/2k_neptune.jpg',// 4-
+        '/assets/2k_venus_surface.jpg', // 5-
+        '/assets/2k_uranus.jpg',// 6-
+        '/assets/2k_venus_atmosphere.jpg', // 7-
+        '/assets/2k_earth_clouds.jpg', // 8-
+        '/assets/2k_jupiter.jpg', // 9-
+        '/assets/2k_mars.jpg',// 10-
+        '/assets/2k_haumea_fictional.jpg',// 11-
+        '/assets/2k_haumea_fictional.jpg',// 12- 
     ];
 
     const texts = [
@@ -35,19 +37,23 @@ export default function EsferaTexturizada() {
         "OCTAVO PLANETA - - - - - ",
         "NOVENO PLANETA - - - - - ",
         "DECIMO PLANETA - - - - - ",
+        "ONCEAVO PLANETA - - - - - ",
+        "DOCEAVO PLANETA - - - - - ",
     ];
 
     const planetUrls = [
-        '/padres/salud_social/planeta_kio',
-        '/padres/salud_social/planeta_mer',
-        '/padres/salud_social/planeta_ven',
-        '/padres/salud_social/planeta_4',
-        '/padres/salud_social/planeta_5',
-        '/padres/salud_social/planeta_6',
-        '/padres/salud_social/planeta_7',
-        '/padres/salud_social/planeta_8',
-        '/padres/salud_social/planeta_9',
-        '/padres/salud_social/planeta_10',
+        '/padres/salud_social/planeta_companio',
+        '/padres/salud_social/planeta_communi',
+        '/padres/salud_social/planeta_emotion',
+        '/padres/salud_social/planeta_amore',
+        '/padres/salud_social/planeta_sexus',
+        '/padres/salud_social/planeta_fors',
+        '/padres/salud_social/planeta_utilus',
+        '/padres/salud_social/planeta_propius',
+        '/padres/salud_social/planeta_sensus',
+        '/padres/salud_social/planeta_directus',
+        '/padres/salud_social/planeta_kritikos',
+        '/padres/salud_social/planeta_moysico',
     ];
 
     const changeTexture = (direction) => {

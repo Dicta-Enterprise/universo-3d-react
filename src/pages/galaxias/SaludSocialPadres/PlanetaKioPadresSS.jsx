@@ -10,7 +10,7 @@ const PlanetaKio = () => {
 
     // Texturas para el carrusel de planetas
     const textures = [
-        '/assets/2k_makemake_fictional.jpg',
+        '/assets/2k_haumea_fictional.jpg',// 2k_makemake_fictional
         '/assets/2k_haumea_fictional.jpg',
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
