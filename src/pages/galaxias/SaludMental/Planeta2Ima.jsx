@@ -4,7 +4,7 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const PlanetaMer = () => {
+const Planeta2Ima = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
@@ -19,21 +19,25 @@ const PlanetaMer = () => {
     "/assets/2k_earth_clouds.jpg",
     "/assets/2k_jupiter.jpg",
     "/assets/2k_mars.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
     "/assets/2k_makemake_fictional.jpg",
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/salud_mental/planeta_mer",
-    "/ninos/salud_mental/planeta_ven",
-    "/ninos/salud_mental/planeta_4",
-    "/ninos/salud_mental/planeta_5",
-    "/ninos/salud_mental/planeta_6",
-    "/ninos/salud_mental/planeta_7",
-    "/ninos/salud_mental/planeta_8",
-    "/ninos/salud_mental/planeta_9",
-    "/ninos/salud_mental/planeta_10",
-    "/ninos/salud_mental/planeta_kio",
+    "/ninos/salud_mental/planeta_ima",
+    "/ninos/salud_mental/planeta_suf",
+    "/ninos/salud_mental/planeta_cen",
+    "/ninos/salud_mental/planeta_eue",
+    "/ninos/salud_mental/planeta_pra",
+    "/ninos/salud_mental/planeta_aes",
+    "/ninos/salud_mental/planeta_ina",
+    "/ninos/salud_mental/planeta_cer",
+    "/ninos/salud_mental/planeta_mat",
+    "/ninos/salud_mental/planeta_res",
+    "/ninos/salud_mental/planeta_abs",
+    "/ninos/salud_mental/planeta_cons",
   ];
 
   // Rutas de las imágenes
@@ -41,10 +45,10 @@ const PlanetaMer = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
 
   // Información específica del Planeta Mer
-  const planetaNombre = "Mer";
+  const planetaNombre = "IMAGINATIO";
   const resumenCurso = (
     <div>
-      <p>Explora los misterios del planeta Mer, un mundo de contrastes extremos donde:</p>
+      <p>Explora los misterios del planeta IMAGINATIO, un mundo de contrastes extremos donde:</p>
       <ul>
         <li><strong>Geografía cambiante:</strong> Montañas de hielo que se derriten en lagos de metano.</li>
         <li><strong>Clima impredecible:</strong> Tormentas magnéticas que alteran la percepción del tiempo.</li>
@@ -171,4 +175,4 @@ const PlanetaMer = () => {
   );
 };
 
-export default PlanetaMer;
+export default Planeta2Ima;

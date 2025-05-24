@@ -510,7 +510,7 @@ export default function EsferaTexturizada() {
             }}
         >
             <BackButton redirectUrl="/ninos" color={'#69b6d9'} background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="💪 Bienvenidos a la sección de Salud Fisica 💪">
+            <DivCentral title="🌐💎 Bienvenidos a la sección de Salud Fisica 🌐💎">
                 <InfoBox text={texts[currentTextureIndex]} color={'#69b6d9'} />
             </DivCentral>
             <ControlButtons

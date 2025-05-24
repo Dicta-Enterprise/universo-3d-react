@@ -30,32 +30,38 @@ export default function EsferaTexturizada() {
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
         '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
     ];
 
     const texts = [
-        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA - - ",
-        "TERCER PLANETA - - - ",
-        "CUARTO PLANETA - - - - ",
-        "QUINTO PLANETA - - - - - ",
-        "SEXTO PLANETA - - - - - ",
-        "SEPTIMO PLANETA - - - - - ",
-        "OCTAVO PLANETA - - - - - ",
-        "NOVENO PLANETA - - - - - ",
-        "DECIMO PLANETA - - - - - ",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CONSCIRE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Realidad virtual\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Artificialis",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta IMAGINATIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Cibercondria\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Dolientis",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SUFFERO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoadicción\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Adictus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CENTRUM\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: TDHA\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Distractor",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta EUESTRECE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoestres\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Estresus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta PRAESENS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoansiedad\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Anciosus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta AESTIMARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnodepresión\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Depresiorus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta INANIMIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Videojuegos\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sujector",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CERTIDUDO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ludopatía Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Apostor",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta MATURARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Pornografía\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Pornofulus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta RESILIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Resiliencia Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Fracasus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ABSTINERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Compras\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Derrocherus",
     ];
 
     const planetUrls = [
-        '/ninos/salud_mental/planeta_kio',
-        '/ninos/salud_mental/planeta_mer',
-        '/ninos/salud_mental/planeta_ven',
-        '/ninos/salud_mental/planeta_4',
-        '/ninos/salud_mental/planeta_5',
-        '/ninos/salud_mental/planeta_6',
-        '/ninos/salud_mental/planeta_7',
-        '/ninos/salud_mental/planeta_8',
-        '/ninos/salud_mental/planeta_9',
-        '/ninos/salud_mental/planeta_10',
+        '/ninos/salud_mental/planeta_cons',
+        '/ninos/salud_mental/planeta_ima',
+        '/ninos/salud_mental/planeta_suf',
+        '/ninos/salud_mental/planeta_cen',
+        '/ninos/salud_mental/planeta_eue',
+        '/ninos/salud_mental/planeta_pra',
+        '/ninos/salud_mental/planeta_aes',
+        '/ninos/salud_mental/planeta_ina',
+        '/ninos/salud_mental/planeta_cer',
+        '/ninos/salud_mental/planeta_mat',
+        '/ninos/salud_mental/planeta_res',
+        '/ninos/salud_mental/planeta_abs',
     ];
 
     const changeTexture = (direction) => {
@@ -516,7 +522,7 @@ export default function EsferaTexturizada() {
             }}
         >
             <BackButton redirectUrl="/ninos" color={'#55dd84'} background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="Bienvenidos a la sección de Salud Mental">
+            <DivCentral title="🧪🦠 Bienvenidos a la sección de Salud Mental 🧪🦠">
                 <InfoBox text={texts[currentTextureIndex]} color={'#55dd84'} />
             </DivCentral>
             <ControlButtons

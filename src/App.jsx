@@ -28,9 +28,18 @@ import Planeta9Sen from './pages/galaxias/SaludSocial/Planeta9Sen';
 import Planeta10Dir from './pages/galaxias/SaludSocial/Planeta10Dir';
 import Planeta11Kri from './pages/galaxias/SaludSocial/Planeta11Kri';
 import Planeta12Moy from './pages/galaxias/SaludSocial/Planeta12Moy';
-import PlanetaKioSM from './pages/galaxias/SaludMental/PlanetaKioSM';
-import PlanetaMerSM from './pages/galaxias/SaludMental/PlanetaMerSM';
-import PlanetaVenSM from './pages/galaxias/SaludMental/PlanetaVenSM';
+import Planeta1Cons from './pages/galaxias/SaludMental/Planeta1Cons';
+import Planeta2Ima from './pages/galaxias/SaludMental/Planeta2Ima';
+import Planeta3Suf from './pages/galaxias/SaludMental/Planeta3Suf';
+import Planeta4Cen from './pages/galaxias/SaludMental/Planeta4Cen';
+import Planeta5Eue from './pages/galaxias/SaludMental/Planeta5Eue';
+import Planeta6Pra from './pages/galaxias/SaludMental/Planeta6Pra';
+import Planeta7Aes from './pages/galaxias/SaludMental/Planeta7Aes';
+import Planeta8Ina from './pages/galaxias/SaludMental/Planeta8Ina';
+import Planeta9Cer from './pages/galaxias/SaludMental/Planeta9Cer';
+import Planeta10Mat from './pages/galaxias/SaludMental/Planeta10Mat';
+import Planeta11Res from './pages/galaxias/SaludMental/Planeta11Res';
+import Planeta12Abs from './pages/galaxias/SaludMental/Planeta12Abs';
 import Planeta1Man from './pages/galaxias/SaludFisica/Planeta1Man';
 import Planeta2Lev from './pages/galaxias/SaludFisica/Planeta2Lev';
 import Planeta3Ver from './pages/galaxias/SaludFisica/Planeta3Ver';
@@ -80,9 +89,18 @@ function App() {
                 <Route path="/ninos/salud_social/planeta_kri" element={<Planeta11Kri />} />
                 <Route path="/ninos/salud_social/planeta_moy" element={<Planeta12Moy />} />
 
-                <Route path="/ninos/salud_mental/planeta_kio" element={<PlanetaKioSM />} />
-                <Route path="/ninos/salud_mental/planeta_mer" element={<PlanetaMerSM />} />
-                <Route path="/ninos/salud_mental/planeta_ven" element={<PlanetaVenSM />} />
+                <Route path="/ninos/salud_mental/planeta_cons" element={<Planeta1Cons />} />
+                <Route path="/ninos/salud_mental/planeta_ima" element={<Planeta2Ima />} />
+                <Route path="/ninos/salud_mental/planeta_suf" element={<Planeta3Suf />} />
+                <Route path="/ninos/salud_mental/planeta_cen" element={<Planeta4Cen />} />
+                <Route path="/ninos/salud_mental/planeta_eue" element={<Planeta5Eue />} />
+                <Route path="/ninos/salud_mental/planeta_pra" element={<Planeta6Pra />} />
+                <Route path="/ninos/salud_mental/planeta_aes" element={<Planeta7Aes />} />
+                <Route path="/ninos/salud_mental/planeta_ina" element={<Planeta8Ina />} />
+                <Route path="/ninos/salud_mental/planeta_cer" element={<Planeta9Cer />} />
+                <Route path="/ninos/salud_mental/planeta_mat" element={<Planeta10Mat />} />
+                <Route path="/ninos/salud_mental/planeta_res" element={<Planeta11Res />} />
+                <Route path="/ninos/salud_mental/planeta_abs" element={<Planeta12Abs />} />
 
                 <Route path="/ninos/salud_fisica/planeta_man" element={<Planeta1Man />} />
                 <Route path="/ninos/salud_fisica/planeta_lev" element={<Planeta2Lev />} />

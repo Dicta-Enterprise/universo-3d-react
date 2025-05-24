@@ -4,36 +4,40 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const PlanetaVen = () => {
+const Planeta8Ina = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
-    "/assets/earthx5400x2700.jpg", // Textura del planeta Ven (primera posición)
-    "/assets/2k_neptune.jpg",
-    "/assets/2k_venus_surface.jpg",
-    "/assets/2k_uranus.jpg",
-    "/assets/2k_venus_atmosphere.jpg",
-    "/assets/2k_earth_clouds.jpg",
-    "/assets/2k_jupiter.jpg",
-    "/assets/2k_mars.jpg",
-    "/assets/2k_makemake_fictional.jpg",
-    "/assets/2k_haumea_fictional.jpg",
+    '/assets/2k_earth_clouds.jpg',
+    '/assets/2k_jupiter.jpg',
+    '/assets/2k_mars.jpg',
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    '/assets/2k_makemake_fictional.jpg',
+    '/assets/2k_haumea_fictional.jpg',
+    '/assets/earthx5400x2700.jpg',
+    '/assets/2k_neptune.jpg',
+    '/assets/2k_venus_surface.jpg',
+    '/assets/2k_uranus.jpg',
+    '/assets/2k_venus_atmosphere.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/salud_mental/planeta_ven",
-    "/ninos/salud_mental/planeta_4",
-    "/ninos/salud_mental/planeta_5",
-    "/ninos/salud_mental/planeta_6",
-    "/ninos/salud_mental/planeta_7",
-    "/ninos/salud_mental/planeta_8",
-    "/ninos/salud_mental/planeta_9",
-    "/ninos/salud_mental/planeta_10",
-    "/ninos/salud_mental/planeta_kio",
-    "/ninos/salud_mental/planeta_mer",
+    "/ninos/salud_mental/planeta_ina",
+    "/ninos/salud_mental/planeta_cer",
+    "/ninos/salud_mental/planeta_mat",
+    "/ninos/salud_mental/planeta_res",
+    "/ninos/salud_mental/planeta_abs",
+    "/ninos/salud_mental/planeta_cons",
+    "/ninos/salud_mental/planeta_ima",
+    "/ninos/salud_mental/planeta_suf",
+    "/ninos/salud_mental/planeta_cen",
+    "/ninos/salud_mental/planeta_eue",
+    "/ninos/salud_mental/planeta_pra",
+    "/ninos/salud_mental/planeta_aes",
   ];
 
   // Rutas de las imágenes
@@ -41,10 +45,10 @@ const PlanetaVen = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "Ven";
+  const planetaNombre = "INANIMIS";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta Ven, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta INANIMIS, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
@@ -167,4 +171,4 @@ const PlanetaVen = () => {
   );
 };
 
-export default PlanetaVen;
+export default Planeta8Ina;
