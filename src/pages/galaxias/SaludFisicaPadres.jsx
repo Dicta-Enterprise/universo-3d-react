@@ -20,8 +20,8 @@ export default function EsferaTexturizada() {
         '/assets/2k_uranus.jpg',
         '/assets/2k_venus_atmosphere.jpg',
         '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
+        //'/assets/2k_jupiter.jpg',
+        //'/assets/2k_mars.jpg',
     ];
 
     const texts = [
@@ -33,8 +33,7 @@ export default function EsferaTexturizada() {
         "SEXTO PLANETA - - - - - ",
         "SEPTIMO PLANETA - - - - - ",
         "OCTAVO PLANETA - - - - - ",
-        "NOVENO PLANETA - - - - - ",
-        "DECIMO PLANETA - - - - - ",
+
     ];
 
     const planetUrls = [
@@ -46,8 +45,7 @@ export default function EsferaTexturizada() {
         '/padres/salud_fisica/planeta_6',
         '/padres/salud_fisica/planeta_7',
         '/padres/salud_fisica/planeta_8',
-        '/padres/salud_fisica/planeta_9',
-        '/padres/salud_fisica/planeta_10',
+
     ];
 
     const changeTexture = (direction) => {

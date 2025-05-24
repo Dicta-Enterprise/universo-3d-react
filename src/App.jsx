@@ -54,7 +54,21 @@ import PlanetaVenPD from './pages/galaxias/PeligrosDigitales/PlanetaVenPD';
 import PlanetaKioPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaKioPadresSS';
 import PlanetaMerPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaMerPadresSS';
 import PlanetaVenPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaVenPadresSS';
-
+// Planeta Padres
+import PlanetaCompanio from './pages/galaxias/SaludSocialPadres/Planeta-1';
+import PlanetaCOMMUNIS from './pages/galaxias/SaludSocialPadres/Planeta-2';
+import PlanetaEmotion from './pages/galaxias/SaludSocialPadres/Planeta-3'; 
+import PlanetaAmore from './pages/galaxias/SaludSocialPadres/Planeta-4';
+import PlanetaSexus from './pages/galaxias/SaludSocialPadres/Planeta-5';
+import PlanetaFors from './pages/galaxias/SaludSocialPadres/Planeta-6';
+import PlanetaUtilus from './pages/galaxias/SaludSocialPadres/Planeta-7';
+import PlanetaPropius from './pages/galaxias/SaludSocialPadres/Planeta-8';
+import PlanetaSensus from './pages/galaxias/SaludSocialPadres/Planeta-9';
+import PlanetaDirectus from './pages/galaxias/SaludSocialPadres/Planeta-10';
+import PlanetaKritikos from './pages/galaxias/SaludSocialPadres/Planeta-11';
+import PlanetaMoysico from './pages/galaxias/SaludSocialPadres/Planeta-12';
+import Planeta1Comp_jovenes from './pages/galaxias/SaludSocialJovenes/Planeta1Comp';
+//Fin Planeta Padres
 function App() {
     return (
         <Router>
@@ -119,12 +133,29 @@ function App() {
 
 
 
+                {/* Rutas principales Planetas Jovenes  */}
+                <Route path="/jovenes/salud_social/planeta_comp" element={<Planeta1Comp_jovenes/>} />|
 
-
+                {/* Rutas principales Planetas Padres  */}
+                {/* Salud_Social */}
                 <Route path="/padres/salud_social/planeta_kio" element={<PlanetaKioPadresSS />} />
                 <Route path="/padres/salud_social/planeta_mer" element={<PlanetaMerPadresSS />} />
                 <Route path="/padres/salud_social/planeta_ven" element={<PlanetaVenPadresSS />} />
+                <Route path="/padres/salud_social/planeta_companio" element={<PlanetaCompanio/>} />
+                <Route path="/padres/salud_social/planeta_communi" element={<PlanetaCOMMUNIS/>} />
+                <Route path="/padres/salud_social/planeta_emotion" element={<PlanetaEmotion/>} />
+                <Route path="/padres/salud_social/planeta_amore" element={<PlanetaAmore/>} />
+                <Route path="/padres/salud_social/planeta_sexus" element={<PlanetaSexus/>} />
+                <Route path="/padres/salud_social/planeta_fors" element={<PlanetaFors/>} />
+                <Route path="/padres/salud_social/planeta_utilus" element={<PlanetaUtilus/>} />
+                <Route path="/padres/salud_social/planeta_propius" element={<PlanetaPropius/>} />
+                <Route path="/padres/salud_social/planeta_sensus" element={<PlanetaSensus/>} />
+                <Route path="/padres/salud_social/planeta_directus" element={<PlanetaDirectus/>} />
+                <Route path="/padres/salud_social/planeta_kritikos" element={<PlanetaKritikos/>} />
+                <Route path="/padres/salud_social/planeta_moysico" element={<PlanetaMoysico/>} />
+                {/* Salud_Mental */}
 
+                {/*  Fin de Rutas principales  Planetas Padres  */}
 
 
 

@@ -4,13 +4,13 @@ import ThreeScene from '../../../components/Landing/ThreeScene';
 import MainContent from '../../../components/Landing/MainContent';
 import ResizeHandler from '../../../components/Landing/ResizeHandler';
 
-const PlanetaKio = () => {
+const Planeta1Comp_jovenes = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showCarousel, setShowCarousel] = useState(false);
 
     // Texturas para el carrusel de planetas
     const textures = [
-        '/assets/2k_haumea_fictional.jpg',// 2k_makemake_fictional
+        '/assets/2k_makemake_fictional.jpg',
         '/assets/2k_haumea_fictional.jpg',
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
@@ -20,20 +20,24 @@ const PlanetaKio = () => {
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
         '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
     ];
 
     // URLs de los planetas
     const planetUrls = [
-        '/padres/salud_social/planeta_kio',
-        '/padres/salud_social/planeta_mer',
-        '/padres/salud_social/planeta_ven',
-        '/padres/salud_social/planeta_4',
-        '/padres/salud_social/planeta_5',
-        '/padres/salud_social/planeta_6',
-        '/padres/salud_social/planeta_7',
-        '/padres/salud_social/planeta_8',
-        '/padres/salud_social/planeta_9',
-        '/padres/salud_social/planeta_10',
+        '/ninos/salud_social/planeta_comp',
+        '/ninos/salud_social/planeta_com',
+        '/ninos/salud_social/planeta_emo',
+        '/ninos/salud_social/planeta_amo',
+        '/ninos/salud_social/planeta_sexu',
+        '/ninos/salud_social/planeta_for',
+        '/ninos/salud_social/planeta_util',
+        '/ninos/salud_social/planeta_pro',
+        '/ninos/salud_social/planeta_sen',
+        '/ninos/salud_social/planeta_dir',
+        '/ninos/salud_social/planeta_kri',
+        '/ninos/salud_social/planeta_moy',
     ];
 
     // Rutas de las imágenes
@@ -41,14 +45,14 @@ const PlanetaKio = () => {
     const imagenBeneficios = 'https://tn.com.ar/resizer/v2/cual-es-el-sueldo-de-un-astronauta-de-la-nasa-foto-adobestock-OVP5HZHY7NHB3PWLAVL5ARG66A.png?auth=a3e77c7ff1be7c62dfc79ca3276dbc43d99ec81620644ed5637f4993c154dad4&width=767';
 
     // Información específica del Planeta Kio
-    const planetaNombre = "Kio";
+    const planetaNombre = "COMPANIO";
     const resumenCurso = (
         <div>
-            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta Kio, explorando:</p>
+            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta COMPANIO, explorando:</p>
             <ul>
                 <li><strong>Geografía única:</strong> Montañas cristalinas, océanos de lava y biomas impresionantes.</li>
                 <li><strong>Clima extremo:</strong> Tormentas de arena eléctricas y lluvias ácidas.</li>
-                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar Kio.</li>
+                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar COMPANIO.</li>
             </ul>
         </div>
     );
@@ -145,7 +149,7 @@ const PlanetaKio = () => {
             overflowY: 'auto',
             overflowX: 'hidden',
         }}>
-            <BackButton color="#FFFFFF" redirectUrl="/padres/salud_social" background= {'none'}/>
+            <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
             <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
             <MainContent
                 isMobile={isMobile}
@@ -163,4 +167,4 @@ const PlanetaKio = () => {
     );
 };
 
-export default PlanetaKio;
+export default Planeta1Comp_jovenes;
