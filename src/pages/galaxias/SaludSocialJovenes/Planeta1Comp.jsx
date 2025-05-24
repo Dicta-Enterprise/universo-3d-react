@@ -4,7 +4,7 @@ import ThreeScene from '../../../components/Landing/ThreeScene';
 import MainContent from '../../../components/Landing/MainContent';
 import ResizeHandler from '../../../components/Landing/ResizeHandler';
 
-const Planeta1Comp = () => {
+const Planeta1Comp_jovenes = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showCarousel, setShowCarousel] = useState(false);
 
@@ -167,4 +167,4 @@ const Planeta1Comp = () => {
     );
 };
 
-export default Planeta1Comp;
+export default Planeta1Comp_jovenes;

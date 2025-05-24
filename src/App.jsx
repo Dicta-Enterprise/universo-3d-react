@@ -58,6 +58,7 @@ import PlanetaSensus from './pages/galaxias/SaludSocialPadres/Planeta-9';
 import PlanetaDirectus from './pages/galaxias/SaludSocialPadres/Planeta-10';
 import PlanetaKritikos from './pages/galaxias/SaludSocialPadres/Planeta-11';
 import PlanetaMoysico from './pages/galaxias/SaludSocialPadres/Planeta-12';
+import Planeta1Comp_jovenes from './pages/galaxias/SaludSocialJovenes/Planeta1Comp';
 //Fin Planeta Padres
 function App() {
     return (
@@ -114,6 +115,8 @@ function App() {
 
 
 
+                {/* Rutas principales Planetas Jovenes  */}
+                <Route path="/jovenes/salud_social/planeta_comp" element={<Planeta1Comp_jovenes/>} />|
 
                 {/* Rutas principales Planetas Padres  */}
                 {/* Salud_Social */}

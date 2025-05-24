@@ -12,7 +12,7 @@ export default function EsferaTexturizada() {
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
     const textures = [
-        '/assets/2k_makemake_fictional.jpg',
+        '/assets/2k_mars.jpg',
         '/assets/2k_haumea_fictional.jpg',
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
@@ -21,7 +21,7 @@ export default function EsferaTexturizada() {
         '/assets/2k_venus_atmosphere.jpg',
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
+        '/assets/2k_mars.jpg',//2k_makemake_fictional.jpg
     ];
 
     const texts = [
@@ -38,7 +38,7 @@ export default function EsferaTexturizada() {
     ];
 
     const planetUrls = [
-        '/jovenes/salud_social/planeta_kio',
+        '/jovenes/salud_social/planeta_comp',
         '/jovenes/salud_social/planeta_mer',
         '/jovenes/salud_social/planeta_ven',
         '/jovenes/salud_social/planeta_4',
