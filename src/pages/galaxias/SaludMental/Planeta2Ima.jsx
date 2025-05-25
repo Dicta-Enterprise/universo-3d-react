@@ -21,6 +21,9 @@ const Planeta2Ima = () => {
     "/assets/2k_mars.jpg",
     "/assets/textura blanco.jpg",
     "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
     "/assets/2k_makemake_fictional.jpg",
   ];
 
@@ -37,6 +40,9 @@ const Planeta2Ima = () => {
     "/ninos/salud_mental/planeta_mat",
     "/ninos/salud_mental/planeta_res",
     "/ninos/salud_mental/planeta_abs",
+    "/ninos/salud_mental/planeta_som",
+    "/ninos/salud_mental/planeta_act",
+    "/ninos/salud_mental/planeta_ali",
     "/ninos/salud_mental/planeta_cons",
   ];
 

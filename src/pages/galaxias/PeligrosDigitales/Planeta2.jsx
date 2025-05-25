@@ -4,7 +4,7 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const PlanetaMer = () => {
+const Planeta2Ima = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
@@ -19,21 +19,31 @@ const PlanetaMer = () => {
     "/assets/2k_earth_clouds.jpg",
     "/assets/2k_jupiter.jpg",
     "/assets/2k_mars.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
     "/assets/2k_makemake_fictional.jpg",
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/peligros_digitales/planeta_mer",
-    "/ninos/peligros_digitales/planeta_ven",
-    "/ninos/peligros_digitales/planeta_4",
-    "/ninos/peligros_digitales/planeta_5",
-    "/ninos/peligros_digitales/planeta_6",
-    "/ninos/peligros_digitales/planeta_7",
-    "/ninos/peligros_digitales/planeta_8",
-    "/ninos/peligros_digitales/planeta_9",
-    "/ninos/peligros_digitales/planeta_10",
-    "/ninos/peligros_digitales/planeta_kio",
+    '/ninos/peligros_digitales/planeta_2',
+    '/ninos/peligros_digitales/planeta_3',
+    '/ninos/peligros_digitales/planeta_4',
+    '/ninos/peligros_digitales/planeta_5',
+    '/ninos/peligros_digitales/planeta_gra',
+    '/ninos/peligros_digitales/planeta_sci',
+    '/ninos/peligros_digitales/planeta_gau',
+    '/ninos/peligros_digitales/planeta_pax',
+    '/ninos/peligros_digitales/planeta_lib',
+    '/ninos/peligros_digitales/planeta_rea',
+    '/ninos/peligros_digitales/planeta_rep',
+    '/ninos/peligros_digitales/planeta_pri',
+    '/ninos/peligros_digitales/planeta_acc',
+    '/ninos/peligros_digitales/planeta_tri',
+    '/ninos/peligros_digitales/planeta_kio',
   ];
 
   // Rutas de las imágenes
@@ -41,10 +51,10 @@ const PlanetaMer = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
 
   // Información específica del Planeta Mer
-  const planetaNombre = "Mer";
+  const planetaNombre = "2";
   const resumenCurso = (
     <div>
-      <p>Explora los misterios del planeta Mer, un mundo de contrastes extremos donde:</p>
+      <p>Explora los misterios del planeta 2, un mundo de contrastes extremos donde:</p>
       <ul>
         <li><strong>Geografía cambiante:</strong> Montañas de hielo que se derriten en lagos de metano.</li>
         <li><strong>Clima impredecible:</strong> Tormentas magnéticas que alteran la percepción del tiempo.</li>
@@ -171,4 +181,4 @@ const PlanetaMer = () => {
   );
 };
 
-export default PlanetaMer;
+export default Planeta2Ima;

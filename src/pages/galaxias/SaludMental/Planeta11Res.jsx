@@ -12,6 +12,9 @@ const Planeta11Res = () => {
   const textures = [
     "/assets/textura blanco.jpg",
     "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
     '/assets/2k_makemake_fictional.jpg',
     '/assets/2k_haumea_fictional.jpg',
     '/assets/earthx5400x2700.jpg',
@@ -28,6 +31,9 @@ const Planeta11Res = () => {
   const planetUrls = [
     "/ninos/salud_mental/planeta_res",
     "/ninos/salud_mental/planeta_abs",
+    "/ninos/salud_mental/planeta_som",
+    "/ninos/salud_mental/planeta_act",
+    "/ninos/salud_mental/planeta_ali",
     "/ninos/salud_mental/planeta_cons",
     "/ninos/salud_mental/planeta_ima",
     "/ninos/salud_mental/planeta_suf",

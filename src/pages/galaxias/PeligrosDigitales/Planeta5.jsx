@@ -4,36 +4,46 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const PlanetaVen = () => {
+const Planeta5 = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
-    "/assets/earthx5400x2700.jpg", // Textura del planeta Ven (primera posición)
-    "/assets/2k_neptune.jpg",
-    "/assets/2k_venus_surface.jpg",
-    "/assets/2k_uranus.jpg",
-    "/assets/2k_venus_atmosphere.jpg",
-    "/assets/2k_earth_clouds.jpg",
-    "/assets/2k_jupiter.jpg",
-    "/assets/2k_mars.jpg",
-    "/assets/2k_makemake_fictional.jpg",
-    "/assets/2k_haumea_fictional.jpg",
+    '/assets/2k_venus_surface.jpg',
+    '/assets/2k_uranus.jpg',
+    '/assets/2k_venus_atmosphere.jpg',
+    '/assets/2k_earth_clouds.jpg',
+    '/assets/2k_jupiter.jpg',
+    '/assets/2k_mars.jpg',
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
+    "/assets/textura negro.jpg",
+    "/assets/textura blanco.jpg",
+    '/assets/2k_makemake_fictional.jpg',
+    '/assets/2k_haumea_fictional.jpg',
+    '/assets/earthx5400x2700.jpg',
+    '/assets/2k_neptune.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    "/ninos/peligros_digitales/planeta_ven",
-    "/ninos/peligros_digitales/planeta_4",
-    "/ninos/peligros_digitales/planeta_5",
-    "/ninos/peligros_digitales/planeta_6",
-    "/ninos/peligros_digitales/planeta_7",
-    "/ninos/peligros_digitales/planeta_8",
-    "/ninos/peligros_digitales/planeta_9",
-    "/ninos/peligros_digitales/planeta_10",
-    "/ninos/peligros_digitales/planeta_kio",
-    "/ninos/peligros_digitales/planeta_mer",
+    '/ninos/peligros_digitales/planeta_5',
+    '/ninos/peligros_digitales/planeta_gra',
+    '/ninos/peligros_digitales/planeta_sci',
+    '/ninos/peligros_digitales/planeta_gau',
+    '/ninos/peligros_digitales/planeta_pax',
+    '/ninos/peligros_digitales/planeta_lib',
+    '/ninos/peligros_digitales/planeta_rea',
+    '/ninos/peligros_digitales/planeta_rep',
+    '/ninos/peligros_digitales/planeta_pri',
+    '/ninos/peligros_digitales/planeta_acc',
+    '/ninos/peligros_digitales/planeta_tri',
+    '/ninos/peligros_digitales/planeta_kio',
+    '/ninos/peligros_digitales/planeta_2',
+    '/ninos/peligros_digitales/planeta_3',
+    '/ninos/peligros_digitales/planeta_4',
   ];
 
   // Rutas de las imágenes
@@ -41,10 +51,10 @@ const PlanetaVen = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "Ven";
+  const planetaNombre = "5";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta Ven, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta 5, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
@@ -167,4 +177,4 @@ const PlanetaVen = () => {
   );
 };
 
-export default PlanetaVen;
+export default Planeta5;

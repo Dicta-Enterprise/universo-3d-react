@@ -4,12 +4,17 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const Planeta5Eue = () => {
+const Planeta15Ali = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
+    "/assets/textura blanco.jpg",
+    '/assets/2k_makemake_fictional.jpg',
+    '/assets/2k_haumea_fictional.jpg',
+    '/assets/earthx5400x2700.jpg',
+    '/assets/2k_neptune.jpg',
     '/assets/2k_venus_surface.jpg',
     '/assets/2k_uranus.jpg',
     '/assets/2k_venus_atmosphere.jpg',
@@ -20,15 +25,15 @@ const Planeta5Eue = () => {
     "/assets/textura negro.jpg",
     "/assets/textura blanco.jpg",
     "/assets/textura negro.jpg",
-    "/assets/textura blanco.jpg",
-    '/assets/2k_makemake_fictional.jpg',
-    '/assets/2k_haumea_fictional.jpg',
-    '/assets/earthx5400x2700.jpg',
-    '/assets/2k_neptune.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
+    "/ninos/salud_mental/planeta_ali",
+    "/ninos/salud_mental/planeta_cons",
+    "/ninos/salud_mental/planeta_ima",
+    "/ninos/salud_mental/planeta_suf",
+    "/ninos/salud_mental/planeta_cen",
     "/ninos/salud_mental/planeta_eue",
     "/ninos/salud_mental/planeta_pra",
     "/ninos/salud_mental/planeta_aes",
@@ -39,11 +44,6 @@ const Planeta5Eue = () => {
     "/ninos/salud_mental/planeta_abs",
     "/ninos/salud_mental/planeta_som",
     "/ninos/salud_mental/planeta_act",
-    "/ninos/salud_mental/planeta_ali",
-    "/ninos/salud_mental/planeta_cons",
-    "/ninos/salud_mental/planeta_ima",
-    "/ninos/salud_mental/planeta_suf",
-    "/ninos/salud_mental/planeta_cen",
   ];
 
   // Rutas de las imágenes
@@ -51,10 +51,10 @@ const Planeta5Eue = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "EUESTRECE";
+  const planetaNombre = "ALIMENTUM";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta EUESTRECE, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta ALIMENTUM, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
@@ -177,4 +177,4 @@ const Planeta5Eue = () => {
   );
 };
 
-export default Planeta5Eue;
+export default Planeta15Ali;

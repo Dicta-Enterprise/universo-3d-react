@@ -40,6 +40,9 @@ import Planeta9Cer from './pages/galaxias/SaludMental/Planeta9Cer';
 import Planeta10Mat from './pages/galaxias/SaludMental/Planeta10Mat';
 import Planeta11Res from './pages/galaxias/SaludMental/Planeta11Res';
 import Planeta12Abs from './pages/galaxias/SaludMental/Planeta12Abs';
+import Planeta13Som from './pages/galaxias/SaludMental/Planeta13Som';
+import Planeta14Act from './pages/galaxias/SaludMental/Planeta14Act';
+import Planeta15Ali from './pages/galaxias/SaludMental/Planeta15Ali';
 import Planeta1Man from './pages/galaxias/SaludFisica/Planeta1Man';
 import Planeta2Lev from './pages/galaxias/SaludFisica/Planeta2Lev';
 import Planeta3Ver from './pages/galaxias/SaludFisica/Planeta3Ver';
@@ -48,9 +51,21 @@ import Planeta5Add from './pages/galaxias/SaludFisica/Planeta5Add';
 import Planeta6Ele from './pages/galaxias/SaludFisica/Planeta6Ele';
 import Planeta7Mel from './pages/galaxias/SaludFisica/Planeta7Mel';
 import Planeta8Aud from './pages/galaxias/SaludFisica/Planeta8Aud';
-import PlanetaKioPD from './pages/galaxias/PeligrosDigitales/PlanetaKioPD';
-import PlanetaMerPD from './pages/galaxias/PeligrosDigitales/PlanetaMerPD';
-import PlanetaVenPD from './pages/galaxias/PeligrosDigitales/PlanetaVenPD';
+import Planeta1Kio from './pages/galaxias/PeligrosDigitales/Planeta1Kio';
+import Planeta2 from './pages/galaxias/PeligrosDigitales/Planeta2';
+import Planeta3 from './pages/galaxias/PeligrosDigitales/Planeta3';
+import Planeta4 from './pages/galaxias/PeligrosDigitales/Planeta4';
+import Planeta5 from './pages/galaxias/PeligrosDigitales/Planeta5';
+import Planeta6Gra from './pages/galaxias/PeligrosDigitales/Planeta6Gra';
+import Planeta7Sci from './pages/galaxias/PeligrosDigitales/Planeta7Sci';
+import Planeta8Gau from './pages/galaxias/PeligrosDigitales/Planeta8Gau';
+import Planeta9Pax from './pages/galaxias/PeligrosDigitales/Planeta9Pax';
+import Planeta10Lib from './pages/galaxias/PeligrosDigitales/Planeta10Lib';
+import Planeta11Rea from './pages/galaxias/PeligrosDigitales/Planeta11Rea';
+import Planeta12Rep from './pages/galaxias/PeligrosDigitales/Planeta12Rep';
+import Planeta13Pri from './pages/galaxias/PeligrosDigitales/Planeta13Pri';
+import Planeta14Acc from './pages/galaxias/PeligrosDigitales/Planeta14Acc';
+import Planeta15Tri from './pages/galaxias/PeligrosDigitales/Planeta15Tri';
 import PlanetaKioPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaKioPadresSS';
 import PlanetaMerPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaMerPadresSS';
 import PlanetaVenPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaVenPadresSS';
@@ -115,6 +130,10 @@ function App() {
                 <Route path="/ninos/salud_mental/planeta_mat" element={<Planeta10Mat />} />
                 <Route path="/ninos/salud_mental/planeta_res" element={<Planeta11Res />} />
                 <Route path="/ninos/salud_mental/planeta_abs" element={<Planeta12Abs />} />
+                <Route path="/ninos/salud_mental/planeta_som" element={<Planeta13Som />} />
+                <Route path="/ninos/salud_mental/planeta_act" element={<Planeta14Act />} />
+                <Route path="/ninos/salud_mental/planeta_ali" element={<Planeta15Ali />} />
+
 
                 <Route path="/ninos/salud_fisica/planeta_man" element={<Planeta1Man />} />
                 <Route path="/ninos/salud_fisica/planeta_lev" element={<Planeta2Lev />} />
@@ -126,10 +145,21 @@ function App() {
                 <Route path="/ninos/salud_fisica/planeta_aud" element={<Planeta8Aud />} />
 
 
-                <Route path="/ninos/peligros_digitales/planeta_kio" element={<PlanetaKioPD />} />
-                <Route path="/ninos/peligros_digitales/planeta_mer" element={<PlanetaMerPD />} />
-                <Route path="/ninos/peligros_digitales/planeta_ven" element={<PlanetaVenPD />} />
-
+                <Route path="/ninos/peligros_digitales/planeta_kio" element={<Planeta1Kio />} />
+                <Route path="/ninos/peligros_digitales/planeta_2" element={<Planeta2 />} />
+                <Route path="/ninos/peligros_digitales/planeta_3" element={<Planeta3 />} />
+                <Route path="/ninos/peligros_digitales/planeta_4" element={<Planeta4 />} />
+                <Route path="/ninos/peligros_digitales/planeta_5" element={<Planeta5 />} />
+                <Route path="/ninos/peligros_digitales/planeta_gra" element={<Planeta6Gra />} />
+                <Route path="/ninos/peligros_digitales/planeta_sci" element={<Planeta7Sci />} />
+                <Route path="/ninos/peligros_digitales/planeta_gau" element={<Planeta8Gau />} />
+                <Route path="/ninos/peligros_digitales/planeta_pax" element={<Planeta9Pax />} />
+                <Route path="/ninos/peligros_digitales/planeta_lib" element={<Planeta10Lib />} />
+                <Route path="/ninos/peligros_digitales/planeta_rea" element={<Planeta11Rea />} />
+                <Route path="/ninos/peligros_digitales/planeta_rep" element={<Planeta12Rep />} />
+                <Route path="/ninos/peligros_digitales/planeta_pri" element={<Planeta13Pri />} />
+                <Route path="/ninos/peligros_digitales/planeta_acc" element={<Planeta14Acc />} />
+                <Route path="/ninos/peligros_digitales/planeta_tri" element={<Planeta15Tri />} />
 
 
 

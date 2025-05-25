@@ -32,6 +32,9 @@ export default function EsferaTexturizada() {
         '/assets/2k_mars.jpg',
         '/assets/textura blanco.jpg',
         '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
     ];
 
     const texts = [
@@ -47,6 +50,9 @@ export default function EsferaTexturizada() {
         "Tipo de riesgo: Salud Mental\nPlaneta: Planeta MATURARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Pornografía\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Pornofulus",
         "Tipo de riesgo: Salud Mental\nPlaneta: Planeta RESILIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Resiliencia Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Fracasus",
         "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ABSTINERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Compras\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Derrocherus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SOMNUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Trastorno del Sueño\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Imsomnios",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ACTUARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Trastorno de Conducta\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Bipolarus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ALIMENTUM\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Transtornos Alimenticios\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Desnutrictor",
     ];
 
     const planetUrls = [
@@ -62,6 +68,9 @@ export default function EsferaTexturizada() {
         '/ninos/salud_mental/planeta_mat',
         '/ninos/salud_mental/planeta_res',
         '/ninos/salud_mental/planeta_abs',
+        '/ninos/salud_mental/planeta_som',
+        '/ninos/salud_mental/planeta_act',
+        '/ninos/salud_mental/planeta_ali',
     ];
 
     const changeTexture = (direction) => {

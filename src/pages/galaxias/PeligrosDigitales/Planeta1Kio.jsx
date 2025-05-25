@@ -4,7 +4,7 @@ import ThreeScene from '../../../components/Landing/ThreeScene';
 import MainContent from '../../../components/Landing/MainContent';
 import ResizeHandler from '../../../components/Landing/ResizeHandler';
 
-const PlanetaKio = () => {
+const Planeta1Kio = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showCarousel, setShowCarousel] = useState(false);
 
@@ -20,20 +20,30 @@ const PlanetaKio = () => {
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
         '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
     ];
 
     // URLs de los planetas
     const planetUrls = [
         '/ninos/peligros_digitales/planeta_kio',
-        '/ninos/peligros_digitales/planeta_mer',
-        '/ninos/peligros_digitales/planeta_ven',
+        '/ninos/peligros_digitales/planeta_2',
+        '/ninos/peligros_digitales/planeta_3',
         '/ninos/peligros_digitales/planeta_4',
         '/ninos/peligros_digitales/planeta_5',
-        '/ninos/peligros_digitales/planeta_6',
-        '/ninos/peligros_digitales/planeta_7',
-        '/ninos/peligros_digitales/planeta_8',
-        '/ninos/peligros_digitales/planeta_9',
-        '/ninos/peligros_digitales/planeta_10',
+        '/ninos/peligros_digitales/planeta_gra',
+        '/ninos/peligros_digitales/planeta_sci',
+        '/ninos/peligros_digitales/planeta_gau',
+        '/ninos/peligros_digitales/planeta_pax',
+        '/ninos/peligros_digitales/planeta_lib',
+        '/ninos/peligros_digitales/planeta_rea',
+        '/ninos/peligros_digitales/planeta_rep',
+        '/ninos/peligros_digitales/planeta_pri',
+        '/ninos/peligros_digitales/planeta_acc',
+        '/ninos/peligros_digitales/planeta_tri',
     ];
 
     // Rutas de las imágenes
@@ -41,14 +51,14 @@ const PlanetaKio = () => {
     const imagenBeneficios = 'https://tn.com.ar/resizer/v2/cual-es-el-sueldo-de-un-astronauta-de-la-nasa-foto-adobestock-OVP5HZHY7NHB3PWLAVL5ARG66A.png?auth=a3e77c7ff1be7c62dfc79ca3276dbc43d99ec81620644ed5637f4993c154dad4&width=767';
 
     // Información específica del Planeta Kio
-    const planetaNombre = "Kio";
+    const planetaNombre = "KIO";
     const resumenCurso = (
         <div>
-            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta Kio, explorando:</p>
+            <p>Este curso te llevará a través de los conceptos básicos y avanzados del planeta KIO, explorando:</p>
             <ul>
                 <li><strong>Geografía única:</strong> Montañas cristalinas, océanos de lava y biomas impresionantes.</li>
                 <li><strong>Clima extremo:</strong> Tormentas de arena eléctricas y lluvias ácidas.</li>
-                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar Kio.</li>
+                <li><strong>Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar CONSCIRE.</li>
             </ul>
         </div>
     );
@@ -163,4 +173,4 @@ const PlanetaKio = () => {
     );
 };
 
-export default PlanetaKio;
+export default Planeta1Kio;
