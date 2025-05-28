@@ -66,6 +66,21 @@ import Planeta12Rep from './pages/galaxias/PeligrosDigitales/Planeta12Rep';
 import Planeta13Pri from './pages/galaxias/PeligrosDigitales/Planeta13Pri';
 import Planeta14Acc from './pages/galaxias/PeligrosDigitales/Planeta14Acc';
 import Planeta15Tri from './pages/galaxias/PeligrosDigitales/Planeta15Tri';
+import Planeta16Cau from './pages/galaxias/PeligrosDigitales/Planeta16Cau';
+import Planeta17Nat from './pages/galaxias/PeligrosDigitales/Planeta17Nat';
+import Planeta18Sil from './pages/galaxias/PeligrosDigitales/Planeta18Sil';
+import Planeta19Ami from './pages/galaxias/PeligrosDigitales/Planeta19Ami';
+import Planeta20Per from './pages/galaxias/PeligrosDigitales/Planeta20Per';
+import Planeta21Int from './pages/galaxias/PeligrosDigitales/Planeta21Int';
+import Planeta22Unu from './pages/galaxias/PeligrosDigitales/Planeta22Unu';
+import Planeta23Und from './pages/galaxias/PeligrosDigitales/Planeta23Und';
+import Planeta24Inc from './pages/galaxias/PeligrosDigitales/Planeta24Inc';
+import Planeta25Ver from './pages/galaxias/PeligrosDigitales/Planeta25Ver';
+import Planeta26Qui from './pages/galaxias/PeligrosDigitales/Planeta26Qui';
+import Planeta27Sin from './pages/galaxias/PeligrosDigitales/Planeta27Sin';
+import Planeta28Det from './pages/galaxias/PeligrosDigitales/Planeta28Det';
+import Planeta29Den from './pages/galaxias/PeligrosDigitales/Planeta29Den';
+import Planeta30Hon from './pages/galaxias/PeligrosDigitales/Planeta30Hon';
 import PlanetaKioPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaKioPadresSS';
 import PlanetaMerPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaMerPadresSS';
 import PlanetaVenPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaVenPadresSS';
@@ -160,6 +175,21 @@ function App() {
                 <Route path="/ninos/peligros_digitales/planeta_pri" element={<Planeta13Pri />} />
                 <Route path="/ninos/peligros_digitales/planeta_acc" element={<Planeta14Acc />} />
                 <Route path="/ninos/peligros_digitales/planeta_tri" element={<Planeta15Tri />} />
+                <Route path="/ninos/peligros_digitales/planeta_cau" element={<Planeta16Cau />} />
+                <Route path="/ninos/peligros_digitales/planeta_nat" element={<Planeta17Nat />} />
+                <Route path="/ninos/peligros_digitales/planeta_sil" element={<Planeta18Sil />} />
+                <Route path="/ninos/peligros_digitales/planeta_ami" element={<Planeta19Ami />} />
+                <Route path="/ninos/peligros_digitales/planeta_per" element={<Planeta20Per />} />
+                <Route path="/ninos/peligros_digitales/planeta_int" element={<Planeta21Int />} />
+                <Route path="/ninos/peligros_digitales/planeta_unu" element={<Planeta22Unu />} />
+                <Route path="/ninos/peligros_digitales/planeta_und" element={<Planeta23Und />} />
+                <Route path="/ninos/peligros_digitales/planeta_inc" element={<Planeta24Inc />} />
+                <Route path="/ninos/peligros_digitales/planeta_ver" element={<Planeta25Ver />} />
+                <Route path="/ninos/peligros_digitales/planeta_qui" element={<Planeta26Qui />} />
+                <Route path="/ninos/peligros_digitales/planeta_sin" element={<Planeta27Sin />} />
+                <Route path="/ninos/peligros_digitales/planeta_det" element={<Planeta28Det />} />
+                <Route path="/ninos/peligros_digitales/planeta_den" element={<Planeta29Den />} />
+                <Route path="/ninos/peligros_digitales/planeta_hon" element={<Planeta30Hon />} />
 
 
 

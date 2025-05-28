@@ -10,21 +10,36 @@ const Planeta2Ima = () => {
 
   // Texturas para el carrusel de planetas
   const textures = [
-    "/assets/2k_haumea_fictional.jpg", // Textura del planeta Mer (primera posición)
-    "/assets/earthx5400x2700.jpg",
-    "/assets/2k_neptune.jpg",
-    "/assets/2k_venus_surface.jpg",
-    "/assets/2k_uranus.jpg",
-    "/assets/2k_venus_atmosphere.jpg",
-    "/assets/2k_earth_clouds.jpg",
-    "/assets/2k_jupiter.jpg",
-    "/assets/2k_mars.jpg",
-    "/assets/textura blanco.jpg",
-    "/assets/textura negro.jpg",
-    "/assets/textura blanco.jpg",
-    "/assets/textura negro.jpg",
-    "/assets/textura blanco.jpg",
-    "/assets/2k_makemake_fictional.jpg",
+        '/assets/2k_haumea_fictional.jpg',
+        '/assets/earthx5400x2700.jpg',
+        '/assets/2k_neptune.jpg',
+        '/assets/2k_venus_surface.jpg',
+        '/assets/2k_uranus.jpg',
+        '/assets/2k_venus_atmosphere.jpg',
+        '/assets/2k_earth_clouds.jpg',
+        '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/2k_makemake_fictional.jpg',
   ];
 
   // URLs de los planetas
@@ -43,6 +58,21 @@ const Planeta2Ima = () => {
     '/ninos/peligros_digitales/planeta_pri',
     '/ninos/peligros_digitales/planeta_acc',
     '/ninos/peligros_digitales/planeta_tri',
+    '/ninos/peligros_digitales/planeta_cau',
+    '/ninos/peligros_digitales/planeta_nat',
+    '/ninos/peligros_digitales/planeta_sil',
+    '/ninos/peligros_digitales/planeta_ami',
+    '/ninos/peligros_digitales/planeta_per',
+    '/ninos/peligros_digitales/planeta_int',
+    '/ninos/peligros_digitales/planeta_unu',
+    '/ninos/peligros_digitales/planeta_und',
+    '/ninos/peligros_digitales/planeta_inc',
+    '/ninos/peligros_digitales/planeta_ver',
+    '/ninos/peligros_digitales/planeta_qui',
+    '/ninos/peligros_digitales/planeta_sin',
+    '/ninos/peligros_digitales/planeta_det',
+    '/ninos/peligros_digitales/planeta_den',
+    '/ninos/peligros_digitales/planeta_hon',
     '/ninos/peligros_digitales/planeta_kio',
   ];
 
@@ -51,10 +81,10 @@ const Planeta2Ima = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
 
   // Información específica del Planeta Mer
-  const planetaNombre = "2";
+  const planetaNombre = "VÍTREO";
   const resumenCurso = (
     <div>
-      <p>Explora los misterios del planeta 2, un mundo de contrastes extremos donde:</p>
+      <p>Explora los misterios del planeta VÍTREO, un mundo de contrastes extremos donde:</p>
       <ul>
         <li><strong>Geografía cambiante:</strong> Montañas de hielo que se derriten en lagos de metano.</li>
         <li><strong>Clima impredecible:</strong> Tormentas magnéticas que alteran la percepción del tiempo.</li>

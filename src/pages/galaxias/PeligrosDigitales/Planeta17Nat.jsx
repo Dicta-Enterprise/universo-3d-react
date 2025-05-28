@@ -4,19 +4,12 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const Planeta10Lib = () => {
+const Planeta17Nat = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
-        '/assets/2k_mars.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
         '/assets/textura blanco.jpg',
         '/assets/textura negro.jpg',
         '/assets/textura blanco.jpg',
@@ -40,17 +33,17 @@ const Planeta10Lib = () => {
         '/assets/2k_venus_atmosphere.jpg',
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    '/ninos/peligros_digitales/planeta_lib',
-    '/ninos/peligros_digitales/planeta_rea',
-    '/ninos/peligros_digitales/planeta_rep',
-    '/ninos/peligros_digitales/planeta_pri',
-    '/ninos/peligros_digitales/planeta_acc',
-    '/ninos/peligros_digitales/planeta_tri',
-    '/ninos/peligros_digitales/planeta_cau',
     '/ninos/peligros_digitales/planeta_nat',
     '/ninos/peligros_digitales/planeta_sil',
     '/ninos/peligros_digitales/planeta_ami',
@@ -74,94 +67,105 @@ const Planeta10Lib = () => {
     '/ninos/peligros_digitales/planeta_sci',
     '/ninos/peligros_digitales/planeta_gau',
     '/ninos/peligros_digitales/planeta_pax',
+    '/ninos/peligros_digitales/planeta_lib',
+    '/ninos/peligros_digitales/planeta_rea',
+    '/ninos/peligros_digitales/planeta_rep',
+    '/ninos/peligros_digitales/planeta_pri',
+    '/ninos/peligros_digitales/planeta_acc',
+    '/ninos/peligros_digitales/planeta_tri',
+    '/ninos/peligros_digitales/planeta_cau',
   ];
 
   // Rutas de las imágenes
-  const imagenResumen = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
-  const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
+  const imagenResumen = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3000&q=80';
+  const imagenBeneficios = 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3111&q=80';
 
-  // Información específica del Planeta Ven
-  const planetaNombre = "LIBER";
+  // Información específica del Planeta Mer
+  const planetaNombre = "NATUS";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta LIBER, un mundo de contrastes vibrantes donde:</p>
+      <p>Explora los misterios del planeta NATUS, un mundo de contrastes extremos donde:</p>
       <ul>
-        <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
-        <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
-        <li><strong>Tecnología fotónica:</strong> Sistemas que funcionan con energía lumínica pura.</li>
+        <li><strong>Geografía cambiante:</strong> Montañas de hielo que se derriten en lagos de metano.</li>
+        <li><strong>Clima impredecible:</strong> Tormentas magnéticas que alteran la percepción del tiempo.</li>
+        <li><strong>Tecnología adaptativa:</strong> Sistemas que evolucionan con el entorno.</li>
       </ul>
     </div>
   );
 
-  // Peligros del planeta Ven (6 riesgos)
+  // Peligros del planeta Mer (7 en lugar de 5)
   const peligros = [
     {
-      nombre: "☀️ Tormentas solares",
-      descripcion: "🌪️ Emisiones masivas de radiación que afectan equipos y organismos.",
+      nombre: "🌀 Tormentas magnéticas",
+      descripcion: "⚡ Alteran equipos electrónicos y la percepción del tiempo.",
       nivelRiesgo: "🔴 Alto",
-      temperatura: "🌡️ 200°C a 500°C",
-      villano: "☀️ Solaris",
-      cta: "🚀 Visita al planeta Ven",
+      temperatura: "🌡️ -100°C a 200°C",
+      villano: "🌪️ Magnetor",
+      cta: "🚀 Visita al planeta Mer",
     },
     {
-      nombre: "💥 Explosiones de plasma",
-      descripcion: "⚡ Descargas energéticas que funden materiales en segundos.",
+      nombre: "💧 Lagos de metano",
+      descripcion: "☠️ Líquidos corrosivos que disuelven materiales convencionales.",
       nivelRiesgo: "⚫ Crítico",
-      temperatura: "🌡️ 1000°C+",
-      villano: "🔥 Plasmor",
-      cta: "🚀 Visita al planeta Ven",
+      temperatura: "🌡️ -150°C",
+      villano: "👹 Methanos",
+      cta: "🚀 Visita al planeta Mer",
     },
     {
-      nombre: "🌌 Campos gravitacionales",
-      descripcion: "🌀 Zonas con gravedad variable que afectan el movimiento.",
-      nivelRiesgo: "🟠 Medio",
-      temperatura: "🌡️ 50°C a 300°C",
-      villano: "🌑 Graviton",
-      cta: "🚀 Visita al planeta Ven",
-    },
-    {
-      nombre: "🌈 Refracciones extremas",
-      descripcion: "👁️ Distorsiones visuales que causan desorientación.",
-      nivelRiesgo: "🟡 Bajo",
-      temperatura: "🌡️ 100°C a 200°C",
-      villano: "👁️ Illusionix",
-      cta: "🚀 Visita al planeta Ven",
-    },
-    {
-      nombre: "⚡ Electrocución ambiental",
-      descripcion: "💢 Cargas estáticas que se acumulan en cualquier superficie.",
+      nombre: "❄️ Congelamiento instantáneo",
+      descripcion: "⚠️ Cambios bruscos de temperatura que congelan todo en segundos.",
       nivelRiesgo: "🔴 Alto",
-      temperatura: "🌡️ 150°C a 400°C",
-      villano: "⚡ Voltax",
-      cta: "🚀 Visita al planeta Ven",
+      temperatura: "🌡️ 50°C a -200°C",
+      villano: "🧊 Frostbite",
+      cta: "🚀 Visita al planeta Mer",
     },
     {
-      nombre: "🌠 Lluvia de meteoritos",
-      descripcion: "💫 Fragmentos estelares que impactan constantemente la superficie.",
+      nombre: "🌫️ Niebla tóxica",
+      descripcion: "☣️ Gases que afectan el sistema nervioso y la visión.",
       nivelRiesgo: "🟠 Medio",
-      temperatura: "🌡️ 80°C to 250°C",
-      villano: "🌠 Meteorax",
-      cta: "🚀 Visita al planeta Ven",
+      temperatura: "🌡️ -80°C a 0°C",
+      villano: "👻 Nebulon",
+      cta: "🚀 Visita al planeta Mer",
+    },
+    {
+      nombre: "⚡ Descargas estáticas",
+      descripcion: "💥 Acumulación de energía que daña circuitos y equipos.",
+      nivelRiesgo: "🟠 Medio",
+      temperatura: "🌡️ -30°C a 100°C",
+      villano: "⚡ Voltarius",
+      cta: "🚀 Visita al planeta Mer",
+    },
+    {
+      nombre: "🌋 Erupciones de hielo",
+      descripcion: "🧊 Géiseres que expulsan fragmentos de hielo a alta velocidad.",
+      nivelRiesgo: "🔴 Alto",
+      temperatura: "🌡️ -120°C",
+      villano: "🧊 Icerupt",
+      cta: "🚀 Visita al planeta Mer",
+    },
+    {
+      nombre: "🕳️ Sumideros temporales",
+      descripcion: "⏳ Pozos que aparecen y desaparecen aleatoriamente.",
+      nivelRiesgo: "🟡 Bajo",
+      temperatura: "🌡️ -50°C a 50°C",
+      villano: "🌀 Tempovoid",
+      cta: "🚀 Visita al planeta Mer",
     }
   ];
 
-  // Beneficios del curso (4 beneficios)
+  // Beneficios del curso (3 en lugar de 5)
   const beneficios = [
     {
-      titulo: "🔭 Dominio de telescopios cuánticos",
-      descripcion: "Aprende a usar equipos que ven a través de las distorsiones lumínicas de Ven.",
+      titulo: "🧠 Dominio de tecnologías adaptativas",
+      descripcion: "Aprende a usar equipos que evolucionan con el entorno cambiante de Mer.",
     },
     {
-      titulo: "⚡ Manejo de energía pura",
-      descripcion: "Técnicas para recolectar y utilizar la energía de plasma ambiental.",
+      titulo: "⏱️ Manejo de distorsiones temporales",
+      descripcion: "Técnicas para navegar en zonas con alteraciones en la percepción del tiempo.",
     },
     {
-      titulo: "🌌 Navegación en campos gravitacionales",
-      descripcion: "Certificación en pilotaje en zonas de gravedad variable.",
-    },
-    {
-      titulo: "🌈 Especialista en óptica extrema",
-      descripcion: "Habilidades para trabajar en entornos con refracciones peligrosas.",
+      titulo: "❄️ Especialista en entornos criogénicos",
+      descripcion: "Certificación en supervivencia en climas bajo cero extremos.",
     }
   ];
 
@@ -207,4 +211,4 @@ const Planeta10Lib = () => {
   );
 };
 
-export default Planeta10Lib;
+export default Planeta17Nat;

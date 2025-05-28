@@ -4,25 +4,12 @@ import ThreeScene from "../../../components/Landing/ThreeScene";
 import MainContent from "../../../components/Landing/MainContent";
 import ResizeHandler from "../../../components/Landing/ResizeHandler";
 
-const Planeta5 = () => {
+const Planeta18Sil = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showCarousel, setShowCarousel] = useState(false);
 
   // Texturas para el carrusel de planetas
   const textures = [
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
         '/assets/textura negro.jpg',
         '/assets/textura blanco.jpg',
         '/assets/textura negro.jpg',
@@ -40,23 +27,23 @@ const Planeta5 = () => {
         '/assets/2k_haumea_fictional.jpg',
         '/assets/earthx5400x2700.jpg',
         '/assets/2k_neptune.jpg',
+        '/assets/2k_venus_surface.jpg',
+        '/assets/2k_uranus.jpg',
+        '/assets/2k_venus_atmosphere.jpg',
+        '/assets/2k_earth_clouds.jpg',
+        '/assets/2k_jupiter.jpg',
+        '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
   ];
 
   // URLs de los planetas
   const planetUrls = [
-    '/ninos/peligros_digitales/planeta_5',
-    '/ninos/peligros_digitales/planeta_gra',
-    '/ninos/peligros_digitales/planeta_sci',
-    '/ninos/peligros_digitales/planeta_gau',
-    '/ninos/peligros_digitales/planeta_pax',
-    '/ninos/peligros_digitales/planeta_lib',
-    '/ninos/peligros_digitales/planeta_rea',
-    '/ninos/peligros_digitales/planeta_rep',
-    '/ninos/peligros_digitales/planeta_pri',
-    '/ninos/peligros_digitales/planeta_acc',
-    '/ninos/peligros_digitales/planeta_tri',
-    '/ninos/peligros_digitales/planeta_cau',
-    '/ninos/peligros_digitales/planeta_nat',
     '/ninos/peligros_digitales/planeta_sil',
     '/ninos/peligros_digitales/planeta_ami',
     '/ninos/peligros_digitales/planeta_per',
@@ -74,6 +61,19 @@ const Planeta5 = () => {
     '/ninos/peligros_digitales/planeta_2',
     '/ninos/peligros_digitales/planeta_3',
     '/ninos/peligros_digitales/planeta_4',
+    '/ninos/peligros_digitales/planeta_5',
+    '/ninos/peligros_digitales/planeta_gra',
+    '/ninos/peligros_digitales/planeta_sci',
+    '/ninos/peligros_digitales/planeta_gau',
+    '/ninos/peligros_digitales/planeta_pax',
+    '/ninos/peligros_digitales/planeta_lib',
+    '/ninos/peligros_digitales/planeta_rea',
+    '/ninos/peligros_digitales/planeta_rep',
+    '/ninos/peligros_digitales/planeta_pri',
+    '/ninos/peligros_digitales/planeta_acc',
+    '/ninos/peligros_digitales/planeta_tri',
+    '/ninos/peligros_digitales/planeta_cau',
+    '/ninos/peligros_digitales/planeta_nat',
   ];
 
   // Rutas de las imágenes
@@ -81,10 +81,10 @@ const Planeta5 = () => {
   const imagenBeneficios = 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2960&q=80';
 
   // Información específica del Planeta Ven
-  const planetaNombre = "SOMNUS";
+  const planetaNombre = "SILERE";
   const resumenCurso = (
     <div>
-      <p>Descubre los secretos del planeta SOMNUS, un mundo de contrastes vibrantes donde:</p>
+      <p>Descubre los secretos del planeta SILERE, un mundo de contrastes vibrantes donde:</p>
       <ul>
         <li><strong>Geografía lumínica:</strong> Montañas que brillan en la oscuridad y ríos de plasma.</li>
         <li><strong>Clima energético:</strong> Tormentas de partículas cargadas y auroras permanentes.</li>
@@ -207,4 +207,4 @@ const Planeta5 = () => {
   );
 };
 
-export default Planeta5;
+export default Planeta18Sil;
