@@ -4,14 +4,14 @@ import BackButton from '../../components/BackButton';
 import DivCentral from '../../components/Planetas/DivCentral';
 import ControlButtons from '../../components/Planetas/ControlButtons';
 import InfoBox from '../../components/Planetas/InfoBox';
-import CrearEstrellas3D from '../../components/FondoNIños/CrearEstrellas3D';
-import crearLineaVertical from '../../components/FondoNIños/CrearLineaVerticalEstrella';
-import crearCirculo from '../../components/FondoNIños/CrearCirculo';
-import CreaCruzRedonda from '../../components/FondoNIños/CrearCruzRedonda';
-import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
-import CrearNube from '../../components/FondoNIños/CrearNube';
-import CrearLuna from '../../components/FondoNIños/CrearLuna';
-import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
+import CrearEstrellas3D from '../../components/FondoNiños/CrearEstrellas3D';
+import crearLineaVertical from '../../components/FondoNiños/CrearLineaVerticalEstrella';
+import crearCirculo from '../../components/FondoNiños/CrearCirculo';
+import CreaCruzRedonda from '../../components/FondoNiños/CrearCruzRedonda';
+import CrearTermometro from '../../components/FondoNiños/CrearTermometro';
+import CrearNube from '../../components/FondoNiños/CrearNube';
+import CrearLuna from '../../components/FondoNiños/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNiños/ArregloObjetos';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);

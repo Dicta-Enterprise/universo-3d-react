@@ -1,0 +1,124 @@
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import * as THREE from 'three';
+
+import FondoAdultos from '../Fondos/FondoAdultos';
+import GeneradorGalaxias from '../componentes/GeneradorGalaxias';
+import TarjetaConfirmacion from '../ui/Tarjeta';
+import BotonAtras from '../ui/BotonAtras';
+
+export default function Padres() {
+  const containerRef = useRef();
+  const cameraRef = useRef();
+  const objetosAnimables = useRef([]);
+  const navigate = useNavigate();
+  const [selectedGalaxy, setSelectedGalaxy] = useState(null);
+  const [showCard, setShowCard] = useState(false);
+  const isAnimatingRef = useRef(false);
+
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 20);
+    cameraRef.current = camera;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    containerRef.current.appendChild(renderer.domElement);
+
+    const onSeleccion = (tema) => {
+      setSelectedGalaxy({
+        title: `¿Ir a la galaxia de ${tema.replace('-', ' ')}?`,
+        tema,
+      });
+      setShowCard(true);
+    };
+
+    // 🪐 Agregar fondo + galaxias
+    const fondo = FondoAdultos(scene);
+    const galaxias = GeneradorGalaxias({ scene, grupo: 'adultos', onSeleccion });
+    objetosAnimables.current = [...fondo, ...galaxias];
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    renderer.domElement.addEventListener('click', (e) => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      if (intersects.length > 0) {
+        intersects[0].object.userData?.onClick?.();
+      } else {
+        setSelectedGalaxy(null);
+        setShowCard(false);
+      }
+    });
+
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      objetosAnimables.current.forEach((obj) => obj.userData?.animar?.());
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (containerRef.current && renderer.domElement) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, []);
+
+  const handleConfirm = () => {
+    if (!selectedGalaxy || isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+
+    const tema = selectedGalaxy.tema;
+    const destino = `/galaxia/padres/${tema}`;
+    const camera = cameraRef.current;
+    const start = camera.position.clone();
+    const end = new THREE.Vector3(0, 0, 5);
+    let t = 0;
+
+    const animar = () => {
+      t += 0.02;
+      camera.position.lerpVectors(start, end, t);
+      camera.lookAt(0, 0, 0);
+      if (t < 1) {
+        requestAnimationFrame(animar);
+      } else {
+        navigate(destino);
+      }
+    };
+    animar();
+    setShowCard(false);
+  };
+
+  const handleClose = () => {
+    setShowCard(false);
+  };
+
+  return (
+    <>
+      {showCard && selectedGalaxy && (
+        <TarjetaConfirmacion
+          title={selectedGalaxy.title}
+          onConfirm={handleConfirm}
+          onClose={handleClose}
+        />
+      )}
+      <BotonAtras color="#CCAC00" />
+      <div ref={containerRef} />
+    </>
+  );
+}
