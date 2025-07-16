@@ -12,58 +12,25 @@ import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
 import CrearNube from '../../components/FondoNIños/CrearNube';
 import CrearLuna from '../../components/FondoNIños/CrearLuna';
 import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
+import datagalaxia from '../data';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
     const [isZooming, setIsZooming] = useState(false);
     const clickSoundRef = useRef(null); // Referencia para el sonido de clic
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
+    
+    // Obtener los planetas de Salud Social desde data.js
+    const Planetas = datagalaxia[0].planetas.filter(planeta => 
+        planeta.categoria === 'niños' && 
+        planeta.activo
+    );
 
-    const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-    ];
+    const textures = Planetas.map(item => item.texture);
+    const texts = Planetas.map(item => item.text);
+    const planetUrls = Planetas.map(item => item.planetUrl);
 
-    const texts = [
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta COMPANIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Asociales-Hikikomori\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Solitarius",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta COMMUNIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Comunicativas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Distorsionarus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta EMOTIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Emocionales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Alterius",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta AMORE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Relacionales Nov.\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Manipularus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta SEXUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Sexualidad D.\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Asexualis",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta FORS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Amistades-Influencias\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Perderius",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta UTILIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Habilidades Domesticas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Inutileus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta PROPIUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Influenciadores\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Mangoneus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta SENSUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciencias de la tierra\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Insensiblus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta DIRECTUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Derechos digitales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Desfavorecius",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta KRITIKOS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Nega y afirPeteicones\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Facilismus",
-        "Tipo de riesgo: Salud Social\nPlaneta: Planeta MOYSIKO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Música addictive\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Extasius",
-    ];
-
-    const planetUrls = [
-        '/ninos/salud_social/planeta_comp',
-        '/ninos/salud_social/planeta_com',
-        '/ninos/salud_social/planeta_emo',
-        '/ninos/salud_social/planeta_amo',
-        '/ninos/salud_social/planeta_sexu',
-        '/ninos/salud_social/planeta_for',
-        '/ninos/salud_social/planeta_util',
-        '/ninos/salud_social/planeta_pro',
-        '/ninos/salud_social/planeta_sen',
-        '/ninos/salud_social/planeta_dir',
-        '/ninos/salud_social/planeta_kri',
-        '/ninos/salud_social/planeta_moy',
-    ];
-
+    
     const changeTexture = (direction) => {
         setCurrentTextureIndex((prevIndex) => {
             let nextIndex = prevIndex;
@@ -157,7 +124,7 @@ export default function EsferaTexturizada() {
 
             termometro.animation = () => {
                 termometro.userData.angle += swingSpeed; // Aumentamos el ángulo en cada frame
-                termometro.rotation.z = Math.sin(termometro.userData.angle) * 10; // Aplicamos el movimiento de oscilación
+                termometro.rotation.z = Math.sin(termometro.userData.angle) * 0.2; // Aplicamos el movimiento de oscilación
             };
         });
         
@@ -199,7 +166,7 @@ export default function EsferaTexturizada() {
             cruces.push(cruz);
         });
         
-        let velocidadMovimiento = 10; // Velocidad de la oscilación
+        let velocidadMovimiento = 0.00003; // Velocidad de la oscilación
         let rangoOscilacion = 25; // El rango máximo de oscilación en el eje X
         
         // Función para actualizar la velocidad y el rango de oscilación en función del tamaño de la pantalla
@@ -468,9 +435,9 @@ export default function EsferaTexturizada() {
             });
 
             circulos.forEach((circulo, index) => {
-                const velocidad = 0.1; // Ajusta la velocidad del rebote
+                const velocidad = 0.5; // Ajusta la velocidad del rebote
                 const amplitud = 0.01; // Ajusta la altura del rebote
-                const tiempo = tiempoBase + index * 0.1; // Desfase entre círculos
+                const tiempo = tiempoBase + index * 0.3; // Desfase entre círculos
             
             
                 circulo.position.y += Math.cos(tiempo * velocidad) * amplitud;
@@ -501,7 +468,7 @@ export default function EsferaTexturizada() {
 
             moverNubes();
 
-            sphere.rotation.y += 0.00010; // Rotación de la esfera
+            sphere.rotation.y += 0.0005; // Rotación de la esfera
             renderer.render(scene, camera);
         };
         animate();
@@ -533,7 +500,7 @@ export default function EsferaTexturizada() {
                     setTimeout(() => {
                         setIsZooming(false); // Desactiva la animación
                         window.location.href = planetUrls[currentTextureIndex]; // Redirige
-                    }, 100); // Ajusta el tiempo según la duración de la animación
+                    }, 1000); // Ajusta el tiempo según la duración de la animación
                 }}
                 clickSoundRef={clickSoundRef}
                 planetSoundRef={planetSoundRef}

@@ -12,6 +12,7 @@ import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
 import CrearNube from '../../components/FondoNIños/CrearNube';
 import CrearLuna from '../../components/FondoNIños/CrearLuna';
 import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
+import datagalaxia from '../data';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
@@ -19,59 +20,16 @@ export default function EsferaTexturizada() {
     const clickSoundRef = useRef(null); // Referencia para el sonido de clic
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
 
-    const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-        '/assets/textura blanco.jpg',
-    ];
+    const Planetas = datagalaxia[2].planetas.filter(planeta => 
+        planeta.categoria === 'niños' && 
+        planeta.activo
+    );
 
-    const texts = [
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CONSCIRE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Realidad virtual\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Artificialis",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta IMAGINATIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Cibercondria\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Dolientis",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SUFFERO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoadicción\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Adictus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CENTRUM\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: TDHA\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Distractor",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta EUESTRECE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoestres\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Estresus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta PRAESENS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnoansiedad\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Anciosus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta AESTIMARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Tecnodepresión\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Depresiorus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta INANIMIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Videojuegos\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sujector",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CERTIDUDO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ludopatía Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Apostor",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta MATURARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Pornografía\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Pornofulus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta RESILIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Resiliencia Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Fracasus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ABSTINERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Adicción Compras\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Derrocherus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SOMNUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Trastorno del Sueño\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Imsomnios",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ACTUARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Trastorno de Conducta\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Bipolarus",
-        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ALIMENTUM\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Transtornos Alimenticios\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Desnutrictor",
-    ];
+    const textures = Planetas.map(item => item.texture);
+    const texts = Planetas.map(item => item.text);
+    const planetUrls = Planetas.map(item => item.planetUrl);
 
-    const planetUrls = [
-        '/ninos/salud_mental/planeta_cons',
-        '/ninos/salud_mental/planeta_ima',
-        '/ninos/salud_mental/planeta_suf',
-        '/ninos/salud_mental/planeta_cen',
-        '/ninos/salud_mental/planeta_eue',
-        '/ninos/salud_mental/planeta_pra',
-        '/ninos/salud_mental/planeta_aes',
-        '/ninos/salud_mental/planeta_ina',
-        '/ninos/salud_mental/planeta_cer',
-        '/ninos/salud_mental/planeta_mat',
-        '/ninos/salud_mental/planeta_res',
-        '/ninos/salud_mental/planeta_abs',
-        '/ninos/salud_mental/planeta_som',
-        '/ninos/salud_mental/planeta_act',
-        '/ninos/salud_mental/planeta_ali',
-    ];
+    
 
     const changeTexture = (direction) => {
         setCurrentTextureIndex((prevIndex) => {

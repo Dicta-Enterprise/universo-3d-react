@@ -110,6 +110,7 @@ function App() {
                 <Route path="/ninos/salud_social" element={<SaludSocial />} />
                 <Route path="/ninos/salud_mental" element={<SaludMental />} />
                 <Route path="/ninos/salud_fisica" element={<SaludFisica />} />
+                <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
                 <Route path="/jovenes/salud_social" element={<SaludSocialJovenes />} />
                 <Route path="/jovenes/salud_mental" element={<SaludMentalJovenes />} />
                 <Route path="/jovenes/salud_fisica" element={<SaludFisicaJovenes />} />
@@ -118,7 +119,7 @@ function App() {
                 <Route path="/padres/salud_mental" element={<SaludMentalPadres />} />
                 <Route path="/padres/salud_fisica" element={<SaludFisicaPadres />} />
                 <Route path="/padres/peligros_digitales" element={<PeligrosDigitalesPadres />} />
-                <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
+               
 
                 <Route path="/ninos/salud_social/planeta_comp" element={<Planeta1Comp />} />
                 <Route path="/ninos/salud_social/planeta_com" element={<Planeta2Com />} />

@@ -12,45 +12,22 @@ import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
 import CrearNube from '../../components/FondoNIños/CrearNube';
 import CrearLuna from '../../components/FondoNIños/CrearLuna';
 import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
+import datagalaxia from '../data';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
     const [isZooming, setIsZooming] = useState(false);
     const clickSoundRef = useRef(null); // Referencia para el sonido de clic
     const planetSoundRef = useRef(null); // Referencia para el sonido de "Planet.mp3"
+    
+    const Planetas = datagalaxia[1].planetas.filter(planeta => 
+        planeta.categoria === 'niños' && 
+        planeta.activo
+    );
 
-    const textures = [
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-    ];
-
-    const texts = [
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta MANUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Whatsapitis\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Tendinitius",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta LEVIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Sedentarismo Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sinsalus",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta VERTERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Espolón Óseo- Síndrome de CUSHING \nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Jorobus- Lumbarus",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta BIOS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Cáncer de Tiroides\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Cancerus",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta ADDORMISC\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Síndrome de la Pantalla Azul- Sequedad Ocular\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Invidentius",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta ELEKTRON\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Exposición Electromagnética\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Radioactivus",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta MELIOR\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Enfermedades Gastrointestinales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Microbiotus",
-        "Tipo de riesgo: Salud Física\nPlaneta: Planeta AUDITIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Hipoacusia o Total Cofosis- Sordera\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Sorderus",
-    ];
-
-    const planetUrls = [
-        '/ninos/salud_fisica/planeta_man',
-        '/ninos/salud_fisica/planeta_lev',
-        '/ninos/salud_fisica/planeta_ver',
-        '/ninos/salud_fisica/planeta_bio',
-        '/ninos/salud_fisica/planeta_add',
-        '/ninos/salud_fisica/planeta_ele',
-        '/ninos/salud_fisica/planeta_mel',
-        '/ninos/salud_fisica/planeta_aud',
-    ];
+    const textures = Planetas.map(item => item.texture);
+    const texts = Planetas.map(item => item.text);
+    const planetUrls = Planetas.map(item => item.planetUrl);
 
     const changeTexture = (direction) => {
         setCurrentTextureIndex((prevIndex) => {
