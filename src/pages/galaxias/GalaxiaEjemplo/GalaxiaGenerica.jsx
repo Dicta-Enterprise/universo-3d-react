@@ -25,6 +25,7 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
     });
   };
 
+
   const formatearTexto = (info, nombre) => {
     return (
       `Tipo de riesgo: ${info.tipoRiesgo}\n` +
@@ -39,6 +40,9 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
     );
   };
 
+  const rotacionRef = useRef(0.002);
+  const velocidadTarget = useRef(0.002);
+
   useEffect(() => {
     const escena = new THREE.Scene();
 
@@ -50,6 +54,36 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
     camara.position.z = 18; // ver el planeta mas grande o chico
 
     const render = new THREE.WebGLRenderer({ antialias: true });
+
+    let isDragging = false;
+    let prevX = null;
+
+    const handleMouseDown = (e) => {
+      isDragging = true;
+      prevX = e.clientX;
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - prevX;
+      prevX = e.clientX;
+
+      const factor = 0.0002; // sensibilidad
+      velocidadTarget.current = THREE.MathUtils.clamp(
+        rotacionRef.current + deltaX * factor,
+        -0.05,
+        0.05
+      );
+    };
+
+    const handleMouseUp = () => {
+      isDragging = false;
+    };
+
+    render.domElement.addEventListener('mousedown', handleMouseDown);
+    render.domElement.addEventListener('mousemove', handleMouseMove);
+    render.domElement.addEventListener('mouseup', handleMouseUp);
+
     render.setSize(window.innerWidth, window.innerHeight);
     render.setPixelRatio(window.devicePixelRatio);
     document.body.style.overflow = 'hidden';
@@ -86,8 +120,23 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
     const material = new THREE.MeshStandardMaterial({
       map: cargadorTextura.load(planetaActual.textura),
     });
+
     const esfera = new THREE.Mesh(geometria, material);
+
+    esfera.position.z = 0;
+    const originalZ = esfera.position.z;
     escena.add(esfera);
+
+    let zoomTarget = 1;
+    let zoomCurrent = 1;
+
+    const handleWheel = (event) => {
+      const delta = -event.deltaY * 0.001;
+      zoomTarget = Math.min(Math.max(zoomTarget + delta, 0.6), 1.6);
+    };
+
+    render.domElement.addEventListener('wheel', handleWheel);
+    
 
     // 🔊 Sonidos
     const listener = new THREE.AudioListener();
@@ -119,11 +168,17 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
         camara.position.z -= 0.1;
       }
 
-      esfera.rotation.y += 0.002;
+      rotacionRef.current += (velocidadTarget.current - rotacionRef.current) * 0.05;
+      esfera.rotation.y += rotacionRef.current;
 
       objetosAnimables.forEach((obj) => {
         obj.userData?.animar && obj.userData.animar();
       });
+
+      zoomCurrent += (zoomTarget - zoomCurrent) * 0.05;
+      esfera.scale.set(zoomCurrent, zoomCurrent, zoomCurrent);
+
+      esfera.position.z = originalZ - (zoomCurrent - 1) * 6;
 
       render.render(escena, camara);
     };
@@ -132,6 +187,7 @@ export default function GalaxiaGenerica({ titulo, color, planetas, backUrl, tipo
 
     return () => {
       render.dispose();
+      render.domElement.removeEventListener('wheel', handleWheel);
       document.body.removeChild(render.domElement);
       window.removeEventListener('resize', handleResizeOrZoom);
       clearInterval(dprInterval);

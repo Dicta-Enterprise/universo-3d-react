@@ -256,7 +256,7 @@ export const planetasEjemplo = [
     nombre: "Euforia",
     activo: true,
     tema: "salud-mental",
-    textura: "/assets/planetas/2k_jupiter.jpg",
+    textura: "/assets/2k_jupiter.jpg",
     url: "/galaxia/jovenes/salud-mental/euforia",
     info: {
       tipoRiesgo: "Impulsividad",
@@ -276,7 +276,7 @@ export const planetasEjemplo = [
     nombre: "Serenix",
     activo: true,
     tema: "salud-mental",
-    textura: "/assets/planetas/2k_moon.jpg",
+    textura: "/assets/2k_earth_clouds.jpg",
     url: "/galaxia/jovenes/salud-mental/serenix",
     info: {
       tipoRiesgo: "Presión académica",
@@ -296,7 +296,7 @@ export const planetasEjemplo = [
     nombre: "Confusón",
     activo: false,
     tema: "salud-mental",
-    textura: "/assets/planetas/2k_mercury.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/jovenes/salud-mental/confuson",
     info: {
       tipoRiesgo: "Identidad difusa",
@@ -318,7 +318,7 @@ export const planetasEjemplo = [
     nombre: "Conexión",
     activo: true,
     tema: "salud-social",
-    textura: "/assets/planetas/2k_earth.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/jovenes/salud-social/conexion",
     info: {
       tipoRiesgo: "Desconexión emocional",
@@ -338,7 +338,7 @@ export const planetasEjemplo = [
     nombre: "Círculo",
     activo: true,
     tema: "salud-social",
-    textura: "/assets/planetas/2k_neptune.jpg",
+    textura: "/assets/2k_neptune.jpg",
     url: "/galaxia/jovenes/salud-social/circulo",
     info: {
       tipoRiesgo: "Presión social",
@@ -358,7 +358,7 @@ export const planetasEjemplo = [
     nombre: "Sombras",
     activo: false,
     tema: "salud-social",
-    textura: "/assets/planetas/2k_pluto.jpg",
+    textura: "/assets/2k_jupiter.jpg",
     url: "/galaxia/jovenes/salud-social/sombras",
     info: {
       tipoRiesgo: "Bullying",
@@ -380,7 +380,7 @@ export const planetasEjemplo = [
     nombre: "Motrion",
     activo: true,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_mars.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/jovenes/salud-fisica/motrion",
     info: {
       tipoRiesgo: "Vida sedentaria",
@@ -400,7 +400,7 @@ export const planetasEjemplo = [
     nombre: "Nutrilia",
     activo: true,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_saturn.jpg",
+    textura: "/assets/2k_saturn.jpg",
     url: "/galaxia/jovenes/salud-fisica/nutrilia",
     info: {
       tipoRiesgo: "Desequilibrio alimenticio",
@@ -420,7 +420,7 @@ export const planetasEjemplo = [
     nombre: "Desconectón",
     activo: false,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_venus.jpg",
+    textura: "/assets/2k_saturn.jpg",
     url: "/galaxia/jovenes/salud-fisica/desconecton",
     info: {
       tipoRiesgo: "Fatiga crónica",
@@ -442,7 +442,7 @@ export const planetasEjemplo = [
     nombre: "Digitox",
     activo: true,
     tema: "peligros-digitales",
-    textura: "/assets/planetas/2k_uranus.jpg",
+    textura: "/assets/2k_uranus.jpg",
     url: "/galaxia/jovenes/peligros-digitales/digitox",
     info: {
       tipoRiesgo: "Adicción a redes",
@@ -462,7 +462,7 @@ export const planetasEjemplo = [
     nombre: "Infoburbuja",
     activo: true,
     tema: "peligros-digitales",
-    textura: "/assets/planetas/2k_sun.jpg",
+    textura: "/assets/2k_uranus.jpg",
     url: "/galaxia/jovenes/peligros-digitales/infoburbuja",
     info: {
       tipoRiesgo: "Falsas noticias",
@@ -482,7 +482,7 @@ export const planetasEjemplo = [
     nombre: "Lagón",
     activo: false,
     tema: "peligros-digitales",
-    textura: "/assets/planetas/2k_earth_daymap.jpg",
+    textura: "/assets/2k_haumea_fictional.jpg",
     url: "/galaxia/jovenes/peligros-digitales/lagon",
     info: { tipoRiesgo: "Fatiga tecnológica", tamaño: "6.900 km", composición: "Códigos corrompidos", riesgo: "Estrés visual", nivel: "Medio", ambiente: "Pantallas parpadeantes", temperatura: "29°C", villano: "Laggster" }
   },
@@ -576,7 +576,7 @@ export const planetasEjemplo = [
     nombre: "Colaboris",
     activo: true,
     tema: "salud-social",
-    textura: "/assets/2k_mercury.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/salud-social/colaboris",
     info: {
       tipoRiesgo: "Ambiente hostil",
@@ -618,7 +618,7 @@ export const planetasEjemplo = [
     nombre: "Vitalor",
     activo: true,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_earth.jpg",
+    textura: "/assets/2k_earth_clouds.jpg",
     url: "/galaxia/salud-fisica/vitalor",
     info: {
       tipoRiesgo: "Desgaste físico",
@@ -638,7 +638,7 @@ export const planetasEjemplo = [
     nombre: "Nutralia",
     activo: true,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_venus.jpg",
+    textura: "/assets/2k_venus_surface.jpg",
     url: "/galaxia/salud-fisica/nutralia",
     info: {
       tipoRiesgo: "Alimentación desequilibrada",
@@ -658,7 +658,7 @@ export const planetasEjemplo = [
     nombre: "Inerción",
     activo: false,
     tema: "salud-fisica",
-    textura: "/assets/planetas/2k_pluto.jpg",
+    textura: "/assets/2k_jupiter.jpg",
     url: "/galaxia/salud-fisica/inercion",
     info: {
       tipoRiesgo: "Inactividad prolongada",
@@ -680,7 +680,7 @@ export const planetasEjemplo = [
     nombre: "Infox",
     activo: true,
     tema: "peligros-digitales",
-    textura: "/assets/planetas/2k_sun.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/peligros-digitales/infox",
     info: {
       tipoRiesgo: "Infoxicación",
@@ -700,7 +700,7 @@ export const planetasEjemplo = [
     nombre: "Redas",
     activo: true,
     tema: "peligros-digitales",
-    textura: "/assets/2k_earth_daymap.jpg",
+    textura: "/assets/2k_jupiter.jpg",
     url: "/galaxia/padres/peligros-digitales/redas",
     info: {
       tipoRiesgo: "Dependencia tecnológica",
@@ -720,7 +720,7 @@ export const planetasEjemplo = [
     nombre: "VacioNet",
     activo: false,
     tema: "peligros-digitales",
-    textura: "/assets/2k_moon.jpg",
+    textura: "/assets/2k_mars.jpg",
     url: "/galaxia/padres/peligros-digitales/vacionet",
     info: {
       tipoRiesgo: "Aburrimiento digital",
