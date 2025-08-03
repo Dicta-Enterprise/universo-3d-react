@@ -1,14 +1,15 @@
 import { CATEGORIAS } from './CategoriasEnum';
+import { GRUPOS } from './GruposEnum';
+import { TEMAS } from './TemasEnum';
 
 export const planetasEjemplo = [
   // 🌈 salud-mental
   {
     id: 1,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Calmito",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_neptune.jpg",
     url: "/galaxia/ninos/salud-mental/calmito",
     info: {
@@ -24,11 +25,10 @@ export const planetasEjemplo = [
   },
   {
     id: 2,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Mentis",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_mars.jpg",
     url: "/galaxia/ninos/salud-mental/mentis",
     info: {
@@ -44,11 +44,10 @@ export const planetasEjemplo = [
   },
   {
     id: 3,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Pensadín",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_venus_surface.jpg",
     url: "/galaxia/ninos/salud-mental/pensadin",
     info: {
@@ -66,8 +65,7 @@ export const planetasEjemplo = [
   // 🫂 salud-social
   {
     id: 4,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Risitas",
     activo: true,
     tema: "salud-social",
@@ -86,8 +84,7 @@ export const planetasEjemplo = [
   },
   {
     id: 5,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Amiguín",
     activo: true,
     tema: "salud-social",
@@ -106,8 +103,7 @@ export const planetasEjemplo = [
   },
   {
     id: 6,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Silencio",
     activo: false,
     tema: "salud-social",
@@ -128,8 +124,7 @@ export const planetasEjemplo = [
   // 🏃 salud-fisica
   {
     id: 7,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Vitalito",
     activo: true,
     tema: "salud-fisica",
@@ -148,8 +143,7 @@ export const planetasEjemplo = [
   },
   {
     id: 8,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Corpalin",
     activo: true,
     tema: "salud-fisica",
@@ -168,8 +162,7 @@ export const planetasEjemplo = [
   },
   {
     id: 9,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Oxigenín",
     activo: false,
     tema: "salud-fisica",
@@ -190,8 +183,7 @@ export const planetasEjemplo = [
   // 💻 peligros-digitales
   {
     id: 10,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Tecnotín",
     activo: true,
     tema: "peligros-digitales",
@@ -210,8 +202,7 @@ export const planetasEjemplo = [
   },
   {
     id: 11,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Datin",
     activo: true,
     tema: "peligros-digitales",
@@ -230,8 +221,7 @@ export const planetasEjemplo = [
   },
   {
     id: 12,
-    grupo: "ninos",
-    categoriaId: CATEGORIAS.NIÑOS,
+    grupo: GRUPOS.NIÑOS,
     nombre: "Apagón",
     activo: false,
     tema: "peligros-digitales",
@@ -251,11 +241,10 @@ export const planetasEjemplo = [
   // 🧠 salud-mental
   {
     id: 13,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Euforia",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_jupiter.jpg",
     url: "/galaxia/jovenes/salud-mental/euforia",
     info: {
@@ -271,11 +260,10 @@ export const planetasEjemplo = [
   },
   {
     id: 14,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Serenix",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_earth_clouds.jpg",
     url: "/galaxia/jovenes/salud-mental/serenix",
     info: {
@@ -291,11 +279,10 @@ export const planetasEjemplo = [
   },
   {
     id: 15,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Confusón",
     activo: false,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_mars.jpg",
     url: "/galaxia/jovenes/salud-mental/confuson",
     info: {
@@ -313,8 +300,7 @@ export const planetasEjemplo = [
   // 🫂 salud-social
   {
     id: 16,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Conexión",
     activo: true,
     tema: "salud-social",
@@ -333,8 +319,7 @@ export const planetasEjemplo = [
   },
   {
     id: 17,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Círculo",
     activo: true,
     tema: "salud-social",
@@ -353,8 +338,7 @@ export const planetasEjemplo = [
   },
   {
     id: 18,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Sombras",
     activo: false,
     tema: "salud-social",
@@ -375,8 +359,7 @@ export const planetasEjemplo = [
   // 🏃 salud-fisica
   {
     id: 19,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Motrion",
     activo: true,
     tema: "salud-fisica",
@@ -395,8 +378,7 @@ export const planetasEjemplo = [
   },
   {
     id: 20,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Nutrilia",
     activo: true,
     tema: "salud-fisica",
@@ -415,8 +397,7 @@ export const planetasEjemplo = [
   },
   {
     id: 21,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Desconectón",
     activo: false,
     tema: "salud-fisica",
@@ -437,8 +418,7 @@ export const planetasEjemplo = [
   // 💻 peligros-digitales
   {
     id: 22,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Digitox",
     activo: true,
     tema: "peligros-digitales",
@@ -457,8 +437,7 @@ export const planetasEjemplo = [
   },
   {
     id: 23,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Infoburbuja",
     activo: true,
     tema: "peligros-digitales",
@@ -477,8 +456,7 @@ export const planetasEjemplo = [
   },
   {
     id: 24,
-    grupo: "jovenes",
-    categoriaId: CATEGORIAS.JOVENES,
+    grupo: GRUPOS.JOVENES,
     nombre: "Lagón",
     activo: false,
     tema: "peligros-digitales",
@@ -489,11 +467,10 @@ export const planetasEjemplo = [
     // 🧠 salud-mental
   {
     id: 25,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Neuronia",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_mars.jpg",
     url: "/galaxia/salud-mental/neuronia",
     info: {
@@ -509,11 +486,10 @@ export const planetasEjemplo = [
   },
   {
     id: 26,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Tranquilis",
     activo: true,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_neptune.jpg",
     url: "/galaxia/salud-mental/tranquilis",
     info: {
@@ -529,11 +505,10 @@ export const planetasEjemplo = [
   },
   {
     id: 27,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Caóticon",
     activo: false,
-    tema: "salud-mental",
+    tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_saturn.jpg",
     url: "/galaxia/salud-mental/caoticon",
     info: {
@@ -551,8 +526,7 @@ export const planetasEjemplo = [
   // 🫂 salud-social
   {
     id: 28,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Redalia",
     activo: true,
     tema: "salud-social",
@@ -571,8 +545,7 @@ export const planetasEjemplo = [
   },
   {
     id: 29,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Colaboris",
     activo: true,
     tema: "salud-social",
@@ -591,8 +564,7 @@ export const planetasEjemplo = [
   },
   {
     id: 30,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Ausentia",
     activo: false,
     tema: "salud-social",
@@ -613,8 +585,7 @@ export const planetasEjemplo = [
   // 🏃 salud-fisica
   {
     id: 31,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Vitalor",
     activo: true,
     tema: "salud-fisica",
@@ -633,8 +604,7 @@ export const planetasEjemplo = [
   },
   {
     id: 32,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Nutralia",
     activo: true,
     tema: "salud-fisica",
@@ -653,8 +623,7 @@ export const planetasEjemplo = [
   },
   {
     id: 33,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Inerción",
     activo: false,
     tema: "salud-fisica",
@@ -675,8 +644,7 @@ export const planetasEjemplo = [
   // 💻 peligros-digitales
   {
     id: 34,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Infox",
     activo: true,
     tema: "peligros-digitales",
@@ -695,8 +663,7 @@ export const planetasEjemplo = [
   },
   {
     id: 35,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "Redas",
     activo: true,
     tema: "peligros-digitales",
@@ -713,10 +680,9 @@ export const planetasEjemplo = [
       villano: "El Enlazador"
     }
   },
-    {
+  {
     id: 36,
-    grupo: "padres",
-    categoriaId: CATEGORIAS.ADULTOS,
+    grupo: GRUPOS.PADRES,
     nombre: "VacioNet",
     activo: false,
     tema: "peligros-digitales",

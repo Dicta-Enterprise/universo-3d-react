@@ -1,44 +1,22 @@
 import * as THREE from 'three';
+import galaxiasData from '../../../../data/DataGalaxia'; // Ajusta la ruta si es necesario
 
 /**
  * Genera galaxias de partículas con rotaciones independientes para cada una.
  * @param {Object} props
  * @param {THREE.Scene} props.scene - La escena 3D donde insertar las galaxias.
+ * @param {Array} [props.definiciones] - Opcional: definiciones externas de galaxias.
  * @param {string} props.grupo - Grupo actual (niños, jóvenes, adultos).
  * @param {function} props.onSeleccion - Función callback cuando se hace clic en una galaxia.
  * @returns {THREE.Points[]} Lista de objetos animables (galaxias)
  */
-export default function GeneradorGalaxias({ scene, grupo, onSeleccion }) {
+export default function GeneradorGalaxias({ scene, definiciones, grupo, onSeleccion }) {
   const galaxias = [];
 
-  const definiciones = [
-    {
-      tema: 'salud-mental',
-      color: '#8FE968',
-      posicion: [0, 8, 4],
-      rotacion: [Math.PI / 1.3, 0, -5], // vista desde arriba
-    },
-    {
-      tema: 'salud-fisica',
-      color: '#36CEDC',
-      posicion: [0, -7, 5],
-      rotacion: [Math.PI / 4, 0, -2], // ligera diagonal
-    },
-    {
-      tema: 'peligros-digitales',
-      color: '#A587CA',
-      posicion: [13, 1, 3],
-      rotacion: [Math.PI / 1.7, 0, 5], // vista inclinada 3D
-    },
-    {
-      tema: 'salud-social',
-      color: '#FE797B',
-      posicion: [-13, 1, 3],
-      rotacion: [Math.PI / 1.7, 0, 5], // vista lateral
-    },
-  ];
+  // Usa las definiciones externas si existen, si no las internas (filtrando solo las activas)
+  const defs = (definiciones || (galaxiasData[grupo] || [])).filter(g => g.active);
 
-  definiciones.forEach(({ tema, color, posicion, rotacion }) => {
+  defs.forEach(({ tema, color, posicion, rotacion }) => {
     const particles = 9000;
     const radius = 5;
     const spread = 0.5;
@@ -86,8 +64,8 @@ export default function GeneradorGalaxias({ scene, grupo, onSeleccion }) {
         galaxy.rotation.z += 0.0015;
       },
       onClick: () => {
-      onSeleccion(tema);
-    },
+        onSeleccion(tema);
+      },
     };
 
     scene.add(galaxy);
