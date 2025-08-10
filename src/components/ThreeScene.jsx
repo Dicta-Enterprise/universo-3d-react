@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import cohetesData from '../data/CohetesData';
 
 
 
@@ -435,7 +436,7 @@ export default function ThreeScene({ onLoad }) {
             const rocketGroup = new THREE.Group();
 
             loader.load(
-                '/assets/cohete/scene.gltf',
+                position.modelo, // Usar la ruta del modelo desde la data
                 function (gltf) {
                     const rocket = gltf.scene;
                     
@@ -507,13 +508,17 @@ export default function ThreeScene({ onLoad }) {
         }
 
         // Crear cohetes y sus lunas correspondientes
-        createRocket({ x: -1, y: -0.6, z: 5, url: '/galaxia/ninos' }, 0);
+        cohetesData.forEach((cohete, index) => {
+          if (cohete.active) {
+            createRocket(cohete, index);
+          }
+        });
         //createMoon({ x: -1, y: -0.6, z: 5 }, 0);
         
-        createRocket({ x: 0, y: -0.6, z: 5, url: '/galaxia/jovenes' }, 1);
+        //createRocket({ x: 0, y: -0.6, z: 5, url: '/galaxia/jovenes' }, 1);
         createMoon({ x: 0, y: -0.6, z: 5 }, 1);
         
-        createRocket({ x: 1, y: -0.6, z: 5, url: '/galaxia/padres' }, 2);
+        //createRocket({ x: 1, y: -0.6, z: 5, url: '/galaxia/padres' }, 2);
         //createMoon({ x: 1, y: -0.6, z: 5 }, 2);
 
         // Raycaster para detección de clics
