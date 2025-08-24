@@ -3,7 +3,7 @@ const galaxiasData = {
     {
       id: 1,
       tema: 'salud-mental',
-      color: '#8FE968',
+      color: '#f2f3f2ff',
       posicion: [0, 8, 4],
       rotacion: [Math.PI / 1.3, 0, -5],
       active: true,
@@ -37,7 +37,7 @@ const galaxiasData = {
     {
       id: 5,
       tema: 'salud-mental',
-      color: '#dadfd8ff',
+      color: '#459e22ff',
       posicion: [0, 8, 4],
       rotacion: [Math.PI / 1.3, 0, -5],
       active: true,

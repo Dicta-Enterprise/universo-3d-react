@@ -1,6 +1,8 @@
 import { CATEGORIAS } from './CategoriasEnum';
 import { GRUPOS } from './GruposEnum';
 import { TEMAS } from './TemasEnum';
+import {PLANET_EXTRAS} from './PlanetaDataInfos';
+
 
 export const planetasEjemplo = [
   // 🌈 salud-mental
@@ -8,10 +10,22 @@ export const planetasEjemplo = [
     id: 1,
     grupo: GRUPOS.NIÑOS,
     nombre: "Calmito",
+    planetaNombre: "Planeta Calmito",
     activo: true,
     tema: TEMAS.SALUD_MENTAL,
     textura: "/assets/2k_neptune.jpg",
     url: "/galaxia/ninos/salud-mental/calmito",
+    imagenResumen: "https://images.unsplash.com/photo-1581822261290-991b38693d1b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8YXN0cm9uYXV0fGVufDB8fDB8fHww",
+    imagenBeneficios: "https://tn.com.ar/resizer/v2/cual-es-el-sueldo-de-un-astronauta-de-la-nasa-foto-adobestock-OVP5HZHY7NHB3PWLAVL5ARG66A.png?auth=a3e77c7ff1be7c62dfc79ca3276dbc43d99ec81620644ed5637f4993c154dad4&width=767",
+    resumenCurso: `
+      
+        Este curso te llevará a través de los conceptos básicos y avanzados del planeta Kio, explorando:</p>
+        
+          Geografía única:</strong> Montañas cristalinas, océanos de lava y biomas impresionantes.
+          Clima extremo:</strong> Tormentas de arena eléctricas y lluvias ácidas.
+          Desafíos tecnológicos:</strong> Tecnologías avanzadas para explorar y habitar Kio.
+
+        `,
     info: {
       tipoRiesgo: "Estrés infantil",
       tamaño: "5.000 km",
@@ -21,7 +35,10 @@ export const planetasEjemplo = [
       ambiente: "Bosques flotantes",
       temperatura: "19°C",
       villano: "El Torbellino"
-    }
+    },
+    peligros: PLANET_EXTRAS.calmito.peligros,
+    beneficios: PLANET_EXTRAS.calmito.beneficios,
+
   },
   {
     id: 2,
