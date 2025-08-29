@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import ResizeHandler from './ResizeHandler';
-import CrearLuna from '../FondoNIños/CrearLuna';
-import CrearEstrellas3D from '../FondoNIños/CrearEstrellas3D';
-import crearLineaVertical from '../FondoNIños/CrearLineaVerticalEstrella';
-import crearCirculo from '../FondoNIños/CrearCirculo';
-import CreaCruzRedonda from '../FondoNIños/CrearCruzRedonda';
-import CrearTermometro from '../FondoNIños/CrearTermometro';
-import CrearNube from '../FondoNIños/CrearNube';
-import {nubeconfigLandinPage, estrellasConfigLandinPage, lineasConfigLandinPage, TermometroConfigLandinPage, circulosConfigLandinPage, crucesConfigLandinPage} from '../FondoNIños/ArregloObjetos';
+import CrearLuna from '../FondoNiños/CrearLuna';
+import CrearEstrellas3D from '../FondoNiños/CrearEstrellas3D';
+import crearLineaVertical from '../FondoNiños/CrearLineaVerticalEstrella';
+import crearCirculo from '../FondoNiños/CrearCirculo';
+import CreaCruzRedonda from '../FondoNiños/CrearCruzRedonda';
+import CrearTermometro from '../FondoNiños/CrearTermometro';
+import CrearNube from '../FondoNiños/CrearNube';
+import {nubeconfigLandinPage, estrellasConfigLandinPage, lineasConfigLandinPage, TermometroConfigLandinPage, circulosConfigLandinPage, crucesConfigLandinPage} from '../FondoNiños/ArregloObjetos';
 
 const ThreeScene = ({ textures, planetUrls }) => {
     const mountRef = useRef(null);

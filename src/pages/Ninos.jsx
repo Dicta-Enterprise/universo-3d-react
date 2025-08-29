@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import CentralText from '../components/Galaxias/CentralText';
 import BackButton from '../components/BackButton';
-import CrearEstrellas3D from '../components/FondoNIños/CrearEstrellas3D';
-import crearLineaVertical from '../components/FondoNIños/CrearLineaVerticalEstrella';
-import crearCirculo from '../components/FondoNIños/CrearCirculo';
-import CreaCruzRedonda from '../components/FondoNIños/CrearCruzRedonda';
-import CrearTermometro from '../components/FondoNIños/CrearTermometro';
-import CrearNube from '../components/FondoNIños/CrearNube';
-import CrearLuna from '../components/FondoNIños/CrearLuna';
-import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoNIños/ArregloObjetos';
+import CrearEstrellas3D from '../components/FondoNiños/CrearEstrellas3D';
+import crearLineaVertical from '../components/FondoNiños/CrearLineaVerticalEstrella';
+import crearCirculo from '../components/FondoNiños/CrearCirculo';
+import CreaCruzRedonda from '../components/FondoNiños/CrearCruzRedonda';
+import CrearTermometro from '../components/FondoNiños/CrearTermometro';
+import CrearNube from '../components/FondoNiños/CrearNube';
+import CrearLuna from '../components/FondoNiños/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../components/FondoNiños/ArregloObjetos';
 
 export default function Ninos() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);

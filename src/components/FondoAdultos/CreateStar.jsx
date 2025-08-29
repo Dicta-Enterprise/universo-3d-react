@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import useEffect from 'react';
+import { useEffect } from 'react';
 
 const StarsScene = (scene) => {
     // Array para almacenar todas las estrellas

@@ -4,14 +4,14 @@ import BackButton from '../../components/BackButton';
 import DivCentral from '../../components/Planetas/DivCentral';
 import ControlButtons from '../../components/Planetas/ControlButtons';
 import InfoBox from '../../components/Planetas/InfoBox';
-import CrearEstrellas3D from '../../components/FondoNIños/CrearEstrellas3D';
-import crearLineaVertical from '../../components/FondoNIños/CrearLineaVerticalEstrella';
-import crearCirculo from '../../components/FondoNIños/CrearCirculo';
-import CreaCruzRedonda from '../../components/FondoNIños/CrearCruzRedonda';
-import CrearTermometro from '../../components/FondoNIños/CrearTermometro';
-import CrearNube from '../../components/FondoNIños/CrearNube';
-import CrearLuna from '../../components/FondoNIños/CrearLuna';
-import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNIños/ArregloObjetos';
+import CrearEstrellas3D from '../../components/FondoNiños/CrearEstrellas3D';
+import crearLineaVertical from '../../components/FondoNiños/CrearLineaVerticalEstrella';
+import crearCirculo from '../../components/FondoNiños/CrearCirculo';
+import CreaCruzRedonda from '../../components/FondoNiños/CrearCruzRedonda';
+import CrearTermometro from '../../components/FondoNiños/CrearTermometro';
+import CrearNube from '../../components/FondoNiños/CrearNube';
+import CrearLuna from '../../components/FondoNiños/CrearLuna';
+import {nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig} from '../../components/FondoNiños/ArregloObjetos';
 
 export default function EsferaTexturizada() {
     const [currentTextureIndex, setCurrentTextureIndex] = useState(0);
@@ -30,32 +30,92 @@ export default function EsferaTexturizada() {
         '/assets/2k_earth_clouds.jpg',
         '/assets/2k_jupiter.jpg',
         '/assets/2k_mars.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
+        '/assets/textura blanco.jpg',
+        '/assets/textura negro.jpg',
     ];
 
     const texts = [
-        "Tipo de riesgo: Peligro digital\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ciberbull",
-        "SEGUNDO PLANETA - - ",
-        "TERCER PLANETA - - - ",
-        "CUARTO PLANETA - - - - ",
-        "QUINTO PLANETA - - - - - ",
-        "SEXTO PLANETA - - - - - ",
-        "SEPTIMO PLANETA - - - - - ",
-        "OCTAVO PLANETA - - - - - ",
-        "NOVENO PLANETA - - - - - ",
-        "DECIMO PLANETA - - - - - ",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta KIO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Cyberbullying\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Artificialis",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta VÍTREO\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Grooming\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Pedofilus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SWAD\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Retos Virales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Falsus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta VALERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Phubbing\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ignorus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SOMNUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Teen Vamping\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Vampirus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta GRATUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Discriminación Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Racistus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SCIENTIA\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Pseudociencia\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Incultus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta GAUDIUM\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Domilización Drogas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Drogus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta PAX\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Contenido Violento\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Barbarus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta LIBER\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Secuestro Electronico\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Amenazus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta REALIS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberextrocion\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Bandidus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta REPAUSARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Intoxicacion Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Toxicus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta PRIVATUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Filtración de Datos\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Hurtus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta ACCU\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Deep Web\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Tnebrosus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta TRIPALLIARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Hackers\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Caretus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta CAUMA\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Hactivismo\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ideolugus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta NATUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Software Malicioso\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Virolugus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SILERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Retos Virales\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Mururius",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta AMICUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Phubbing\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Pisoteus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta PERCIPERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Teen Vamping\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Amargorus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta INTERNUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Discriminación Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Intimiduss",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta UNUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Pseudociencia\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Mostronus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta UNDA\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Domilización Drogas\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Aventurus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta INCOGNITUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Contenido Violento\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Indefensus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta VERUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Secuestro Electronico\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Ignoracius",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta QUIESCERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Ciberextrocion\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Acechus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta SINCERUS\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Intoxicacion Digital\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Estafadorus",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta DETINERE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Filtración de Datos\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Angustius",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta DENARIUS \nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Deep Web\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Lavadius",
+        "Tipo de riesgo: Salud Mental\nPlaneta: Planeta HONORARE\nTamaño del planeta: 1.737,4 km\nComposición: Tierra árida\nNombre del riesgo: Hackers\nNivel de riesgo: Alto\nAmbiente: Tóxico\nTemperatura: -30°C a 127°C\nVillano: Fraudelius",
     ];
 
     const planetUrls = [
         '/ninos/peligros_digitales/planeta_kio',
-        '/ninos/peligros_digitales/planeta_mer',
-        '/ninos/peligros_digitales/planeta_ven',
+        '/ninos/peligros_digitales/planeta_2',
+        '/ninos/peligros_digitales/planeta_3',
         '/ninos/peligros_digitales/planeta_4',
         '/ninos/peligros_digitales/planeta_5',
-        '/ninos/peligros_digitales/planeta_6',
-        '/ninos/peligros_digitales/planeta_7',
-        '/ninos/peligros_digitales/planeta_8',
-        '/ninos/peligros_digitales/planeta_9',
-        '/ninos/peligros_digitales/planeta_10',
+        '/ninos/peligros_digitales/planeta_gra',
+        '/ninos/peligros_digitales/planeta_sci',
+        '/ninos/peligros_digitales/planeta_gau',
+        '/ninos/peligros_digitales/planeta_pax',
+        '/ninos/peligros_digitales/planeta_lib',
+        '/ninos/peligros_digitales/planeta_rea',
+        '/ninos/peligros_digitales/planeta_rep',
+        '/ninos/peligros_digitales/planeta_pri',
+        '/ninos/peligros_digitales/planeta_acc',
+        '/ninos/peligros_digitales/planeta_tri',
+        '/ninos/peligros_digitales/planeta_cau',
+        '/ninos/peligros_digitales/planeta_nat',
+        '/ninos/peligros_digitales/planeta_sil',
+        '/ninos/peligros_digitales/planeta_ami',
+        '/ninos/peligros_digitales/planeta_per',
+        '/ninos/peligros_digitales/planeta_int',
+        '/ninos/peligros_digitales/planeta_unu',
+        '/ninos/peligros_digitales/planeta_und',
+        '/ninos/peligros_digitales/planeta_inc',
+        '/ninos/peligros_digitales/planeta_ver',
+        '/ninos/peligros_digitales/planeta_qui',
+        '/ninos/peligros_digitales/planeta_sin',
+        '/ninos/peligros_digitales/planeta_det',
+        '/ninos/peligros_digitales/planeta_den',
+        '/ninos/peligros_digitales/planeta_hon',
     ];
 
     const changeTexture = (direction) => {
@@ -516,7 +576,7 @@ export default function EsferaTexturizada() {
             }}
         >
             <BackButton redirectUrl="/ninos" color={'#cc99ff'} background= {'none'}/> {/* Pasa la URL dinámica */}
-            <DivCentral title="Bienvenidos a la sección de Peligros Digitales">
+            <DivCentral title="🎆 Bienvenidos a la sección de Peligros Digitales 🎆">
                 <InfoBox text={texts[currentTextureIndex]} color={'#cc99ff'} />
             </DivCentral>
             <ControlButtons

@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import CrearEstrellas3D from '../FondoNIños/CrearEstrellas3D';
-import crearLineaVertical from '../FondoNIños/CrearLineaVerticalEstrella';
-import crearCirculo from '../FondoNIños/CrearCirculo';
-import CreaCruzRedonda from '../FondoNIños/CrearCruzRedonda';
-import CrearTermometro from '../FondoNIños/CrearTermometro';
-import CrearNube from '../FondoNIños/CrearNube';
-import CrearLuna from '../FondoNIños/CrearLuna';
-import { nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig } from '../FondoNIños/ArregloObjetos';
+import CrearEstrellas3D from '../FondoNiños/CrearEstrellas3D';
+import crearLineaVertical from '../FondoNiños/CrearLineaVerticalEstrella';
+import crearCirculo from '../FondoNiños/CrearCirculo';
+import CreaCruzRedonda from '../FondoNiños/CrearCruzRedonda';
+import CrearTermometro from '../FondoNiños/CrearTermometro';
+import CrearNube from '../FondoNiños/CrearNube';
+import CrearLuna from '../FondoNiños/CrearLuna';
+import { nubeconfig, estrellasConfig, circulosConfig, crucesConfig, lineasConfig, TermometroConfig } from '../FondoNiños/ArregloObjetos';
 
 const FondoScene = ({ scene, camera, renderer }) => {
     useEffect(() => {
