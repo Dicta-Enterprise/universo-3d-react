@@ -109,11 +109,16 @@ import Planeta1Comp_jovenes from './pages/galaxias/SaludSocialJovenes/Planeta1Co
 //Fin Planeta Padres
 
 */
+
+import Planeta from './pages/planeta';
+
 function App() {
     return (
         <Router>
 
                 <Routes>
+
+                <Route path="/planeta/:id" element={<Planeta />} />
 
                 <Route path="/galaxia/ninos" element={<Ninoss />} />
                 <Route path="/galaxia/jovenes" element={<Joveness />} />
