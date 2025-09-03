@@ -61,6 +61,7 @@ export default function Planeta() {
             console.log(plans.data._value[0].planetaNombre)
             console.log(plans.data._value[1].planetaNombre)
             plans.data._value.map(planeta_ => {
+                if(planeta == undefined || planeta_ == undefined) return;
                 if(planeta.textura != planeta_.textura){//no agrego la textura y url del planeta seleccionado porque ya se agregó antes
                     setTextures(prev => [...prev, planeta_.textura])
                     setPlanetUrls(prev => [...prev, planeta_.url])
@@ -76,6 +77,7 @@ export default function Planeta() {
     };
 
     useEffect(() => {
+        console.log("sdasdasdas")
 
         const promesaPeticion = fetch("http://localhost:5000/api/planetas/"+id)//peticion al back para el planeta actual
         const dataPromesa = promesaPeticion.then(res => res.json())
@@ -85,6 +87,8 @@ export default function Planeta() {
                 
                 return;
             }
+            console.log("planetaaaa")
+            console.log(plan.data._value)
             setPlaneta(plan.data._value)
             setPlanetaLoaded(true);
             cargarTexturasYUrls(plan.data._value.galaxiaId)
@@ -105,7 +109,7 @@ export default function Planeta() {
     return(
         <>
             {/*si e planeta ya cargó...*/planetaLoaded && 
-                planeta.grupo == "NIÑOS"?(
+                (
                     /*Si es para niños... */
                     <div style={{
                         position: 'relative',
@@ -131,17 +135,6 @@ export default function Planeta() {
                         />
                         <ResizeHandler setIsMobile={setIsMobile} />
                     </div>
-                ):
-                (
-                    planeta.grupo == "JOVENES"? (
-                        /*Si es para jovenes... */
-
-                        <div></div>
-                        ): (
-                        /*Si es para adultos... */
-
-                        <div></div>
-                    )
                 )
             }
         </>
