@@ -42,12 +42,19 @@ Asegúrate de tener **Node.js** y **npm** instalados en tu sistema.
 npm install
 ```
 
-### 4️⃣ Iniciar el servidor de desarrollo
+### 4️⃣ Colocar variables de entorno
+Hacer una copia del archivo `.env.template` y renombrarlo a `.env`
+Dentro del `.env` coloca el enlace y puerto correcto al backend (normalmente localhost:3000)
+```sh
+VITE_BACKEND_URL = http://enlace_correcto:puerto/api/
+```
+
+### 5️⃣ Iniciar el servidor de desarrollo
 ```sh
 npm run dev
 ```
 
-### 5️⃣ Abrir el proyecto en el navegador
+### 6️⃣ Abrir el proyecto en el navegador
 Una vez el servidor esté en funcionamiento, accede a:
 ```
 http://localhost:3000

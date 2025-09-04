@@ -5,6 +5,8 @@ import ThreeScene from '../components/Landing/ThreeScene';
 import MainContent from '../components/Landing/MainContent';
 import ResizeHandler from '../components/Landing/ResizeHandler';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function Planeta() {
     const { id } = useParams();
 
@@ -16,40 +18,9 @@ export default function Planeta() {
     const [textures, setTextures] = useState([]);
     const [planetUrls, setPlanetUrls] = useState([]);
     
-    /*texturas...
-        '/assets/2k_makemake_fictional.jpg',
-        '/assets/2k_haumea_fictional.jpg',
-        '/assets/earthx5400x2700.jpg',
-        '/assets/2k_neptune.jpg',
-        '/assets/2k_venus_surface.jpg',
-        '/assets/2k_uranus.jpg',
-        '/assets/2k_venus_atmosphere.jpg',
-        '/assets/2k_earth_clouds.jpg',
-        '/assets/2k_jupiter.jpg',
-        '/assets/2k_mars.jpg',
-        '/assets/textura blanco.jpg',
-        '/assets/textura negro.jpg',
-    */
-   // URLs de los planetas
-   
-    /*planetUrls...
-        '/ninos/salud_social/planeta_comp',
-        '/ninos/salud_social/planeta_com',
-        '/ninos/salud_social/planeta_emo',
-        '/ninos/salud_social/planeta_amo',
-        '/ninos/salud_social/planeta_sexu',
-        '/ninos/salud_social/planeta_for',
-        '/ninos/salud_social/planeta_util',
-        '/ninos/salud_social/planeta_pro',
-        '/ninos/salud_social/planeta_sen',
-        '/ninos/salud_social/planeta_dir',
-        '/ninos/salud_social/planeta_kri',
-        '/ninos/salud_social/planeta_moy',
-    */
-    function cargarTexturasYUrls(galaxiaID){
-        console.log("id galaxia: "+galaxiaID)
+    function cargarTexturasYUrls(galaxiaID,plt){
 
-        const planetas_galaxia = fetch("http://localhost:5000/api/planetas?galaxiaId="+galaxiaID)//peticion al back
+        const planetas_galaxia = fetch(BACKEND_URL+"planetas?galaxiaId="+galaxiaID)//peticion al back
         const dataPromesa = planetas_galaxia.then(res => res.json())
         dataPromesa.then(plans => {
             
@@ -57,14 +28,24 @@ export default function Planeta() {
                 
                 return;
             }
-            console.log("planetas de esta galaxia txt")
-            console.log(plans.data._value[0].planetaNombre)
-            console.log(plans.data._value[1].planetaNombre)
             plans.data._value.map(planeta_ => {
-                if(planeta == undefined || planeta_ == undefined) return;
-                if(planeta.textura != planeta_.textura){//no agrego la textura y url del planeta seleccionado porque ya se agregó antes
+
+                if(plt == undefined || planeta_ == undefined) return;
+                console.log("planeta_")
+                console.log(planeta_)
+                var repetido = false;
+                planetUrls.map(url => {
+                    console.log("comparando")
+                    console.log(url)
+                    console.log("/planeta/"+planeta_.id)
+                    if(url == "/planeta/"+planeta_.id) repetido = true;
+                })
+                if(plt.id != planeta_.id && !repetido){//no agrego la textura y url del planeta seleccionado porque ya se agregó antes
                     setTextures(prev => [...prev, planeta_.textura])
-                    setPlanetUrls(prev => [...prev, planeta_.url])
+                    setPlanetUrls(prev => [...prev, "/planeta/"+planeta_.id])
+                    console.log("-----count------------")
+                    console.log(planeta_.id)
+
                 }
                 
             })
@@ -79,7 +60,7 @@ export default function Planeta() {
     useEffect(() => {
         console.log("sdasdasdas")
 
-        const promesaPeticion = fetch("http://localhost:5000/api/planetas/"+id)//peticion al back para el planeta actual
+        const promesaPeticion = fetch(BACKEND_URL+"planetas/"+id)//peticion al back para el planeta actual
         const dataPromesa = promesaPeticion.then(res => res.json())
         dataPromesa.then(plan => {
             
@@ -91,7 +72,7 @@ export default function Planeta() {
             console.log(plan.data._value)
             setPlaneta(plan.data._value)
             setPlanetaLoaded(true);
-            cargarTexturasYUrls(plan.data._value.galaxiaId)
+            cargarTexturasYUrls(plan.data._value.galaxiaId,plan.data._value)
         })
 
         document.body.style.overflow = 'hidden';
@@ -119,7 +100,7 @@ export default function Planeta() {
                         overflowX: 'hidden',
                     }}>
                         {textures.length == 0?textures[0] = planeta.textura:""/* En un principio esto cargará sin texturas, por lo que le agrego la textura del planeta actual */}
-                        {planetUrls.length == 0?planetUrls[0] = planeta.url:""/* En un principio esto cargará sin urls, por lo que le agrego la url del planeta actual */}
+                        {planetUrls.length == 0?planetUrls[0] = "/planeta/"+planeta.id:""/* En un principio esto cargará sin urls, por lo que le agrego la url del planeta actual */}
                         <BackButton color="#FFFFFF" redirectUrl="/ninos/salud_social" background= {'none'}/>
                         <ThreeScene textures={textures} planetUrls={planetUrls} showCarousel={showCarousel} />
                         <MainContent
