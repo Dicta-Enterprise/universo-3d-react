@@ -522,7 +522,7 @@ const ThreeScene = ({ textures, planetUrls }) => {
             let scaleLimit = window.innerWidth < 768 ? 0.7 : 1.5; // Límite de escala máximo
             
             time += 0.02;
-            console.log(time);
+            //console.log(time);
             
             cruces.forEach(cruz => {
                 cruz.rotation.z += 0.005;  // Rotación en el eje X
@@ -578,7 +578,7 @@ const ThreeScene = ({ textures, planetUrls }) => {
             
         };
         animateFondo();
-
+        
         return () => {
             rendererRef.current.dispose();
         };

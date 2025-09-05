@@ -22,6 +22,7 @@ import SaludSocialPadres from './pages/galaxias/SaludSocialPadres';
 import SaludMentalPadres from './pages/galaxias/SaludMentalPadres';
 import SaludFisicaPadres from './pages/galaxias/SaludFisicaPadres';
 import PeligrosDigitalesPadres from './pages/galaxias/PeligrosDigitalesPadres';
+/*
 import Planeta1Comp from './pages/galaxias/SaludSocial/Planeta1Comp';
 import Planeta2Com from './pages/galaxias/SaludSocial/Planeta2Com';
 import Planeta3Emo from './pages/galaxias/SaludSocial/Planeta3Emo';
@@ -86,7 +87,7 @@ import Planeta26Qui from './pages/galaxias/PeligrosDigitales/Planeta26Qui';
 import Planeta27Sin from './pages/galaxias/PeligrosDigitales/Planeta27Sin';
 import Planeta28Det from './pages/galaxias/PeligrosDigitales/Planeta28Det';
 import Planeta29Den from './pages/galaxias/PeligrosDigitales/Planeta29Den';
-import Planeta30Hon from './pages/galaxias/PeligrosDigitales/Planeta30Hon';
+import Planeta30Hon from './pages/galaxias/PeligrosDigitales/Planeta30Hon';*/
 //import PlanetaKioPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaKioPadresSS';
 //import PlanetaMerPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaMerPadresSS';
 //import PlanetaVenPadresSS from './pages/galaxias/SaludSocialPadres/PlanetaVenPadresSS';
@@ -109,11 +110,16 @@ import Planeta1Comp_jovenes from './pages/galaxias/SaludSocialJovenes/Planeta1Co
 //Fin Planeta Padres
 
 */
+
+import Planeta from './pages/planeta';
+
 function App() {
     return (
         <Router>
 
                 <Routes>
+
+                <Route path="/planeta/:id" element={<Planeta />} />
 
                 <Route path="/galaxia/ninos" element={<Ninoss />} />
                 <Route path="/galaxia/jovenes" element={<Joveness />} />
@@ -138,6 +144,8 @@ function App() {
                 <Route path="/padres/peligros_digitales" element={<PeligrosDigitalesPadres />} />
                 <Route path="/ninos/peligros_digitales" element={<PeligrosDigitales />} />
 
+                {
+                    /*
                 <Route path="/ninos/salud_social/planeta_comp" element={<Planeta1Comp />} />
                 <Route path="/ninos/salud_social/planeta_com" element={<Planeta2Com />} />
                 <Route path="/ninos/salud_social/planeta_emo" element={<Planeta3Emo />} />
@@ -208,6 +216,8 @@ function App() {
                 <Route path="/ninos/peligros_digitales/planeta_det" element={<Planeta28Det />} />
                 <Route path="/ninos/peligros_digitales/planeta_den" element={<Planeta29Den />} />
                 <Route path="/ninos/peligros_digitales/planeta_hon" element={<Planeta30Hon />} />
+                    */
+                }
 
 
 

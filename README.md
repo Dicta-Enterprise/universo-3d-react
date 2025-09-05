@@ -42,12 +42,19 @@ Asegúrate de tener **Node.js** y **npm** instalados en tu sistema.
 npm install
 ```
 
-### 4️⃣ Iniciar el servidor de desarrollo
+### 4️⃣ Colocar variables de entorno
+Hacer una copia del archivo `.env.template` y renombrarlo a `.env`
+Dentro del `.env` coloca el enlace y puerto correcto al backend (normalmente localhost:3000)
+```sh
+VITE_BACKEND_NEST_API_URL = http://enlace_correcto:puerto/api/
+```
+
+### 5️⃣ Iniciar el servidor de desarrollo
 ```sh
 npm run dev
 ```
 
-### 5️⃣ Abrir el proyecto en el navegador
+### 6️⃣ Abrir el proyecto en el navegador
 Una vez el servidor esté en funcionamiento, accede a:
 ```
 http://localhost:3000
@@ -60,6 +67,20 @@ Este es un proyecto privado de Dicta Colombia. Para el desarrollo interno:
 2. Sigue las guías de desarrollo establecidas por el equipo.
 3. Utiliza las ramas de desarrollo según el flujo de trabajo acordado.
 4. Mantén la confidencialidad del código y la documentación.
+
+### Uso de variables de entorno
+Se ha utilizado Vite para la creación del entorno, Vite expone las variables de entorno bajo el objeto import.meta.env como cadenas automáticamente.
+
+Para evitar la filtración accidental de variables de entorno al cliente, solo las variables prefijadas con VITE_ se exponen en el código procesado por Vite. Por ejemplo, para las siguientes variables de entorno
+
+Por ello, todas las variables de entorno creadas deben comenzar con "VITE_" seguido del nombre de la variable que se desea poner, por ejemplo:
+"VITE_NOMBRE_VARIABLE"
+
+y para usarla en código, se puede acceder a esta variable mediante:
+
+```
+import.meta.env.VITE_SOME_KEY
+```
 
 ## Versiones 📚
 - **v0.2.0-alpha**: Actualización mayor con nuevas características 3D
