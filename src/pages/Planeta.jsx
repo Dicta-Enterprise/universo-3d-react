@@ -5,7 +5,7 @@ import ThreeScene from '../components/Landing/ThreeScene';
 import MainContent from '../components/Landing/MainContent';
 import ResizeHandler from '../components/Landing/ResizeHandler';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_NEST_API_URL;
 
 export default function Planeta() {
     const { id } = useParams();
