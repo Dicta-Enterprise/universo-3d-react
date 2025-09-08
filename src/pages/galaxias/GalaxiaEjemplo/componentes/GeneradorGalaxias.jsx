@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import galaxiasData from '../../../../data/DataGalaxia'; // Ajusta la ruta si es necesario
+import { fetchGalaxias } from '../data/galaxia';
+import React, { useEffect, useState } from 'react';
+import { fetchCategorias } from '../data/categoria';
 
 /**
  * Genera galaxias de partículas con rotaciones independientes para cada una.
@@ -73,4 +76,14 @@ export default function GeneradorGalaxias({ scene, definiciones, grupo, onSelecc
   });
 
   return galaxias;
+}
+
+function MiComponente() {
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    fetchCategorias().then(setCategorias).catch(console.error);
+  }, []);
+
+  // Usa 'categorias' en tu render
 }
