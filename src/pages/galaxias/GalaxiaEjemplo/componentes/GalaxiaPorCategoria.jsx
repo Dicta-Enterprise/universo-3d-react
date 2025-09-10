@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import { planetasEjemplo } from '../PlanetasData';
 import GalaxiaGenerica from "../GalaxiaGenerica";
+import { fetchPlanetas, fetchPlanetasEnGalaxia } from './../../../../data/planetas'
+import { TEMAS } from '../TemasEnum';
 
 // Utilidades
 function categoriaIdPorGrupo(grupo) {
@@ -35,6 +38,8 @@ export default function GalaxiaPorCategoria() {
   const { grupo, tema } = useParams();
   const categoriaId = categoriaIdPorGrupo(grupo);
 
+  const [planetas, setPlanetas] = useState([]);
+
   if (!grupo || !tema || !categoriaId) {
     return (
       <div style={{ color: "white", textAlign: "center", padding: "3rem" }}>
@@ -43,21 +48,32 @@ export default function GalaxiaPorCategoria() {
     );
   }
 
-  // 💥 Filtramos directo desde la data
-  const planetas = planetasEjemplo.filter(
-    (p) => p.grupo === grupo && p.tema === tema && p.activo
-  );
-
+  
+/*
   if (planetas.length === 0) {
     return (
       <div style={{ color: "black", textAlign: "center", padding: "3rem" }}>
         🚧 Nada para mostrar, aún...
       </div>
     );
-  }
+  }*/
 
   const fondo = fondoPorCategoria(categoriaId);
   const color = colorPorTema(tema);
+
+  useEffect(() => {
+    fetchPlanetasEnGalaxia(tema).then(res => {
+      console.log("planetas de data/fetch")
+      console.log(res)
+      setPlanetas(res)
+    }).catch(() => {
+      // 💥 Filtramos directo desde la data
+      setPlanetas(planetasEjemplo.filter(
+        (p) => p.grupo === grupo && p.tema === tema && p.activo
+      ))
+    })
+  }, [])
+  
 
   return (
     <GalaxiaGenerica

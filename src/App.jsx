@@ -47,6 +47,7 @@ import Planeta1Comp_jovenes from './pages/galaxias/SaludSocialJovenes/Planeta1Co
 */
 
 import Planeta from './pages/planeta';
+import RotatingPlanet from './components/LadingPageBORRAR/RotatingPlanet';
 
 function App() {
     return (
@@ -54,6 +55,7 @@ function App() {
 
                 <Routes>
 
+                <Route path="/prueba" element={<RotatingPlanet />} />
                 <Route path="/planeta/:id" element={<Planeta />} />
 
                 <Route path="/galaxia/ninos" element={<Ninoss />} />
