@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import ResizeHandler from './ResizeHandler';
-import BackButton from '../../components/BackButton';
-import DivCentral from '../../components/Planetas/DivCentral';
-import ControlButtons from '../../components/Planetas/ControlButtons';
-import InfoBox from '../../components/Planetas/InfoBox';
 
 const ThreeSceneBackground = ({ textures, planetUrls, showCarousel, initialPlanetIndex = 0 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialPlanetIndex); // Para el planeta principal
