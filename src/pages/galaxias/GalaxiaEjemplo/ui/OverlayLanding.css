@@ -9,58 +9,244 @@
   justify-content: center;
   align-items: center;
   padding: 24px;
+  animation: overlay-appear 2000ms ease;
 }
 
-.overlay-container {
-  width: min(1100px, 95vw);
+@keyframes overlay-appear {
+  0%{
+    opacity: 0;
+    transform: scale(0%);
+
+  }
+  70%{
+    opacity: 0;
+    transform: scale(10%);
+  }
+  100%{
+    opacity: 1;
+    transform: scale(100%);
+
+  }
+}
+
+.overlay-container{
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0fr 2fr 8fr 4fr;
+  
+  width: min(1600px, 95vw);
   max-height: 90vh;
+  padding: 0 2rem;
+
   overflow-y: auto;
-  background: #0b0f1a;
+  /*background: #0b0f1a;*/
+  background: url("../../../../../public/assets/galaxia_punt2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
   color: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,.45);
   border: 1px solid var(--accent);
 }
 
+
 .overlay-hero { position: relative; }
-.overlay-hero img {
-  width: 100%; height: 280px; object-fit: cover;
-  border-top-left-radius: 16px; border-top-right-radius: 16px;
-}
+
 .overlay-hero-gradient {
   position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,.7) 100%);
   border-top-left-radius: 16px; border-top-right-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overlay-close::before {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 1px;
+  transform: translateY(15px);
+  background-color: var(--accent);
+  transition: all 200ms ease;
+
 }
 .overlay-close {
-  position: absolute; top: 16px; right: 16px;
+  position: absolute; top: 28px; left: 0px;
   background: transparent; color: #fff;
-  border: 1px solid var(--accent);
-  padding: 8px 12px; border-radius: 10px; cursor: pointer;
-}
-.overlay-title {
-  position: absolute; bottom: 16px; left: 16px; margin: 0;
-  font-size: clamp(22px, 3.5vw, 36px); line-height: 1.1;
+  /*border: 1px solid var(--accent);*/
+  border: none;
+  padding: 10px 16px; border-radius: 10px; cursor: pointer;
+  transition: all 200ms ease;
+
 }
 
+.overlay-close:hover::before{
+  width: 0;
+  height: 2px;
+  transition: all 200ms ease;
+}
+
+.overlay-close:hover {
+  box-shadow: 0 0 5px 0 var(--accent);
+  transition: all 200ms ease;
+}
+
+.overlay-title {
+  /*position: absolute; bottom: 16px; left: 16px; margin: 0;*/
+  position: relative !important;
+  font-size: clamp(22px, 3.5vw, 36px); line-height: 1.1;
+}
 .overlay-section { padding: 20px; }
 .overlay-heading { margin: 0 0 12px 0; color: var(--accent); }
 
-.overlay-grid {
+#overlay-titulo-resumen{
+  justify-items: center;
+}
+
+#overlay-beneficios-peligros{
+  justify-items: center;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  z-index: 1;
+}
+
+.overlay-grid-cols {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+.overlay-grid-rows {
+  /*display: grid;
+  grid-template-rows: repeat(auto-fit, minmax(260px, 1fr));*/
+  display: flex;
+  flex-direction: column;
+  max-width: 20rem;
   gap: 14px;
 }
+
 .overlay-card {
-  background: #0f1525;
+  background: #0f152599;
+  backdrop-filter: blur(6px);
   border: 1px solid color-mix(in oklab, var(--accent) 20%, transparent);
   border-radius: 12px; padding: 14px;
 }
+
+.overlay-grid-rows > .overlay-card{
+  height: 6rem;
+}
+
+.overlay-cta button{
+  border: none;
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+  margin-top: .7rem;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+.overlay-cta button:hover {
+  box-shadow: 0 -2px 0 1px rgb(94, 94, 94);
+  transform: translateY(2px);
+  transition: all 200ms ease;
+
+}
+
 .overlay-card-title { margin: 0 0 6px 0; font-weight: 600; }
 .overlay-card-text { margin: 0 0 6px 0; }
-/* en OverlayLanding.css */
-.overlay-container {
-  /* max-height: 90vh;  <-- puedes subirlo o quitarlo */
-  max-height: 95vh;
-  overflow-y: auto;
+
+.overlay-bottom{
+  position: relative;
+}
+.overlay-bottom > div{
+  height: 100%;
+  width: 100%;
+
+}
+
+.overlay-bottom button{
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(45deg, rgb(51, 51, 105), var(--accent));
+  border: none;
+  padding: 1.5rem 4rem;
+  border-radius: .5rem;
+  color: black;
+  font-size: 1rem;
+
+  z-index: 5;
+
+  transition: all 400ms ease;
+}
+.overlay-bottom button:hover{
+  background: rgba(245, 245, 245, 0.025);
+  color: white;
+  transform: scale(105%);
+  cursor: pointer;
+  transition: all 300ms ease;
+  /*transition-delay: 100ms;*/
+  box-shadow: 0 0 10px 0px var(--accent);
+  overflow: hidden;
+}
+.overlay-bottom button:hover::after{
+  content: "";
+  position: absolute;
+
+  width: 12rem;
+  height: 4.3rem;
+  border-radius: .5rem;
+
+  animation: btn2 600ms ease;
+}
+
+#overlay-planet-view {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 25rem;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes btn1 {
+  0%{
+    background: linear-gradient(45deg, rgb(51, 51, 105), var(--accent));
+    transform: translateX(0rem) scale(100%) translateY(0rem);
+  }
+  100%{
+    background: linear-gradient(45deg, rgb(51, 51, 105), var(--accent));
+    transform: translateX(8rem) scale(0%) translateY(8rem) ;
+
+  }
+}
+@keyframes btn2 {
+  0%{
+    background: linear-gradient(45deg, rgb(51, 51, 105), var(--accent));
+    opacity: 1;
+  }
+  100%{
+    background: linear-gradient(45deg, rgb(51, 51, 105), var(--accent));
+    opacity: 0;
+
+  }
+}
+
+#planeta-container canvas {
+  position: absolute !important;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+}
+
+@media only screen and (max-width: 950px) {
+  .overlay-container{
+  }
 }
