@@ -21,3 +21,19 @@ export async function fetchPlaneta(id) {
     if(!planeta.data.isSuccess) throw new Error('Error al obtener planeta')
     return planeta.data._value
 }
+
+export async function fetchColorPlaneta(id) {
+    const response = await fetch(BACK_URL+'galaxias/'+id);
+    if (!response.ok) throw new Error('Error al obtener planeta');
+    const planeta = await response.json();
+    if(!planeta.data.isSuccess) throw new Error('Error al obtener planeta')
+    return planeta.data._value
+}
+
+export async function fetchColorPlanetaPrueba() {
+    const response = await fetch(BACK_URL+'galaxias/');
+    if (!response.ok) throw new Error('Error al obtener galaxias');
+    const planeta = await response.json();
+    if(!planeta.data.isSuccess) throw new Error('Error al obtener planeta')
+    return planeta.data._value[0]
+}

@@ -4,7 +4,10 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import "./ui/OverlayLanding.css"; // asegúrate de que el archivo exista en ./ui/
-import RotatingPlanet from './ui/RotatingPlanet'
+import RotatingPlanet from "./ui/RotatingPlanet";
+import DivCentrado from "./ui/DivCentrado";
+import Visualizer from "./ui/3dVisualizer";
+import OverlayCard from "./ui/OverlayCard";
 
 export default function OverlayLanding({
   open,
@@ -13,25 +16,10 @@ export default function OverlayLanding({
   color = "#62d4ff",
 }) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    console.log("textura: ")
-    console.log(planeta)
-    setMounted(true);
-  }, []);
+  const [scroll, setScroll] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(200);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
-    window.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [open, onClose]);
-
-  if (!open || !mounted) return null;
+  const [overlayStyles, setOverlayStyles] = useState("overlay-container-img");
 
   const handleBackdropClick = () => onClose?.();
   const stop = (e) => e.stopPropagation();
@@ -102,38 +90,81 @@ export default function OverlayLanding({
     ? Object.values(planeta.peligros)
     : [];
 
+  const handleScroll = (e) => {
+    var maxScroll = e.target.scrollHeight - e.target.clientHeight;
+    const position = e.target.scrollTop;
+    setScroll(position);
+    setMaxScroll(maxScroll);
+
+    if (position > 1477) {
+      setOverlayStyles("overlay-container-color");
+    } else {
+      setOverlayStyles("overlay-container-img");
+    }
+  };
+
+  useEffect(() => {
+    if (mounted) return;
+    console.log("textura: ");
+    console.log(planeta);
+    setMounted(true);
+    
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose?.();
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open || !mounted) return null;
   return createPortal(
     <div className="overlay-backdrop" onClick={handleBackdropClick}>
-      <div className="overlay-container" onClick={stop}>
+      <div
+        className={"overlay-container " + overlayStyles}
+        onClick={stop}
+        onScroll={(e) => handleScroll(e)}
+      >
         {/* Hero */}
         <div className="overlay-hero">
           {/*<img src={planeta?.imagenResumen} alt={planeta?.planetaNombre ?? "Planeta"} />*/}
           <div className="overlay-hero-gradient" />
           <button className="overlay-close" onClick={onClose}>
-            &lt;  Volver
+            &lt; Volver
           </button>
-          
         </div>
-        {/* Resumen */}
-        <section className="overlay-section" id="overlay-titulo-resumen">
-          <h1 className="overlay-title">{planeta?.planetaNombre}</h1>
-          {/*<h2 className="overlay-heading">Resumen del Curso</h2>*/}
-          {renderResumen()}
+        <section>
+          <div
+            className="div-centered div-full-height"
+            style={{ display: "flex", flexDirection: "column" }}
+          >
+            <h2 className="overlay-huge-title" style={{textAlign:"center"}}>{planeta?.planetaNombre}</h2>
+            <p className="texto texto-centrado" style={{ margin: "0 5rem" }}>
+              {planeta?.resumenCurso}
+            </p>
+          </div>
         </section>
-        {/* beneficios y peligros */}
-        <div id="overlay-beneficios-peligros">
-          {/* Beneficios */}
-          {!!beneficios.length && (
-            <section className="overlay-section">
-              <h2 className="overlay-heading">Beneficios</h2>
-              {/* Beneficios
-            {planeta?.imagenBeneficios && (
-              <div className="overlay-beneficios-hero">
-                <img src={planeta.imagenBeneficios} alt="Beneficios" />
-              </div>
-            )} */}
 
-              <div className="overlay-grid-rows">
+        <section id="overlay-sec-benefs">
+          <div className="div-two-part-dif div-full-height" id="overlay-astronauta">
+            <div className="div-full-height">
+              <Visualizer
+                color={color}
+                modelo="/assets/planeta_astronauta/scene.gltf"
+                pos={{ x: 0, y: -2, z: -3 }}
+                intensidad_luz={2}
+              ></Visualizer>
+            </div>
+            <div className="div-full-height">
+              {/* Beneficios */}
+              <h2 className="overlay-big-title">Beneficios</h2>
+              <div className="overlay-grid-cols">
                 {beneficios.map((b, i) => (
                   <div key={i} className="overlay-card">
                     {b.titulo && (
@@ -146,67 +177,61 @@ export default function OverlayLanding({
                   </div>
                 ))}
               </div>
-            </section>
-          )}
-
-          {/* Peligros */}
-          {!!peligros.length && (
-            <section className="overlay-section" style={{width: "100%"}}>
-              <h2 className="overlay-heading">Peligros</h2>
-              <div className="overlay-grid-cols">
-                {peligros.map((p, i) => (
-                  <div key={i} className="overlay-card">
-                    {p.nombre && (
-                      <h3 className="overlay-card-title">{p.nombre}</h3>
-                    )}
-                    {p.descripcion && (
-                      <p className="overlay-card-text">{p.descripcion}</p>
-                    )}
-
-                    {"nivelRiesgo" in p && (
-                      <p className="overlay-card-text">
-                        <b>Nivel:</b> {p.nivelRiesgo}
-                      </p>
-                    )}
-                    {"temperatura" in p && (
-                      <p className="overlay-card-text">
-                        <b>Temperatura:</b> {p.temperatura}
-                      </p>
-                    )}
-                    {"villano" in p && (
-                      <p className="overlay-card-text">
-                        <b>Villano:</b> {p.villano}
-                      </p>
-                    )}
-
-                    <ExtraFields
-                      obj={p}
-                      exclude={[
-                        "nombre",
-                        "descripcion",
-                        "nivelRiesgo",
-                        "temperatura",
-                        "villano",
-                        "cta",
-                      ]}
-                    />
-
-                    {p.cta && (
-                      <div className="overlay-cta">
-                        <button type="button" onClick={() => onClose?.()}>
-                          {p.cta}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+            </div>
+          </div>
+        </section>
+        <section style={{ position: "relative" }}>
+          <div className="overlay-separator"></div>
+          <div className="div-mid-height overlay-danger">
+            <h2 className="overlay-big-title">Peligros</h2>
+            <div className="overlay-grid-cols">
+              {peligros.map((p, i) => (
+                <OverlayCard key={i} p={p} i={i} peligro={true}></OverlayCard>
+              ))}
+            </div>
+            <img id="overlay-prof" src="/assets/prof.png" alt="" />
+          </div>
+        </section>
+        <section>
+          <div
+            className="div-three-part"
+            style={{ position: "relative", maxHeight: "60vh" }}
+          >
+            <div className="div-max-height" style={{ position: "relative" }}>
+              {/**<button className="overlay-comprar">Comprar</button> */}
+              <div className="overlay-planet-comprar">
+                <RotatingPlanet
+                  width={1000}
+                  height={800}
+                  textureUrl={planeta?.textura}
+                />
               </div>
-            </section>
-          )}
-        </div>
-        <div className="overlay-bottom">
-          <div id="overlay-planet-view"><RotatingPlanet width={1500} height={800} textureUrl={"/public/assets/2k_mars.jpg"}/></div>
-          <button>Comprar</button>
+            </div>
+            <div className="div-max-height" id="overlay-comprar-3d" style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
+              <h2 className="overlay-big-title" style={{lineHeight:"normal", textAlign:"center"}}>{planeta?.planetaNombre}</h2>
+              <button className="overlay-comprar">Comprar</button>
+              {/**<Visualizer
+                modelo="/assets/planeta_perro_espacial/scene.gltf"
+                pos={{ x: 10, y: -5, z: -15 }}
+                rot={{ x: 0, y: -45, z: 0 }}
+              ></Visualizer> */}
+            </div>
+            
+            <div className="overlay-trazos"></div>
+          </div>
+        </section>
+
+        <div className="div-centered div-planeta">
+          <div
+            id="overlay-planet-view"
+            style={{ transform: "translateY(" + (scroll / 2 + 100) + "px)" }}
+          >
+            <RotatingPlanet
+              width={1400}
+              height={800}
+              textureUrl={planeta?.textura}
+            />
+          </div>
         </div>
       </div>
     </div>,

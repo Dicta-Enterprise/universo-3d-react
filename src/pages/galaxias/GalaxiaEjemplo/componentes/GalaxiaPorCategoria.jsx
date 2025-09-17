@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from "react-router-dom";
 import { planetasEjemplo } from '../PlanetasData';
 import GalaxiaGenerica from "../GalaxiaGenerica";
-import { fetchPlanetas, fetchPlanetasEnGalaxia } from './../../../../data/planetas'
+import { fetchColorPlanetaPrueba, fetchPlanetas, fetchPlanetasEnGalaxia } from './../../../../data/planetas'
 import { TEMAS } from '../TemasEnum';
 
 // Utilidades
@@ -39,6 +39,7 @@ export default function GalaxiaPorCategoria() {
   const categoriaId = categoriaIdPorGrupo(grupo);
 
   const [planetas, setPlanetas] = useState([]);
+  const [color, setColor] = useState(colorPorTema(tema));
 
   if (!grupo || !tema || !categoriaId) {
     return (
@@ -59,9 +60,16 @@ export default function GalaxiaPorCategoria() {
   }*/
 
   const fondo = fondoPorCategoria(categoriaId);
-  const color = colorPorTema(tema);
+
 
   useEffect(() => {
+    fetchColorPlanetaPrueba(tema).then(res => {
+      console.log("resultado colorFetch")
+      console.log(res.color)
+      setColor(res.color)
+      var r = document.querySelector(':root');
+      r.style.setProperty('--accent', res.color);
+    })
     fetchPlanetasEnGalaxia(tema).then(res => {
       console.log("planetas de data/fetch")
       console.log(res)
