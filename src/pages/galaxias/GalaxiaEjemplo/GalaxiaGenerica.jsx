@@ -225,6 +225,7 @@ export default function GalaxiaGenerica({ titulo, color, planetas = [], backUrl,
 
     grupo: planetaActual.grupo,
     tema: planetaActual.tema,
+    textura: planetaActual.textura
   };
 
   return (
