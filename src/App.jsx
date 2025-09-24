@@ -10,12 +10,15 @@ import Home from './pages/Home';
 
 
 import Planeta from './pages/planeta';
+import Error from './pages/Error';
 
 function App() {
     return (
         <Router>
 
                 <Routes>
+
+                <Route path="/error" element={<Error />} />
 
                 <Route path="/planeta/:id" element={<Planeta />} />
 

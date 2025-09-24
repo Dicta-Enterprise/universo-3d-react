@@ -2,12 +2,12 @@ import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-function Visualizer({
+function Meteoritos({
   color,
   width = 1400,
   height = 900,
   modelo,
-  pos = { x: 0, y: -2, z: -3 },
+  pos = { x: 0, y: 0, z: -10 },
   scale = { x: 1, y: 1, z: 1 },
   rot = { x: 0, y: 0, z: 0 },
   intensidad_luz = 5,
@@ -15,6 +15,7 @@ function Visualizer({
   posAnimX = 0,
   posAnimY = 0,
   posAnimZ = 0,
+  anim = {scroll: 0}
 }) {
   const mountRef = useRef(null);
   useEffect(() => {
@@ -34,27 +35,62 @@ function Visualizer({
 
     //loader
     const loader = new GLTFLoader();
-    let model;
+
+    let model1;
+    let model2;
+    let model3;
     // Load a glTF resource
     // Cargar el modelo del meteorito
     loader.load(
-      modelo,
+      "/assets/meteor/scene.gltf",
       function (gltf) {
-        model = gltf.scene;
+        model1 = gltf.scene;
         // Posición inicial del meteorito fuera de la cámara, en el lado izquierdo
-        model.position.set(pos.x, pos.y, pos.z); // Lejos de la cámara en Z
-        model.scale.set(scale.x, scale.y, scale.z);
-        model.rotation.set(rot.x, rot.y, rot.z);
-        scene.add(model);
+        model1.position.set(pos.x, pos.y, pos.z); // Lejos de la cámara en Z
+        model1.scale.set(scale.x, scale.y, scale.z);
+        model1.rotation.set(rot.x, rot.y, rot.z);
 
-        if (gltf.animations && gltf.animations.length > 0) {
-          setupAnimation(model, gltf.animations);
-        }
+        scene.add(model1);
+      },
+      function (xhr) {
+        // Monitoreo del progreso de carga
+        console.log((xhr.loaded / xhr.total) * 100 + "% cargado");
+      },
+      function (error) {
+        // Muestra cualquier error que ocurra
+        console.error("Error cargando el meteorito: ", error);
+      }
+    );
+    loader.load(
+      "/assets/meteor/scene.gltf",
+      function (gltf) {
+        model2 = gltf.scene;
+        // Posición inicial del meteorito fuera de la cámara, en el lado izquierdo
+        model2.position.set(pos.x, pos.y, pos.z); // Lejos de la cámara en Z
+        model2.scale.set(scale.x, scale.y, scale.z);
+        model2.rotation.set(rot.x, rot.y, rot.z);
 
-        gltf.scene; // THREE.Group
-        gltf.scenes; // Array<THREE.Group>
-        gltf.cameras; // Array<THREE.Camera>
-        gltf.asset;
+        scene.add(model2);
+      },
+      function (xhr) {
+        // Monitoreo del progreso de carga
+        console.log((xhr.loaded / xhr.total) * 100 + "% cargado");
+      },
+      function (error) {
+        // Muestra cualquier error que ocurra
+        console.error("Error cargando el meteorito: ", error);
+      }
+    );
+    loader.load(
+      "/assets/meteor/scene.gltf",
+      function (gltf) {
+        model3 = gltf.scene;
+        // Posición inicial del meteorito fuera de la cámara, en el lado izquierdo
+        model3.position.set(pos.x, pos.y, pos.z); // Lejos de la cámara en Z
+        model3.scale.set(scale.x, scale.y, scale.z);
+        model3.rotation.set(rot.x, rot.y, rot.z);
+
+        scene.add(model3);
       },
       function (xhr) {
         // Monitoreo del progreso de carga
@@ -100,11 +136,37 @@ function Visualizer({
     // Animación
     const animate = () => {
       requestAnimationFrame(animate);
-      if(model){
-        model.position.x = posAnim.x;
-        model.position.y = posAnim.y;
-        model.position.z = posAnim.z;
+      if(model1){
+        if(anim.scroll != 0){
+          model1.position.x = ((-anim.scroll - 50)/20) + 10;//0.3
+          model1.position.y = ((-anim.scroll - 50)/20) + 5;//0.1
+          model1.position.z = ((anim.scroll - 50)/100) - 10;//0.1
+          model1.rotation.z = (anim.scroll/20);//0.1
+        }
       }
+      if(model2){
+        if(anim.scroll != 0){
+          model2.position.x = ((-anim.scroll - 50)/10) + 10;//0.3
+          model2.position.y = ((-anim.scroll - 50)/20) + 5;//0.1
+          model2.scale.x = (-(anim.scroll - 200)/50);//0.1
+          model2.scale.y = (-(anim.scroll - 200)/50);//0.1
+          model2.rotation.z = (anim.scroll/20);//0.1
+
+        }
+      }
+      if(model3){
+        if(anim.scroll != 0){
+          model3.position.x = ((-anim.scroll - 50)/50) + 10;//0.3
+          model3.position.y = ((-anim.scroll - 50)/20) + 5;//0.1
+          model3.position.z = ((anim.scroll - 50)/20) - 10;//0.1
+          model3.scale.x = ((anim.scroll - 100)/70);//0.1
+          model3.scale.y = ((anim.scroll - 100)/70);//0.1
+          model3.rotation.z = (anim.scroll/20);//0.1
+
+        }
+      }
+
+      anim.scroll = 0
       const delta = clock.getDelta();
       if (mixer) {
         mixer.update(delta);
@@ -133,4 +195,4 @@ function Visualizer({
   );
 }
 
-export default Visualizer;
+export default Meteoritos;

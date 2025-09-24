@@ -1,6 +1,3 @@
-// OverlayLanding.jsx
-"use client";
-
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import "./ui/OverlayLanding.css"; // asegúrate de que el archivo exista en ./ui/
@@ -8,6 +5,14 @@ import RotatingPlanet from "./ui/RotatingPlanet";
 import DivCentrado from "./ui/DivCentrado";
 import Visualizer from "./ui/3dVisualizer";
 import OverlayCard from "./ui/OverlayCard";
+import ThreeSceneBG from "./componentes/ThreeSceneBG";
+import Meteoritos from "./ui/MeteoritosPeligro";
+
+const animacion_astronauta = [
+  { xi: 0, yi: 0, zi: 0, xf: 0, yf: 0.2, zf: 0 },
+  { xi: 0, yi: 0.2, zi: 0, xf: 1, yf: 0.5, zf: 0 },
+  { xi: 1, yi: 0.5, zi: 0, xf: 1, yf: 0.7, zf: 0 },
+];
 
 export default function OverlayLanding({
   open,
@@ -18,8 +23,14 @@ export default function OverlayLanding({
   const [mounted, setMounted] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [maxScroll, setMaxScroll] = useState(200);
+  const [animAstronauta, setAnimAstronauta] = useState({ x: 0, y: -2, z: -3 });
+  const [animMeteorito, setAnimMeteorito] = useState({scroll:0});
 
-  const [overlayStyles, setOverlayStyles] = useState("overlay-container-img");
+  const [textura, setTextura] = useState("");
+
+  var meteorito_ultimo_scroll = 0;
+
+  var counterAnimAstronauta = 0;
 
   const handleBackdropClick = () => onClose?.();
   const stop = (e) => e.stopPropagation();
@@ -95,20 +106,57 @@ export default function OverlayLanding({
     const position = e.target.scrollTop;
     setScroll(position);
     setMaxScroll(maxScroll);
-
-    if (position > 1477) {
-      setOverlayStyles("overlay-container-color");
-    } else {
-      setOverlayStyles("overlay-container-img");
-    }
+    animarAstronauta(position);
+    animarMeteoritos(position);
   };
+  function animarMeteoritos(currScroll) {//overlay-sec-peligros
+    const benefs = document.getElementById("overlay-sec-peligros");
+    const scrollTopValue = benefs.offsetTop;
+    const animPointStart = currScroll - scrollTopValue;
+    const scroll_necesario = benefs.offsetHeight;
+
+    var s = animPointStart / scroll_necesario;
+
+    if (s < -1.0 || s > 1.0) return;
+    animMeteorito.scroll = animPointStart
+    console.log("sending")
+    console.log(s - meteorito_ultimo_scroll)
+
+    meteorito_ultimo_scroll = s
+  }
+
+
+  function animarAstronauta(currScroll) {
+    const benefs = document.getElementById("overlay-sec-benefs");
+    const scrollTopValue = benefs.offsetTop;
+    const animPointStart = currScroll - scrollTopValue;
+    const scroll_necesario = benefs.offsetHeight;
+
+    var s = animPointStart / scroll_necesario;
+
+    s += 1;
+    if (s < 0.0 || s > 1.0) return;
+    animacion_astronauta.map((step, i) => {
+      if (
+        Math.round(animAstronauta.y) != step.yf &&
+        i == counterAnimAstronauta
+      ) {
+        console.log("steppp");
+        console.log(step.yi + Math.round(s * 100) / 100);
+        animAstronauta.x = step.xi - parseFloat(s.toFixed(2)) * 2;
+        animAstronauta.y = step.yi - parseFloat(s.toFixed(2)) * 2.5;
+      } else {
+        counterAnimAstronauta++;
+      }
+    });
+  }
 
   useEffect(() => {
     if (mounted) return;
     console.log("textura: ");
     console.log(planeta);
+    setTextura(planeta?.textura);
     setMounted(true);
-    
   });
 
   useEffect(() => {
@@ -127,10 +175,16 @@ export default function OverlayLanding({
   return createPortal(
     <div className="overlay-backdrop" onClick={handleBackdropClick}>
       <div
-        className={"overlay-container " + overlayStyles}
+        className={"overlay-container"}
         onClick={stop}
         onScroll={(e) => handleScroll(e)}
+        style={{ position: "relative" }}
       >
+        <ThreeSceneBG
+          textures={[textura]}
+          planetUrls={[planeta?.id]}
+          showCarousel={false}
+        />
         {/* Hero */}
         <div className="overlay-hero">
           {/*<img src={planeta?.imagenResumen} alt={planeta?.planetaNombre ?? "Planeta"} />*/}
@@ -139,28 +193,38 @@ export default function OverlayLanding({
             &lt; Volver
           </button>
         </div>
-        <section>
+        <section style={{pointerEvents:"none"}}>
           <div
-            className="div-centered div-full-height"
+            className="div-centered div-full-height z-mid"
             style={{ display: "flex", flexDirection: "column" }}
           >
-            <h2 className="overlay-huge-title" style={{textAlign:"center"}}>{planeta?.planetaNombre}</h2>
-            <p className="texto texto-centrado" style={{ margin: "0 5rem" }}>
+            <h2 className="overlay-huge-title" style={{ textAlign: "center" }}>
+              {planeta?.planetaNombre}
+            </h2>
+            <p className="texto-main texto-centrado" style={{ margin: "0 5rem" }}>
               {planeta?.resumenCurso}
             </p>
           </div>
         </section>
-
-        <section id="overlay-sec-benefs">
-          <div className="div-two-part-dif div-full-height" id="overlay-astronauta">
-            <div className="div-full-height">
-              <Visualizer
-                color={color}
-                modelo="/assets/planeta_astronauta/scene.gltf"
-                pos={{ x: 0, y: -2, z: -3 }}
-                intensidad_luz={2}
-              ></Visualizer>
+        <section id="overlay-sec-peligros" className="div-two-part" style={{ position: "relative" }}>
+          <div className="div-mid-height overlay-danger">
+            <h2 className="overlay-big-title">Peligros</h2>
+            <div className="overlay-grid-cols">
+              {peligros.map((p, i) => (
+                <OverlayCard key={i} p={p} i={i} peligro={true}></OverlayCard>
+              ))}
             </div>
+          </div>
+          <div id="meteoritos">
+          <Meteoritos anim={animMeteorito}></Meteoritos>
+          </div>
+        </section>
+        <section id="overlay-sec-benefs" style={{ position: "relative" }}>
+          <div
+            className="div-two-part div-full-height z-mid"
+            id="overlay-astronauta"
+          >
+            <div></div>
             <div className="div-full-height">
               {/* Beneficios */}
               <h2 className="overlay-big-title">Beneficios</h2>
@@ -171,7 +235,7 @@ export default function OverlayLanding({
                       <h3 className="overlay-card-title">{b.titulo}</h3>
                     )}
                     {b.descripcion && (
-                      <p className="overlay-card-text">{b.descripcion}</p>
+                      <p className="overlay-card-text texto">{b.descripcion}</p>
                     )}
                     <ExtraFields obj={b} exclude={["titulo", "descripcion"]} />
                   </div>
@@ -179,19 +243,20 @@ export default function OverlayLanding({
               </div>
             </div>
           </div>
-        </section>
-        <section style={{ position: "relative" }}>
-          <div className="overlay-separator"></div>
-          <div className="div-mid-height overlay-danger">
-            <h2 className="overlay-big-title">Peligros</h2>
-            <div className="overlay-grid-cols">
-              {peligros.map((p, i) => (
-                <OverlayCard key={i} p={p} i={i} peligro={true}></OverlayCard>
-              ))}
-            </div>
-            <img id="overlay-prof" src="/assets/prof.png" alt="" />
+          <div
+            className="div-full-height div-absolute z-back"
+            id="overlay-astronauta"
+          >
+            <Visualizer
+              color={color}
+              modelo="/assets/planeta_astronauta/scene.gltf"
+              pos={{ x: 0, y: -2, z: -3 }}
+              intensidad_luz={2}
+              posAnim={animAstronauta}
+            ></Visualizer>
           </div>
         </section>
+
         <section>
           <div
             className="div-three-part"
@@ -207,8 +272,22 @@ export default function OverlayLanding({
                 />
               </div>
             </div>
-            <div className="div-max-height" id="overlay-comprar-3d" style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center"}}>
-              <h2 className="overlay-big-title" style={{lineHeight:"normal", textAlign:"center"}}>{planeta?.planetaNombre}</h2>
+            <div
+              className="div-max-height"
+              id="overlay-comprar-3d"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <h2
+                className="overlay-big-title"
+                style={{ lineHeight: "normal", textAlign: "center" }}
+              >
+                {planeta?.planetaNombre}
+              </h2>
               <button className="overlay-comprar">Comprar</button>
               {/**<Visualizer
                 modelo="/assets/planeta_perro_espacial/scene.gltf"
@@ -216,23 +295,21 @@ export default function OverlayLanding({
                 rot={{ x: 0, y: -45, z: 0 }}
               ></Visualizer> */}
             </div>
-            
-            <div className="overlay-trazos"></div>
+
+            <div className="overlay-trazos">
+            <Visualizer
+              color={color}
+              modelo="/assets/rocket/scene.gltf"
+              pos={{ x: 0, y: 0, z: -3 }}
+              scale={{ x: 1, y: 1, z: 1 }}
+              intensidad_luz={2}
+              posAnim={{ x: 0, y: 0, z: -3 }}
+            ></Visualizer>
+            </div>
           </div>
         </section>
 
-        <div className="div-centered div-planeta">
-          <div
-            id="overlay-planet-view"
-            style={{ transform: "translateY(" + (scroll / 2 + 100) + "px)" }}
-          >
-            <RotatingPlanet
-              width={1400}
-              height={800}
-              textureUrl={planeta?.textura}
-            />
-          </div>
-        </div>
+        
       </div>
     </div>,
     document.body
