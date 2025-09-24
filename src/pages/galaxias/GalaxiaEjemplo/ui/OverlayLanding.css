@@ -186,6 +186,21 @@
   border: 0px solid var(--accent);
 }
 
+.overlay-container-img {
+  background: url("../../../../../public/assets/galaxia_punt2.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.overlay-container-color {
+  background: url("../../../../../public/assets/fondo-espacio.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  
+}
+
+
 .overlay-hero { position: relative; }
 
 .overlay-hero-gradient {
@@ -227,10 +242,17 @@
   transition: all 200ms ease;
 }
 
+
 .overlay-title {
   /*position: absolute; bottom: 16px; left: 16px; margin: 0;*/
   position: relative !important;
+  /*position: absolute; bottom: 16px; left: 16px; margin: 0;*/
+  position: relative !important;
   font-size: clamp(22px, 3.5vw, 36px); line-height: 1.1;
+}
+.overlay-section { 
+  padding: 20px; 
+  min-height: 20rem;
 }
 .overlay-section { 
   padding: 20px; 
@@ -266,6 +288,10 @@
   /*display: flex;
   flex-direction: column;*/
   max-width: 20rem;
+  grid-template-rows: repeat(auto-fit, minmax(260px, 1fr));
+  /*display: flex;
+  flex-direction: column;*/
+  max-width: 20rem;
   gap: 14px;
 }
 
@@ -281,7 +307,22 @@
 
 }
 
+
+.div-two-part-dif {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 14px;
+  width: 100%;
+}
+
+.div-two-part-dif > div:nth-child(2){
+  padding-right: 5rem;
+
+}
+
 .overlay-card {
+  background: #0f152599;
+  backdrop-filter: blur(6px);
   background: #0f152599;
   backdrop-filter: blur(6px);
   border: 1px solid color-mix(in oklab, var(--accent) 20%, transparent);
