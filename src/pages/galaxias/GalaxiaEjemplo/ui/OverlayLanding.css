@@ -3,6 +3,14 @@
 
 :root { --accent: #62d4ff; }
 
+.quicksand {
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 14px;
+}
+
 .overlay-backdrop *{
   font-family: "Quicksand", sans-serif;
   font-optical-sizing: auto;
@@ -28,6 +36,23 @@
 
   text-shadow: 0 2rem 10px black;
 }
+.z-back {
+  z-index: 0;
+}
+.z-mid {
+  position: relative;
+  z-index: 50;
+}
+.z-top {
+  z-index: 100;
+}
+.div-absolute {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
 .div-max-height {
   min-height: 90vh;
   display: flex;
@@ -36,7 +61,7 @@
   justify-content: center;
 }
 .div-full-height {
-  min-height: 85vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,8 +99,11 @@
   grid-template-rows: 1fr;
 }
 
+.texto-main {
+  font-size: 26px;
+}
 .texto {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .texto-centrado {
@@ -158,21 +186,6 @@
   border: 0px solid var(--accent);
 }
 
-.overlay-container-img {
-  background: url("../../../../../public/assets/galaxia_punt2.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-}
-.overlay-container-color {
-  background: url("../../../../../public/assets/fondo-espacio.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  
-}
-
-
 .overlay-hero { position: relative; }
 
 .overlay-hero-gradient {
@@ -186,18 +199,18 @@
 .overlay-close::before {
   content: "";
   position: absolute;
-  width: 50px;
-  height: 1px;
-  transform: translateY(15px);
+  width: 56px;
+  height: 2px;
+  transform: translateY(18px);
   background-color: var(--accent);
   transition: all 200ms ease;
 
 }
 .overlay-close {
-  position: absolute; top: 28px; left: 0px;
-  background: transparent; color: #fff;
+  position: absolute; top: 28px; left: 1rem;
+  background: #36384ebe; color: #fff;
   /*border: 1px solid var(--accent);*/
-  border: none;
+  border: 1px solid var(--accent);
   padding: 10px 16px; border-radius: 10px; cursor: pointer;
   transition: all 200ms ease;
 
@@ -210,7 +223,7 @@
 }
 
 .overlay-close:hover {
-  box-shadow: 0 0 5px 0 var(--accent);
+  box-shadow: 0 0 8px 1px var(--accent);
   transition: all 200ms ease;
 }
 
@@ -238,14 +251,14 @@
 }
 
 #overlay-sec-benefs {
-  margin-bottom: 20rem;
+  margin-bottom: 0rem;
 }
 
 .overlay-grid-cols {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  width: 100%;
+  width: 40vw;
 }
 .overlay-grid-rows {
   display: grid;
@@ -273,6 +286,11 @@
   backdrop-filter: blur(6px);
   border: 1px solid color-mix(in oklab, var(--accent) 20%, transparent);
   border-radius: 12px; padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  box-shadow: .2rem .2rem 10px 0px black;
 }
 
 .overlay-card-peligro {
@@ -289,8 +307,8 @@
 
 .overlay-riesgo {
   position: absolute;
-  width: 4rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   top: -.5rem;
   right: 1rem;
   border-radius: .5rem;
@@ -312,36 +330,27 @@
   background-color: rgb(142, 127, 28);
 }
 
-.overlay-card-peligro:hover .overlay-riesgo {
-  top: 1rem;
+.overlay-card:hover .overlay-riesgo {
+  top: .1rem;
 
   transition: all 200ms ease;
 
 }
 
-.overlay-card-peligro .overlay-riesgo::after{
+.overlay-card .overlay-riesgo::after{
   content: "";
   opacity: 0;
   transition: all 200ms ease;
 }
-.overlay-card-peligro:hover .riesgo-Alto::after{
-  content: "Alto";
-}
-.overlay-card-peligro:hover .riesgo-Medio::after{
-  content: "Medio";
-}
-.overlay-card-peligro:hover .riesgo-Bajo::after{
-  content: "Bajo";
-}
 
-.overlay-card-peligro:hover .overlay-riesgo::after{
+.overlay-card:hover .overlay-riesgo::after{
   opacity: 1;
 
   transition: all 200ms ease;
 }
 
-.overlay-card-peligro .overlay-card-title{
-  font-size: 16px;
+.overlay-card .overlay-card-title{
+  font-size: 30px;
 }
 
 .overlay-grid-rows > .overlay-card{
@@ -370,7 +379,7 @@
 .overlay-card-title { 
   margin: 0 0 6px 0; 
   font-weight: 600; 
-  font-size: 22px;
+  font-size: 26px !important;
 }
 .overlay-card-text { margin: 0 0 6px 0; }
 
@@ -499,7 +508,7 @@
   bottom: 0;
   z-index: 1000;
   width: 100% !important;
-  height: 400px !important;
+  height: 90vh !important;
 }
 .model-container canvas:nth-child(2){
   display: none !important;
@@ -517,14 +526,10 @@
 
 .overlay-danger {
   position: relative;
-  background-color: #313d44;
   padding: 5rem;
   z-index: 1001;
 }
 
-.overlay-danger > *{
-  transform: translateY(-7rem);
-}
 
 #overlay-comprar-3d > div > canvas {
   height: 30rem !important;
@@ -546,50 +551,60 @@
   transform: scaleX(-1);
 }
 
-.overlay-trazos {
-  
-  background: url("../../../../../public/assets/trazos.png");
-  filter: opacity(0.5) drop-shadow(0px 0px 0 var(--accent));
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  transform: scale(70%) translateX(-10rem);
-}
 
 #overlay-astronauta > div:nth-child(1){
-  animation: astronauta 30000ms steps(80, end) infinite;
+  animation: astronauta 100000ms steps(800, end) infinite;
 }
 
 @keyframes astronauta {
   0%{
-    transform: translate(-2rem,4rem);
+    transform: translate(-2rem,1rem);
   }
   20%{
     transform: rotateZ(6deg);
   }
   33%{
-    transform: translate(1rem,-2rem);
+    transform: translate(10rem,-4rem);
 
   }
   40%{
     transform: rotateZ(-9deg);
   }
   50%{
-    transform: translate(-2rem,1rem);
+    transform: translate(20rem,3rem);
 
   }
   60%{
     transform: rotateZ(-7deg);
   }
   72%{
-    transform: translate(-3rem,-2rem);
+    transform: translate(30rem,-7rem);
 
   }
   80%{
     transform: rotateZ(5deg);
   }
+  90%{
+    transform: translate(20rem,-2rem);
+
+  }
   100%{
-    transform: translate(-2rem,4rem);
+    transform: translate(-2rem,10rem);
+  }
+}
+
+div:has(.overlay-container-bg),.overlay-container-bg *{
+  pointer-events: none !important;
+}
+
+.overlay-container-bg > canvas:nth-child(1){
+  display: none !important;
+  opacity: 0 !important;
+}
+
+@media only screen and (max-width: 1200px){
+  .overlay-planet-comprar {
+    display: none;
   }
 }
 
@@ -618,12 +633,12 @@
   .div-max-height:has(.overlay-planet-comprar) {
     display: none;
   }
-  .overlay-trazos {
-    display: none;
-  }
   div:has(.overlay-trazos) {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
+  }
+  .overlay-trazos {
+    display: none;
   }
 }
 
@@ -647,7 +662,7 @@
   }
   #overlay-astronauta > div:nth-child(1) {
     height: 10vh !important;
-    min-height: 70vh !important;
+    min-height: 90vh !important;
     transform: translateY(10rem);
   }
   .overlay-danger {
@@ -683,5 +698,11 @@
 
   .model-container canvas {
     height: 900px !important;
+  }
+  .overlay-grid-cols {
+    width: 80vw;
+  }
+  #meteoritos {
+    display: none;
   }
 }

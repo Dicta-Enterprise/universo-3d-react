@@ -1,6 +1,6 @@
 import React from "react";
 
-function OverlayCard({p, i, peligro}) {
+function OverlayCard({p, i}) {
     const ExtraFields = ({ obj, exclude = [] }) => {
         if (!obj || typeof obj !== "object") return null;
         const entries = Object.entries(obj).filter(
@@ -15,9 +15,9 @@ function OverlayCard({p, i, peligro}) {
         ));
       };
   return (
-    <div key={i} className={peligro?"overlay-card overlay-card-peligro":"overlay-card"}>
-      {p.nombre && <h3 className="overlay-card-title" style={{fontSize:"20px"}}>{p.nombre}</h3>}
-      {p.descripcion && <p className="overlay-card-text">{p.descripcion}</p>}
+    <div key={i} className="overlay-card">
+      {p.nombre && <h3 className="overlay-card-title" style={{fontSize:"20px"}}>{p.nombre.toUpperCase()}</h3>}
+      {p.descripcion && <p className="overlay-card-text texto">{p.descripcion}</p>}
     <br />
       {"nivelRiesgo" in p && (
         <div className={"overlay-riesgo riesgo-"+p.nivelRiesgo.split(" ")[1]}>
@@ -28,13 +28,13 @@ function OverlayCard({p, i, peligro}) {
           <b>Nivel:</b> {p.nivelRiesgo}
         </p> */}
       {"temperatura" in p && (
-        <p className="overlay-card-text">
-          <b>Temperatura:</b> {p.temperatura}
+        <p className="overlay-card-text texto">
+          <b className="texto">Temperatura:</b> {p.temperatura}
         </p>
       )}
       {"villano" in p && (
-        <p className="overlay-card-text">
-          <b>Villano:</b> {p.villano}
+        <p className="overlay-card-text texto">
+          <b className="texto">Villano:</b> {p.villano}
         </p>
       )}
 
@@ -50,13 +50,13 @@ function OverlayCard({p, i, peligro}) {
         ]}
       />
 
-      {p.cta && (
+      {/*p.cta && (
         <div className="overlay-cta">
           <button type="button" onClick={() => onClose?.()}>
             {p.cta}
           </button>
         </div>
-      )}
+      )*/}
     </div>
   );
 }
