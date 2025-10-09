@@ -1,18 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import cohetesData from '../data/CohetesData';
+//import cohetesData from '../data/CohetesData';
+import { fetchCategorias } from '../data/categorias'
 
+const BACK_URL = import.meta.env.VITE_BACKEND_NEST_API_URL
 
 
 export default function ThreeScene({ onLoad }) {
     const navigate = useNavigate();
 
+    const [cohetesData,setCohetesData] = useState();
+
+
     useEffect(() => {
+
+        
 
         // Crea la escena, cámara y renderizador
         const scene = new THREE.Scene();
@@ -436,7 +443,7 @@ export default function ThreeScene({ onLoad }) {
             const rocketGroup = new THREE.Group();
 
             loader.load(
-                position.modelo, // Usar la ruta del modelo desde la data
+                BACK_URL+position.modelo, // Usar la ruta del modelo desde la data
                 function (gltf) {
                     const rocket = gltf.scene;
                     
@@ -445,7 +452,7 @@ export default function ThreeScene({ onLoad }) {
                     const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
                     
                     if (isMobile) {
-                        rocket.scale.set(5, 5, 5);
+                        rocket.scale.set(10, 10, 10);
                     } else if (isTablet) {
                         rocket.scale.set(4, 4, 4);
                     } else {
@@ -454,6 +461,7 @@ export default function ThreeScene({ onLoad }) {
                     
                     // Ajustar la rotación inicial
                     rocket.rotation.y = Math.PI;
+                    const container_bts_cohetes = document.getElementById("btns_categorias");
 
                     // Agregar efecto de resplandor y materiales interactivos
                     rocket.traverse((child) => {
@@ -469,12 +477,13 @@ export default function ThreeScene({ onLoad }) {
                     });
                     
                     // Ajustar posición de los cohetes según el dispositivo
+                   
                     if (isMobile) {
-                        const yOffset = 0.4;
+                        const yOffset = 3.5;
                         rocketGroup.position.set(
                             0,
-                            position.y - index * yOffset,
-                            position.z + index * 1.5
+                            3 + position.y - index * yOffset,
+                            position.z
                         );
                     } else if (isTablet) {
                         const xOffset = 1.5;
@@ -494,10 +503,17 @@ export default function ThreeScene({ onLoad }) {
                     rocketGroup.add(helper);
 
                     rocketGroup.add(rocket);
+                    rocketGroup.userData.url = "/categoria/"+position.id;
+                    rocketGroup.userData.nombre = position.nombre;
+
                     scene.add(rocketGroup);
                     rockets.push(rocketGroup);
 
-                    rocketGroup.userData.url = position.url;
+                    var nombreGalaxia = position.nombre.toLowerCase()
+                    nombreGalaxia = nombreGalaxia.replace("ñ","n")
+                    console.log(nombreGalaxia)
+
+                    //rocketGroup.userData.url = "/galaxia/"+nombreGalaxia;
                     rocketGroup.userData.isHovered = false;
                 },
                 undefined,
@@ -506,13 +522,19 @@ export default function ThreeScene({ onLoad }) {
                 }
             );
         }
+        //fetch para conseguir data para cohetes (categorias)
+        fetchCategorias().then((data) => {
+            setCohetesData(data)
+            // Crear cohetes y sus lunas correspondientes
 
-        // Crear cohetes y sus lunas correspondientes
-        cohetesData.forEach((cohete, index) => {
-          if (cohete.active) {
-            createRocket(cohete, index);
-          }
-        });
+            data.forEach((cohete, index) => {
+                if (cohete.estado) {
+                  createRocket(cohete, index);
+                }
+              });
+        })
+
+        
         //createMoon({ x: -1, y: -0.6, z: 5 }, 0);
         
         //createRocket({ x: 0, y: -0.6, z: 5, url: '/galaxia/jovenes' }, 1);
@@ -569,6 +591,7 @@ export default function ThreeScene({ onLoad }) {
                             child.material.transparent = true;
                             child.material.opacity = 1;
                             child.material.emissiveIntensity = isMobile ? 0.8 : (isTablet ? 0.6 : 0.5);
+                            child.rotation.y += 0.05;
                         }
                     });
                     object.userData.isHovered = true;
@@ -638,7 +661,7 @@ export default function ThreeScene({ onLoad }) {
                 `;
 
                 const message = document.createElement('p');
-                message.textContent = `¿Deseas ir a ${rocket.userData.url === '/galaxia/ninos' ? 'Niños' : rocket.userData.url === '/galaxia/jovenes' ? 'Jóvenes' : 'Padres'}?`;
+                message.textContent = `¿Deseas ir a ${rocket.userData.nombre}?`;
                 message.style.cssText = `
                     margin-bottom: 25px;
                     font-size: 1.2em;
@@ -699,10 +722,16 @@ export default function ThreeScene({ onLoad }) {
                 };
 
                 buttonContainer.appendChild(acceptButton);
-                buttonContainer.appendChild(cancelButton);
+                //buttonContainer.appendChild(cancelButton);
                 popup.appendChild(buttonContainer);
 
                 document.body.appendChild(popup);
+            }else{
+                // Remover cualquier popup existente
+                const existingPopup = document.querySelector('.rocket-popup');
+                if (existingPopup) {
+                    document.body.removeChild(existingPopup);
+                }
             }
         }
 
@@ -740,7 +769,7 @@ export default function ThreeScene({ onLoad }) {
             const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
-                    const threshold = maxScrollY * (0.3 + index * 0.1); // Más escalonado en móvil
+                    const threshold = maxScrollY * 0.2//(0.3 + index * 0.1); // Más escalonado en móvil
                     rocket.visible = scrollY > threshold;
                 } else if (isTablet) {
                     const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
@@ -969,7 +998,7 @@ export default function ThreeScene({ onLoad }) {
         }
 
         // Crear el sol
-        createSun();
+        //createSun();
 
         // Modificar la función animate para eliminar la animación del sol
         function animate() {
@@ -995,11 +1024,11 @@ export default function ThreeScene({ onLoad }) {
             
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
-                    const yOffset = 0.4;
+                    const yOffset = 2;//0.4
                     rocket.position.set(
                         0,
                         -0.6 - index * yOffset,
-                        5 + index * 1.5
+                        5
                     );
                 } else if (isTablet) {
                     const xOffset = 1.5;
@@ -1037,5 +1066,38 @@ export default function ThreeScene({ onLoad }) {
 
     }, [navigate, onLoad]); // Dependencia de onLoad para asegurarnos de que funcione correctamente
 
-    return null;
+    return (
+        <div style={{position:"relative"}}>
+        <div style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:"60vh", boxSizing:"border-box", textAlign:"center"}}>
+            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL</h1>
+            
+        </div>
+        <p className='quicksand' style={{margin:"5rem", fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center"}}>Aprende a cuidar la salud física, mental y social de tu familia en internet</p>
+        <div id='btns_categorias'>
+            
+        </div>
+        {cohetesData && cohetesData.sort((a, b) => {
+
+            if (a.nombre == "Padres") return 1;   // Cambia el orden normal
+            if (a.nombre == "Niños") return -1;
+            return 0;
+            }).map(coh => (
+                window.innerWidth > 768? (
+                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-100":"-120")+"vh", width:(window.innerWidth >1250?"15":"12")+"rem", height:"10rem", left:(window.innerWidth/2 + coh.x * ((window.innerWidth >1250?"300":"240"))-(window.innerWidth >1250?"120":"96"))+"px"}} className='category-card quicksand'>
+                    <div>
+                        <h4>{coh.nombre}</h4>
+                        <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":"17 - ∞ años")}</p>
+                    </div>
+                    <button className='quicksand'>Ir a categoria</button>
+                    </div>
+                ):
+                (
+                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(-280 - (coh.x-1) * (30))+"vh", width:(12)+"rem", height:"5rem", left:(window.innerWidth/2 -(96))+"px"}}  className='category-card'>
+                    {coh.nombre} asd
+                    </div>
+                )
+            ))}
+        </div>
+        
+    );
 }

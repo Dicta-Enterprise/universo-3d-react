@@ -123,7 +123,7 @@ export default function FondoNinos(scene, onSeleccion) {
     animar: () => (planeta.rotation.y += 0.005),
     onClick: () => {
       const confirmar = confirm('¿Ir a la galaxia de Salud Mental?');
-      if (confirmar) onSeleccion('salud-mental');
+      if (confirmar) onSeleccion("1",'salud-mental');
     }
   };
   scene.add(planeta);

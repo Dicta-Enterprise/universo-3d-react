@@ -1,59 +1,79 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as THREE from 'three';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as THREE from "three";
 
-import FondoJovenes from '../Fondos/FondoJovenes';
-import DivCentrado from '../ui/DivCentrado';
-import BotonAtras from '../ui/BotonAtras';
-import GeneradorGalaxias from '../componentes/GeneradorGalaxias';
-import TarjetaConfirmacion from '../ui/Tarjeta';
+import FondoJovenes from "../Fondos/FondoJovenes";
+import DivCentrado from "../ui/DivCentrado";
+import BotonAtras from "../ui/BotonAtras";
+import GeneradorGalaxias from "../componentes/GeneradorGalaxias";
+import TarjetaConfirmacion from "../ui/Tarjeta"; // Importar el componente de tarjeta
 
-export default function Jovenes() {
+export default function Jovenes(gals) {
   const containerRef = useRef();
   const cameraRef = useRef();
   const objetosAnimables = useRef([]);
   const navigate = useNavigate();
   const [selectedGalaxy, setSelectedGalaxy] = useState(null);
-  const [showCard, setShowCard] = useState(false);
+  const [showCard, setShowCard] = useState(false); // Estado para mostrar la tarjeta
   const isAnimatingRef = useRef(false);
+  const [cont, setCont] = useState(0); // Estado para mostrar la tarjeta
+
+  var init_backup;
+  var lowestGalaxy = 20;
 
   useEffect(() => {
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 20); // Igual que en jovenes.txt
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 0, 20);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    containerRef.current.setAttribute("id", "canvas-bg-galaxia");
     containerRef.current.appendChild(renderer.domElement);
 
-    const onSeleccion = (tema) => {
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+
+    const onSeleccion = (id,nombre) => {
       setSelectedGalaxy({
-        title: `¿Ir a la galaxia de ${tema.replace('-', ' ')}?`,
-        tema,
+        title: `¿Ir a la galaxia de ${nombre.replace("-", " ")}?`,
+        id,
       });
-      setShowCard(true);
+      setShowCard(true); // Mostrar la tarjeta de confirmación directamente
     };
 
-    const fondo = FondoJovenes(scene); // ✅ Tu fondo modular
-    const galaxias = GeneradorGalaxias({ scene, grupo: 'jóvenes', onSeleccion });
+    // Agregar objetos: fondo + galaxias
+    const fondo = FondoJovenes(scene, onSeleccion);
+    const galaxias = GeneradorGalaxias({
+      definiciones: gals,
+      scene,
+      grupo: "jovenes",
+      onSeleccion,
+    });
     objetosAnimables.current = [...fondo, ...galaxias];
+    setCont(prev => prev++);
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    renderer.domElement.addEventListener('click', (e) => {
+    renderer.domElement.addEventListener("click", (e) => {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
 
       const intersects = raycaster.intersectObjects(scene.children, true);
       if (intersects.length > 0) {
+        // Asegúrate de que no se está llamando a un confirm() aquí
         intersects[0].object.userData?.onClick?.();
       } else {
         setSelectedGalaxy(null);
-        setShowCard(false);
+        setShowCard(false); // Ocultar tarjeta si no se selecciona una galaxia
       }
     });
 
@@ -61,8 +81,70 @@ export default function Jovenes() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+      var galsR = objetosAnimables.current.filter((c) => {
+        if (c) {
+          return c.type == "Points";
+        }
+      });
+      galsR.map((g,i) => {
+        const def_pos = () => {
+          if (lowestGalaxy > galsR[i].position.y) {
+            lowestGalaxy = galsR[i].position.y;
+            console.log("cambiando altura");
+            document
+              .getElementsByTagName("body")[0]
+              .setAttribute(
+                "style",
+                "height:" + (80.51 * Math.pow(Math.E,0.032*-lowestGalaxy)) + "vh !important"
+              );
+            console.log("lowest: " + lowestGalaxy);
+            console.log(document.getElementsByTagName("body")[0].style);
+          }
+        }
+        if(window.innerWidth < 1000){
+          if(window.innerWidth < 650){
+            //tamaño cel
+            galsR[i].position.x = 0
+            galsR[i].position.y = -24 * i - 14
+            init_backup[i] = -24 * i - 14
+            requestAnimationFrame(animacion);
+            def_pos()
+            return;
+          }
+          //tamaño tablet
+          galsR[i].position.x = i % 2 == 0?-6:6;
+          galsR[i].position.y = -14 * i - 12
+          init_backup[i] = -14 * i - 12
+          requestAnimationFrame(animacion);
+          def_pos()
+          return;
+        }
+        //tamaño pc
+        /*
+        galsR[i].position.x = gals.gals[i].posicion.x;
+        galsR[i].position.y = gals.gals[i].posicion.y;
+        init_backup[i] = gals.gals[i].posicion.y;
+        requestAnimationFrame(animacion);
+        def_pos()
+        */
+        galsR[i].position.x = i % 2 == 0?-10:10;
+        galsR[i].position.y = -14 * i - 12
+        init_backup[i] = -14 * i - 12
+        requestAnimationFrame(animacion);
+        def_pos()
+
+        
+        //console.log("resssssss")
+        //console.log(g.position)
+      })
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+
+    const animacion = () => {
+      requestAnimationFrame(animacion);
+      renderer.render(scene, camera);
+    };
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -71,19 +153,74 @@ export default function Jovenes() {
     };
     animate();
 
+    const resize_height = () => {
+      init_backup = init_backup.map((c) => {
+        if (c.position) {
+          if (lowestGalaxy > c.position.y) {
+            lowestGalaxy = c.position.y;
+            console.log("cambiando altura");
+            document
+              .getElementsByTagName("body")[0]
+              .setAttribute(
+                "style",
+                "height:" + (80.51 * Math.pow(Math.E,0.032*-lowestGalaxy)) + "vh !important"
+              );
+            console.log("lowest: " + lowestGalaxy);
+            console.log(document.getElementsByTagName("body")[0].style);
+          }
+          return c.position.y;
+        }
+      });
+      //if(objetosAnimables.current[5])
+      console.log(init_backup);
+    }
+
+    if (cont == 0) {
+      console.log(objetosAnimables.current);
+      init_backup = objetosAnimables.current.filter((c) => {
+        if (c) {
+          return c.type == "Points";
+        }
+      });
+
+      resize_height()
+    }
+    window.addEventListener("scroll", () => {
+      //console.log("scroll en generadorgalaxias")
+      //console.log(window.scrollY)
+      objetosAnimables.current
+        .filter((c) => {
+          if (c) {
+            return c.type == "Points";
+          }
+        })
+        .forEach((obj, idx) => {
+          if (obj) {
+            //console.log(init_backup[0]["position"].y)
+            if (obj.type == "Points" && init_backup[idx] != undefined) {
+              obj.position.y = init_backup[idx] + window.scrollY/-lowestGalaxy;
+            }
+          }
+        });
+    });
+
+    handleResize()
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
     };
   }, []);
 
+  
+
   const handleConfirm = () => {
     if (!selectedGalaxy || isAnimatingRef.current) return;
     isAnimatingRef.current = true;
 
-    const tema = selectedGalaxy.tema;
+    const tema = selectedGalaxy.id;
     const destino = `/galaxia/jovenes/${tema}`;
     const camera = cameraRef.current;
     const start = camera.position.clone();
@@ -101,15 +238,16 @@ export default function Jovenes() {
       }
     };
     animar();
-    setShowCard(false);
+    setShowCard(false); // Ocultar la tarjeta después de confirmar
   };
 
   const handleClose = () => {
-    setShowCard(false);
+    setShowCard(false); // Cerrar la tarjeta sin realizar ninguna acción
   };
 
   return (
     <>
+      {/* Mostrar tarjeta solo si una galaxia está seleccionada */}
       {showCard && selectedGalaxy && (
         <TarjetaConfirmacion
           title={selectedGalaxy.title}
@@ -118,6 +256,11 @@ export default function Jovenes() {
         />
       )}
       <BotonAtras color="#ffffff" />
+      <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
+            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
+            <p className='quicksand' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Descubre cómo protegerte en el mundo digital: identifica los riesgos y las áreas clave</p>
+        </section>
+      
       <div ref={containerRef} />
     </>
   );
