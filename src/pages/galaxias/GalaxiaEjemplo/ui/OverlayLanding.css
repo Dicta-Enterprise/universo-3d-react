@@ -3,13 +3,6 @@
 
 :root { --accent: #62d4ff; }
 
-.quicksand {
-  font-family: "Quicksand", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 14px;
-}
 
 .overlay-backdrop *{
   font-family: "Quicksand", sans-serif;

@@ -1,7 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quicksand:wght@300..700&display=swap');
+
     body {
         margin: 0;
         overflow: auto;
         height: 200vh; /* Valor para PC */
+    }
+    .app-container{
+        height: 100vh; /* Valor para PC */
+
     }
 
     /* Estilos para tablet */
@@ -12,9 +19,9 @@
     }
 
     /* Estilos para móvil */
-    @media (max-width: 712px) {
+    @media (max-width: 768px) {
         body {
-            height: 310vh;
+            height: 380vh;
         }
     }
 
@@ -37,8 +44,8 @@
     /* Estilo de las secciones */
     .section {
         width: 100%;
-        height: 100vh;
-        display: flex;
+        height: 0;
+        display: none;
         align-items: center;
         justify-content: center;
         font-size: 2rem;
@@ -74,4 +81,95 @@
     .sections-container.hidden {
         opacity: 0;  /* Hace que las secciones desaparezcan suavemente */
     }
+
+    #canvas-bg-galaxia > canvas:nth-child(1){
+        display: none !important;
+    }
+
+    .titulo-grande {
+        font-family: "Bebas Neue", sans-serif !important;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 92px;
+        position: relative;
+
+        text-shadow: 0 .5rem 30px black;
+
+    }
+    
+.quicksand {
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 14px;
+  }
+
+  .category-card {
+    box-sizing: border-box;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    
+  }
+  .category-card > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .category-card > div > * {
+    line-height: 0;
+    font-size: 1.5rem;
+  }
+
+  .category-card > button {
+    color: white;
+    padding: 1.5rem 3.5rem;
+    border-radius: 1rem;
+    border: solid 2px rgb(224, 224, 224);
+    background-color: rgba(0, 0, 0, 0.651);
+
+    box-shadow: 0 0 10px 0px rgb(224, 224, 224);
+    cursor: pointer;
+    transition: all 500ms ease;
+  }
+
+  .category-card > button:hover {
+    background-color: rgb(224, 224, 224);
+    color: black;
+    font-size: 14px;
+    box-shadow: 0 0 0px 0px rgb(224, 224, 224);
+    transform: scale(110%);
+    transition: all 300ms ease;
+  }
+
+  @media only screen and (max-width: 860px){
+    .titulo-grande {
+        font-size: 70px;
+
+        text-shadow: 0 .5rem 30px black;
+        margin: 2rem 2rem !important;
+    }
+    div:has(>.titulo-grande) + p {
+        margin: 2rem 2rem !important;
+    }
+    div:has(>.titulo-grande){
+        height: 70vh !important;
+    }
+  }
+
+  @media only screen and (max-width: 420px){
+    .titulo-grande {
+        font-size: 60px;
+        margin: 2rem 2rem 2rem 0 !important;
+    }
+    div:has(>.titulo-grande) + p {
+        margin: 2rem 1rem !important;
+    }
+}
     

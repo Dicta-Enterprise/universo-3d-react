@@ -11,16 +11,23 @@ import Home from './pages/Home';
 
 import Planeta from './pages/planeta';
 import Error from './pages/Error';
+import Categorias from './pages/Categorias';
+import Prueba from './pages/Prueba';
 
 function App() {
     return (
         <Router>
 
                 <Routes>
+                
 
-                <Route path="/error" element={<Error />} />
+                <Route path="/prueba" element={<Prueba />} />
+                <Route path="/error/" element={<Error />} />
+                <Route path="/error/:msg" element={<Error />} />
 
                 <Route path="/planeta/:id" element={<Planeta />} />
+
+                <Route path="/categoria/:id" element={<Categorias />} />
 
                 <Route path="/galaxia/ninos" element={<Ninoss />} />
                 <Route path="/galaxia/jovenes" element={<Joveness />} />

@@ -7,7 +7,7 @@ import GeneradorGalaxias from '../componentes/GeneradorGalaxias';
 import TarjetaConfirmacion from '../ui/Tarjeta';
 import BotonAtras from '../ui/BotonAtras';
 
-export default function Padres() {
+export default function Padres(gals) {
   const containerRef = useRef();
   const cameraRef = useRef();
   const objetosAnimables = useRef([]);
@@ -15,6 +15,12 @@ export default function Padres() {
   const [selectedGalaxy, setSelectedGalaxy] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const isAnimatingRef = useRef(false);
+
+  const [cont, setCont] = useState(0); // Estado para mostrar la tarjeta
+
+  
+  var init_backup;
+  var lowestGalaxy = 0;
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -27,18 +33,19 @@ export default function Padres() {
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
 
-    const onSeleccion = (tema) => {
+    const onSeleccion = (id,nombre) => {
       setSelectedGalaxy({
-        title: `¿Ir a la galaxia de ${tema.replace('-', ' ')}?`,
-        tema,
+        title: `¿Ir a la galaxia de ${nombre.replace("-", " ")}?`,
+        id,
       });
       setShowCard(true);
     };
 
     // 🪐 Agregar fondo + galaxias
     const fondo = FondoAdultos(scene);
-    const galaxias = GeneradorGalaxias({ scene, grupo: 'adultos', onSeleccion });
+    const galaxias = GeneradorGalaxias({ definiciones:gals, scene, grupo: 'adultos', onSeleccion });
     objetosAnimables.current = [...fondo, ...galaxias];
+    setCont(prev => prev++);
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -61,8 +68,69 @@ export default function Padres() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+      var galsR = objetosAnimables.current.filter((c) => {
+        if (c) {
+          return c.type == "Points";
+        }
+      });
+      galsR.map((g,i) => {
+        const def_pos = () => {
+          if (lowestGalaxy > galsR[i].position.y) {
+            lowestGalaxy = galsR[i].position.y;
+            console.log("cambiando altura");
+            document
+              .getElementsByTagName("body")[0]
+              .setAttribute(
+                "style",
+                "height:" + (80.51 * Math.pow(Math.E,0.032*-lowestGalaxy)) + "vh !important"
+              );
+            console.log("lowest: " + lowestGalaxy);
+            console.log(document.getElementsByTagName("body")[0].style);
+          }
+        }
+        if(window.innerWidth < 1000){
+          if(window.innerWidth < 650){
+            //tamaño cel
+            galsR[i].position.x = 0
+            galsR[i].position.y = -24 * i - 14
+            init_backup[i] = -24 * i - 14
+            requestAnimationFrame(animacion);
+            def_pos()
+            return;
+          }
+          //tamaño tablet
+          galsR[i].position.x = i % 2 == 0?-6:6;
+          galsR[i].position.y = -14 * i - 12
+          init_backup[i] = -14 * i - 12
+          requestAnimationFrame(animacion);
+          def_pos()
+          return;
+        }
+        //tamaño pc
+        /*
+        galsR[i].position.x = gals.gals[i].posicion.x;
+        galsR[i].position.y = gals.gals[i].posicion.y;
+        init_backup[i] = gals.gals[i].posicion.y;
+        requestAnimationFrame(animacion);
+        def_pos()
+        */
+        galsR[i].position.x = i % 2 == 0?-10:10;
+        galsR[i].position.y = -14 * i - 11.5
+        init_backup[i] = -14 * i - 11.5
+        requestAnimationFrame(animacion);
+        def_pos()
+        
+        //console.log("resssssss")
+        //console.log(g.position)
+      })
     };
     window.addEventListener('resize', handleResize);
+
+    const animacion = () => {
+      requestAnimationFrame(animacion);
+      renderer.render(scene, camera);
+    };
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -70,6 +138,60 @@ export default function Padres() {
       renderer.render(scene, camera);
     };
     animate();
+
+    const resize_height = () => {
+      init_backup = init_backup.map((c) => {
+        if (c.position) {
+          if (lowestGalaxy > c.position.y) {
+            lowestGalaxy = c.position.y;
+            console.log("cambiando altura");
+            document
+              .getElementsByTagName("body")[0]
+              .setAttribute(
+                "style",
+                "height:" + (80.51 * Math.pow(Math.E,0.032*-lowestGalaxy)) + "vh !important"
+              );
+            console.log("lowest: " + lowestGalaxy);
+            console.log(document.getElementsByTagName("body")[0].style);
+          }
+          return c.position.y;
+        }
+      });
+      //if(objetosAnimables.current[5])
+      console.log(init_backup);
+    }
+
+
+    if (cont == 0) {
+      console.log(objetosAnimables.current);
+      init_backup = objetosAnimables.current.filter((c) => {
+        if (c) {
+          return c.type == "Points";
+        }
+      });
+  
+      resize_height()
+    }
+    window.addEventListener("scroll", () => {
+      //console.log("scroll en generadorgalaxias")
+      //console.log(window.scrollY)
+      objetosAnimables.current
+        .filter((c) => {
+          if (c) {
+            return c.type == "Points";
+          }
+        })
+        .forEach((obj, idx) => {
+          if (obj) {
+            //console.log(init_backup[0]["position"].y)
+            if (obj.type == "Points" && init_backup[idx] != undefined) {
+              obj.position.y = init_backup[idx] + window.scrollY/-lowestGalaxy;
+            }
+          }
+        });
+    });
+
+    handleResize()
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -83,7 +205,7 @@ export default function Padres() {
     if (!selectedGalaxy || isAnimatingRef.current) return;
     isAnimatingRef.current = true;
 
-    const tema = selectedGalaxy.tema;
+    const tema = selectedGalaxy.id;
     const destino = `/galaxia/padres/${tema}`;
     const camera = cameraRef.current;
     const start = camera.position.clone();
@@ -110,6 +232,7 @@ export default function Padres() {
 
   return (
     <>
+      {/* Mostrar tarjeta solo si una galaxia está seleccionada */}
       {showCard && selectedGalaxy && (
         <TarjetaConfirmacion
           title={selectedGalaxy.title}
@@ -117,7 +240,12 @@ export default function Padres() {
           onClose={handleClose}
         />
       )}
-      <BotonAtras color="#CCAC00" />
+      <BotonAtras color="#ffffff" />
+      <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
+            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
+            <p className='quicksand' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Identifica los peligros y las áreas clave para proteger a tu hijo en el mundo digital</p>
+        </section>
+      
       <div ref={containerRef} />
     </>
   );

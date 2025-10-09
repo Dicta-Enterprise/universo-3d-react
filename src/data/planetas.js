@@ -1,7 +1,7 @@
 const BACK_URL = import.meta.env.VITE_BACKEND_NEST_API_URL
 
 export async function fetchPlanetas() {
-    const response = await fetch(BACK_URL+'planetas').catch(() => {
+    const response = await fetch(BACK_URL+'/api/planetas').catch(() => {
         window.location.href = "/error"
     });
     if (!response.ok) {
@@ -16,22 +16,27 @@ export async function fetchPlanetas() {
     return planetas.data._value
 }
 export async function fetchPlanetasEnGalaxia(idGalaxia) {
-    const response = await fetch(BACK_URL+'planetas?galaxiaId='+idGalaxia).catch(() => {
-        window.location.href = "/error"
+    const response = await fetch(BACK_URL+'/api/planetas?galaxiaId='+idGalaxia).catch((e) => {
+        //window.location.href = "/error"
+        
     })
+    
     if (!response.ok) {
-        window.location.href = "/error"
+        const planetas = await response.json();
+        console.log(planetas.message)
+        window.location.href = "/error/"+(planetas.message.replace(" ","-"))
         throw new Error('Error al obtener planetas')
+
     };
     const planetas = await response.json();
     if(!planetas.data.isSuccess) {
-        window.location.href = "/error"
+        //window.location.href = "/error"
         throw new Error('Error al obtener planetas')
     }
     return planetas.data._value
 }
 export async function fetchPlaneta(id) {
-    const response = await fetch(BACK_URL+'planetas/'+id).catch(() => {
+    const response = await fetch(BACK_URL+'/api/planetas/'+id).catch(() => {
         window.location.href = "/error"
     });
     if (!response.ok) {
@@ -47,7 +52,7 @@ export async function fetchPlaneta(id) {
 }
 
 export async function fetchColorPlaneta(id) {
-    const response = await fetch(BACK_URL+'galaxias/'+id);
+    const response = await fetch(BACK_URL+'/api/galaxias/'+id);
     if (!response.ok) {
         window.location.href = "/error"
         throw new Error('Error al obtener galaxia')
@@ -61,7 +66,7 @@ export async function fetchColorPlaneta(id) {
 }
 
 export async function fetchColorPlanetaPrueba() {
-    const response = await fetch(BACK_URL+'galaxias/').catch(() => {
+    const response = await fetch(BACK_URL+'/api/galaxias/').catch(() => {
         window.location.href = "/error"
     });
     if (!response.ok) {
