@@ -10,6 +10,10 @@
         height: 100vh; /* Valor para PC */
 
     }
+    .app-container{
+        height: 100vh; /* Valor para PC */
+
+    }
 
     /* Estilos para tablet */
     @media (max-width: 1245px) {
