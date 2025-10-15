@@ -7,6 +7,8 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 //import cohetesData from '../data/CohetesData';
 import { fetchCategorias } from '../data/categorias'
+import useTypeWriter from '../pages/galaxias/GalaxiaEjemplo/ui/TypeWriter'
+import LetterTitle from '../pages/galaxias/GalaxiaEjemplo/ui/LetterTitle'
 
 const BACK_URL = import.meta.env.VITE_BACKEND_NEST_API_URL
 
@@ -16,6 +18,12 @@ export default function ThreeScene({ onLoad }) {
 
     const [cohetesData,setCohetesData] = useState();
 
+    const textoTitulo = "ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL"
+    const { displayText, isTypingComplete } = useTypeWriter(textoTitulo, 100);
+
+    const goToCategory = (cat) => {
+        navigate("/categoria/"+cat)
+    }
 
     useEffect(() => {
 
@@ -452,11 +460,11 @@ export default function ThreeScene({ onLoad }) {
                     const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
                     
                     if (isMobile) {
-                        rocket.scale.set(10, 10, 10);
+                        rocket.scale.set(25 + 4 * index, 25 + 2 * index, 25 + 2 * index);
                     } else if (isTablet) {
-                        rocket.scale.set(4, 4, 4);
+                        rocket.scale.set(30, 30, 30);
                     } else {
-                        rocket.scale.set(5, 5, 5);
+                        rocket.scale.set(30, 30, 30);
                     }
                     
                     // Ajustar la rotación inicial
@@ -479,21 +487,22 @@ export default function ThreeScene({ onLoad }) {
                     // Ajustar posición de los cohetes según el dispositivo
                    
                     if (isMobile) {
-                        const yOffset = 3.5;
+                        const yOffset = 8;
                         rocketGroup.position.set(
                             0,
-                            3 + position.y - index * yOffset,
-                            position.z
+                            -16 + position.y - index * yOffset,
+                            position.z-3
                         );
                     } else if (isTablet) {
-                        const xOffset = 1.5;
+                        const xOffset = 5;
                         rocketGroup.position.set(
                             position.x * xOffset,
-                            position.y,
-                            position.z
+                            position.y-20,
+                            position.z-3
                         );
                     } else {
-                        rocketGroup.position.set(position.x, position.y, position.z);
+                        const xOffset = 7;
+                        rocketGroup.position.set(position.x*xOffset, position.y-20, position.z-3);
                     }
 
                     // Agregar un bounding box para mejorar la detección de clics
@@ -527,7 +536,12 @@ export default function ThreeScene({ onLoad }) {
             setCohetesData(data)
             // Crear cohetes y sus lunas correspondientes
 
-            data.forEach((cohete, index) => {
+            data.sort((a) => {
+
+                if (a.nombre == "Padres") return 1;   // Cambia el orden normal
+                if (a.nombre == "Niños") return -1;
+                return 0;
+                }).forEach((cohete, index) => {
                 if (cohete.estado) {
                   createRocket(cohete, index);
                 }
@@ -748,25 +762,39 @@ export default function ThreeScene({ onLoad }) {
             handleClick(clickEvent);
         });
 
+        const isMobile = window.innerWidth <= 768;
+        const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
         // Actualizar visibilidad y posición en función del scroll
-        const maxScrollY = 2000;
+        var maxScrollY = 2000;
         const cameraStartZ = 3;
         const cameraEndZ = 13;
         const cameraStartY = 0;
-        const cameraEndY = -2;
+        var cameraEndY = -20;
+
+        if(isMobile){
+            cameraEndY = -30;
+        }
 
         let scrollY = 0;
         let isScrolling = false;
         
         function updateOnScroll() {
+            // Mostrar los cohetes progresivamente
+            
+
+            if(isMobile)
+                maxScrollY = 4000
+            else
+                maxScrollY = 2000
+
+            
             // Interpolación para la posición de la cámara
             const progress = Math.min(scrollY / maxScrollY, 1);
             camera.position.z = cameraStartZ + progress * (cameraEndZ - cameraStartZ);
             camera.position.y = cameraStartY + progress * (cameraEndY - cameraStartY);
         
-            // Mostrar los cohetes progresivamente
-            const isMobile = window.innerWidth <= 768;
-            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
                     const threshold = maxScrollY * 0.2//(0.3 + index * 0.1); // Más escalonado en móvil
@@ -1068,13 +1096,21 @@ export default function ThreeScene({ onLoad }) {
 
     return (
         <div style={{position:"relative"}}>
-        <div style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:"60vh", boxSizing:"border-box", textAlign:"center"}}>
-            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL</h1>
-            
+        <div style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"start", width:"100%", height:"62vh", boxSizing:"border-box", textAlign:"center"}}>
+            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>{displayText}{!isTypingComplete && <span className="cursor">|</span>}</h1>
         </div>
         <p className='quicksand' style={{margin:"5rem", fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center"}}>Aprende a cuidar la salud física, mental y social de tu familia en internet</p>
         <div id='btns_categorias'>
             
+        </div>
+        <div style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-100":"-120")+"vh", height:"10rem", left:"0px"}} className='category-info quicksand'>
+            <LetterTitle>¡Bienvenido a un universo digital plagado de amenazas como estafas y ciberacoso!</LetterTitle>
+            <p className='quicksand' style={{margin:"0 2rem", fontSize:"1.5rem", color:"white", textAlign:"center", fontWeight:"bolder"}}>¿La clave para un viaje sin peligros?</p>
+            <p className='quicksand' style={{margin:"0 2rem", fontSize:"1.5rem", color:"white", textAlign:"center"}}>Navegar de forma segura es la clave para un viaje virtual sin peligros.</p>
+        </div>
+        <div style={{position:"absolute", zIndex:999, bottom:"-205vh", height:"10rem", left:"0px"}} className='category-info quicksand'>
+            <p className='quicksand' style={{fontSize:"1.5rem", textAlign:"center", margin:"0"}}>¿Cuál es tu papel en este viaje?</p>
+            <p className='quicksand' style={{fontSize:"1.5rem", textAlign:"center", margin:"0"}}>Elige tu rol:</p>
         </div>
         {cohetesData && cohetesData.sort((a, b) => {
 
@@ -1083,17 +1119,18 @@ export default function ThreeScene({ onLoad }) {
             return 0;
             }).map(coh => (
                 window.innerWidth > 768? (
-                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-100":"-120")+"vh", width:(window.innerWidth >1250?"15":"12")+"rem", height:"10rem", left:(window.innerWidth/2 + coh.x * ((window.innerWidth >1250?"300":"240"))-(window.innerWidth >1250?"120":"96"))+"px"}} className='category-card quicksand'>
+                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-300":"-320")+"vh", width:(window.innerWidth >1250?"15":"12")+"rem", height:"10rem", left:(window.innerWidth/2 + coh.x * ((window.innerWidth >1250?"300":"240"))-(window.innerWidth >1250?"120":"96"))+"px"}} className='category-card quicksand'>
                     <div>
-                        <h4>{coh.nombre}</h4>
-                        <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":"17 - ∞ años")}</p>
                     </div>
-                    <button className='quicksand'>Ir a categoria</button>
+                    <button onClick={() => goToCategory(coh.id)} className='quicksand'><h4>{coh.nombre}</h4>
+                        <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":<br></br>)}</p></button>
                     </div>
                 ):
                 (
-                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(-280 - (coh.x-1) * (30))+"vh", width:(12)+"rem", height:"5rem", left:(window.innerWidth/2 -(96))+"px"}}  className='category-card'>
-                    {coh.nombre} asd
+                    <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(-580 - (coh.x-1) * (130))+"vh", width:(12)+"rem", height:"5rem", left:(window.innerWidth/2 -(96))+"px"}}  className='category-card'>
+                        
+                    <button onClick={() => goToCategory(coh.id)} className='quicksand'><h4>{coh.nombre}</h4>
+                        <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":"")}</p></button>
                     </div>
                 )
             ))}
