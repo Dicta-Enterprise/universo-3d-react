@@ -4,7 +4,7 @@
     body {
         margin: 0;
         overflow: auto;
-        height: 200vh; /* Valor para PC */
+        height: 400vh; /* Valor para PC */
     }
     .app-container{
         height: 100vh; /* Valor para PC */
@@ -14,14 +14,14 @@
     /* Estilos para tablet */
     @media (max-width: 1245px) {
         body {
-            height: 230vh;
+            height: 420vh;
         }
     }
 
     /* Estilos para móvil */
     @media (max-width: 768px) {
         body {
-            height: 380vh;
+            height: 700vh;/*380*/
         }
     }
 
@@ -86,7 +86,7 @@
         display: none !important;
     }
 
-    .titulo-grande {
+    h1.titulo-grande {
         font-family: "Bebas Neue", sans-serif !important;
         font-weight: 400;
         font-style: normal;
@@ -96,6 +96,15 @@
         text-shadow: 0 .5rem 30px black;
 
     }
+    h2.titulo-grande {
+        font-family: "Bebas Neue", sans-serif !important;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 56px;
+        position: relative;
+        text-align: center;
+        text-shadow: 0 .5rem 30px black;
+    }
     
 .quicksand {
     font-family: "Quicksand", sans-serif;
@@ -103,6 +112,18 @@
     font-weight: 600;
     font-style: normal;
     font-size: 14px;
+  }
+
+  .category-info {
+    box-sizing: border-box;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    width: 100%;
   }
 
   .category-card {
@@ -149,6 +170,24 @@
   }
 
   @media only screen and (max-width: 860px){
+    .category-card {
+        width: 80vw !important;
+        left: 10vw !important;
+        padding: 0 !important;
+    }
+    .category-card > button {
+        width: 100%;
+        padding: 0 !important;
+        border-radius: .5rem;
+        transform: translateY(5rem);
+        box-shadow: 0 0 10px 0px rgb(224, 224, 224);
+        transition: all 500ms ease;
+    }
+    .category-card > button:hover {
+        box-shadow: 0 0 0px 0px rgb(224, 224, 224);
+        transform: translateY(5rem) scale(110%);
+        transition: all 300ms ease;
+      }
     .titulo-grande {
         font-size: 70px;
 
@@ -163,10 +202,62 @@
     }
   }
 
+  .cursor {
+    /*border-right: 0.15em solid orange; */
+    font-size: 80px;
+    font-weight: 100 !important;
+    animation: blink 0.75s step-end infinite;
+  }
+  
+  @keyframes blink {
+    from, to { color: transparent }
+    50% { color: white; }
+  }
+
+  @keyframes appear {
+    0%{
+        transform: translate(1rem, -10rem);
+    }
+    20%{
+        transform: translate(0rem, -8rem) rotate(-3deg);
+
+    }
+    40%{
+        transform: translate(-1rem, -6rem);
+
+    }
+    60%{
+        transform: translate(0rem, -4rem) rotate(3deg);
+
+    }
+    80%{
+        transform: translate(1rem, -2rem);
+
+    }
+    100%{
+        transform: translate(0rem, 0rem) rotate(00deg);
+
+    }
+  }
+  .anim-entry {
+    animation: appear 1s linear 1;
+  }
+  .titulo-individual > span {
+    transform: scale(110%) !important;
+    
+  }
+  .titulo-individual > span:hover {
+    color: bisque;
+  }
+
   @media only screen and (max-width: 420px){
-    .titulo-grande {
-        font-size: 60px;
+    h1.titulo-grande {
+        font-size: 60px !important;
         margin: 2rem 2rem 2rem 0 !important;
+    }
+    h2.titulo-grande {
+        font-size: 40px !important;
+        margin: 2rem !important;
     }
     div:has(>.titulo-grande) + p {
         margin: 2rem 1rem !important;
