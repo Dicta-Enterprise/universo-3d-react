@@ -1134,6 +1134,11 @@ export default function ThreeScene({ onLoad }) {
                     </div>
                 )
             ))}
+            {!cohetesData && (
+                <div style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-280":"-300")+"vh", display:"flex", alignItems:"center", justifyContent:"center", width:"100%"}}>
+                    <h2  className='titulo-grande' style={{color:"white" }}>UNIVERSO EN CREACION</h2>
+                </div>
+            )}
         </div>
         
     );
