@@ -10,10 +10,6 @@
         height: 100vh; /* Valor para PC */
 
     }
-    .app-container{
-        height: 100vh; /* Valor para PC */
-
-    }
 
     /* Estilos para tablet */
     @media (max-width: 1245px) {
@@ -252,6 +248,19 @@
   }
   .titulo-individual > span:hover {
     color: bisque;
+  }
+
+  .btn-galaxia {
+    padding: 1rem 1.5rem;
+    border-radius: .5rem;
+    border: none;
+    transition: all 200ms ease;
+    cursor: pointer;
+  }
+
+  .btn-galaxia:hover {
+    transform: scale(104%);
+    transition: all 200ms ease;
   }
 
   @media only screen and (max-width: 420px){
