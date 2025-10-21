@@ -13,6 +13,7 @@ import LetterTitle from '../pages/galaxias/GalaxiaEjemplo/ui/LetterTitle'
 const BACK_URL = import.meta.env.VITE_BACKEND_NEST_API_URL
 
 
+
 export default function ThreeScene({ onLoad }) {
     const navigate = useNavigate();
 
@@ -21,8 +22,108 @@ export default function ThreeScene({ onLoad }) {
     const textoTitulo = "ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL"
     const { displayText, isTypingComplete } = useTypeWriter(textoTitulo, 100);
 
+    var botonCoheteActivo = false;
+
     const goToCategory = (cat) => {
-        navigate("/categoria/"+cat)
+        botonCoheteActivo = true;
+        const principal = document.getElementById("principal");
+    
+        //navigate("/categoria/"+cat)
+        // Remover cualquier popup existente
+        const existingPopup = document.querySelector('.rocket-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+    
+        // Crear y mostrar el popup
+        const popup = document.createElement('div');
+        popup.className = 'rocket-popup';
+        popup.style.cssText = `
+            position: fixed;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border: 3px solid white;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            z-index: 1000;
+            min-width: 300px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            font-family: Arial, sans-serif;
+        `;
+    
+        const message = document.createElement('p');
+        message.textContent = `¿Deseas ir a ${cat.nombre}?`;
+        message.style.cssText = `
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            color: #FF746C;
+        `;
+        popup.appendChild(message);
+    
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        `;
+    
+        const acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Aceptar';
+        acceptButton.style.cssText = `
+            padding: 10px 25px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        `;
+        acceptButton.onmouseover = () => {
+            acceptButton.style.background = '#45a049';
+        };
+        acceptButton.onmouseout = () => {
+            acceptButton.style.background = '#4CAF50';
+        };
+        acceptButton.onclick = () => {
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            window.location.href = "/categoria/"+cat.id;
+        };
+    
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancelar';
+        cancelButton.style.cssText = `
+            padding: 10px 25px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        `;
+        cancelButton.onmouseover = () => {
+            cancelButton.style.background = '#da190b';
+        };
+        cancelButton.onmouseout = () => {
+            cancelButton.style.background = '#f44336';
+        };
+        cancelButton.onclick = () => {
+            popup.remove();
+        };
+    
+        buttonContainer.appendChild(acceptButton);
+    
+        popup.appendChild(buttonContainer);
+    
+        principal.appendChild(popup);
+    
     }
 
     useEffect(() => {
@@ -651,12 +752,12 @@ export default function ThreeScene({ onLoad }) {
                 // Remover cualquier popup existente
                 const existingPopup = document.querySelector('.rocket-popup');
                 if (existingPopup) {
-                    document.body.removeChild(existingPopup);
+                    existingPopup.remove()
                 }
 
                 // Crear y mostrar el popup
                 const popup = document.createElement('div');
-                popup.className = 'rocket-popup';
+                popup.className = 'rocket-popup rocket-popup-three';
                 popup.style.cssText = `
                     position: fixed;
                     top: 80%;
@@ -709,7 +810,7 @@ export default function ThreeScene({ onLoad }) {
                     acceptButton.style.background = '#4CAF50';
                 };
                 acceptButton.onclick = () => {
-                    document.body.removeChild(popup);
+                    popup.remove();
                     window.location.href = rocket.userData.url;
                 };
 
@@ -744,7 +845,10 @@ export default function ThreeScene({ onLoad }) {
                 // Remover cualquier popup existente
                 const existingPopup = document.querySelector('.rocket-popup');
                 if (existingPopup) {
-                    document.body.removeChild(existingPopup);
+                    const threePopup = document.querySelector('.rocket-popup-three')
+                    if(threePopup){
+                        existingPopup.remove();
+                    }
                 }
             }
         }
@@ -1095,7 +1199,7 @@ export default function ThreeScene({ onLoad }) {
     }, [navigate, onLoad]); // Dependencia de onLoad para asegurarnos de que funcione correctamente
 
     return (
-        <div style={{position:"relative"}}>
+        <div id='principal' style={{position:"relative"}}>
         <div style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"start", width:"100%", height:"62vh", boxSizing:"border-box", textAlign:"center"}}>
             <h1 className='titulo-grande' style={{margin:"0 5rem"}}>{displayText}{!isTypingComplete && <span className="cursor">|</span>}</h1>
         </div>
@@ -1122,14 +1226,14 @@ export default function ThreeScene({ onLoad }) {
                     <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-300":"-320")+"vh", width:(window.innerWidth >1250?"15":"12")+"rem", height:"10rem", left:(window.innerWidth/2 + coh.x * ((window.innerWidth >1250?"300":"240"))-(window.innerWidth >1250?"120":"96"))+"px"}} className='category-card quicksand'>
                     <div>
                     </div>
-                    <button onClick={() => goToCategory(coh.id)} className='quicksand'><h4>{coh.nombre}</h4>
+                    <button onClick={() => goToCategory(coh)} className='quicksand'><h4>{coh.nombre}</h4>
                         <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":<br></br>)}</p></button>
                     </div>
                 ):
                 (
                     <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(-580 - (coh.x-1) * (130))+"vh", width:(12)+"rem", height:"5rem", left:(window.innerWidth/2 -(96))+"px"}}  className='category-card'>
                         
-                    <button onClick={() => goToCategory(coh.id)} className='quicksand'><h4>{coh.nombre}</h4>
+                    <button onClick={() => goToCategory(coh)} className='quicksand'><h4>{coh.nombre}</h4>
                         <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":"")}</p></button>
                     </div>
                 )
