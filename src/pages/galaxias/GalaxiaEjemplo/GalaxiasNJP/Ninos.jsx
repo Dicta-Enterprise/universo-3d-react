@@ -271,13 +271,14 @@ export default function Ninos(gals) {
         />
       )}
       <BotonAtras color="#ffffff" />
+      <div className="fondo-categoria"></div>
       <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
             <h1 className='titulo-grande anim-entry' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
             <p className='quicksand' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>¡Protege tu mundo digital! Conoce los riesgos y los secretos para estar seguro.</p>
         </section>
         <section style={{position:"relative", width:"100vw",display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", gap:"65rem", marginTop:"35rem", zIndex:"999"}}>
         {gals?.gals?.map((g,i) => (
-          <div key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
+          <div className="texts-blacker" key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
             <h2 style={{position:"relative", color:"white", fontSize:"40px"}}>{g.nombre}</h2>
             <p style={{position:"relative", color:"white", fontSize:"28px"}}>{g.descripcion}</p>
             <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => onSeleccion(g.id,g.nombre,g.descripcion)}>¡Quiero saber más!</button>

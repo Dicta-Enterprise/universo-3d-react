@@ -17,9 +17,20 @@ export default function Jovenes(gals) {
   const [showCard, setShowCard] = useState(false); // Estado para mostrar la tarjeta
   const isAnimatingRef = useRef(false);
   const [cont, setCont] = useState(0); // Estado para mostrar la tarjeta
+  const [listaGalaxias, setGalaxias] = useState([]); // Estado para mostrar la tarjeta
+
 
   var init_backup;
   var lowestGalaxy = 20;
+
+  const onSeleccion = (id,nombre, descripcion) => {
+    setSelectedGalaxy({
+      title: `¿Ir a la galaxia de ${nombre.replace("-", " ")}?`,
+      descripcion,
+      id,
+    });
+    setShowCard(true); // Mostrar la tarjeta de confirmación directamente
+  };
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -43,6 +54,7 @@ export default function Jovenes(gals) {
     const onSeleccion = (id,nombre) => {
       setSelectedGalaxy({
         title: `¿Ir a la galaxia de ${nombre.replace("-", " ")}?`,
+        descripcion,
         id,
       });
       setShowCard(true); // Mostrar la tarjeta de confirmación directamente
@@ -260,7 +272,15 @@ export default function Jovenes(gals) {
             <h1 className='titulo-grande anim-entry' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
             <p className='quicksand' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Descubre cómo protegerte en el mundo digital: identifica los riesgos y las áreas clave</p>
         </section>
-      
+        <section style={{position:"relative", width:"100vw",display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", gap:"65rem", marginTop:"35rem", zIndex:"999"}}>
+        {gals?.gals?.map((g,i) => (
+          <div key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
+            <h2 style={{position:"relative", color:"white", fontSize:"40px"}}>{g.nombre}</h2>
+            <p style={{position:"relative", color:"white", fontSize:"28px"}}>{g.descripcion}</p>
+            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => onSeleccion(g.id,g.nombre,g.descripcion)}>¡Quiero saber más!</button>
+          </div>
+        ))}
+      </section>
       <div ref={containerRef} />
     </>
   );

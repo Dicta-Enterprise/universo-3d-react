@@ -263,6 +263,18 @@
     transition: all 200ms ease;
   }
 
+  .fondo-categoria{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index:1;
+    backdrop-filter: brightness(120%) saturate(50%);
+  }
+
+  .texts-blacker > *:not(button) {
+    text-shadow: 0 0 4px black,0 0 4px black,0 0 4px black;
+  }
+
   @media only screen and (max-width: 420px){
     h1.titulo-grande {
         font-size: 60px !important;
