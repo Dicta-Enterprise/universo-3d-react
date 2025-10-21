@@ -275,6 +275,20 @@
     text-shadow: 0 0 4px black,0 0 4px black,0 0 4px black;
   }
 
+
+  @media only screen and (max-width:650px) {
+    section:has(>.galaxy-info){
+      gap: 120rem !important;
+    }
+    .galaxy-info {
+      width: 100% !important;
+    }
+    .text-responsive {
+      margin: 0 1rem !important;
+    }
+  }
+  
+
   @media only screen and (max-width: 420px){
     h1.titulo-grande {
         font-size: 60px !important;
