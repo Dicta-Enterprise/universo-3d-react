@@ -5,6 +5,7 @@
         margin: 0;
         overflow: auto;
         height: 400vh; /* Valor para PC */
+        overflow-x: hidden;
     }
     .app-container{
         height: 100vh; /* Valor para PC */

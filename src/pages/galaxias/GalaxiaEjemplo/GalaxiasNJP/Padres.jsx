@@ -249,7 +249,7 @@ export default function Padres(gals) {
           onClose={handleClose}
         />
       )}
-      <BotonAtras color="#ffffff" />
+      <BotonAtras color="#ffffff" redirectUrl={"/"} />
       <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
             <h1 className='titulo-grande anim-entry' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
             <p className='quicksand text-responsive' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Identifica los peligros y las áreas clave para proteger a tu hijo en el mundo digital</p>
@@ -259,7 +259,7 @@ export default function Padres(gals) {
           <div className="galaxy-info texts-blacker" key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
             <h2 style={{position:"relative", color:"white", fontSize:"40px"}}>{g.nombre}</h2>
             <p style={{position:"relative", color:"white", fontSize:"28px"}}>{g.descripcion}</p>
-            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => onSeleccion(g.id,g.nombre,g.descripcion)}>¡Quiero saber más!</button>
+            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => navigate("/galaxia/padres/"+g.id)}>¡Quiero saber más!</button>
           </div>
         ))}
       </section>

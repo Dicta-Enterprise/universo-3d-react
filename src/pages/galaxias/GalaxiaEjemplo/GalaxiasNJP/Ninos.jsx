@@ -270,7 +270,7 @@ export default function Ninos(gals) {
           onClose={handleClose}
         />
       )}
-      <BotonAtras color="#ffffff" />
+      <BotonAtras color="#ffffff" redirectUrl={"/"} />
       <div className="fondo-categoria"></div>
       <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
             <h1 className='titulo-grande anim-entry' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
@@ -281,7 +281,8 @@ export default function Ninos(gals) {
           <div className="galaxy-info texts-blacker" key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
             <h2 style={{position:"relative", color:"white", fontSize:"40px"}}>{g.nombre}</h2>
             <p style={{position:"relative", color:"white", fontSize:"28px"}}>{g.descripcion}</p>
-            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => onSeleccion(g.id,g.nombre,g.descripcion)}>¡Quiero saber más!</button>
+            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() =>navigate("/galaxia/ninos/"+g.id)}>¡Quiero saber más!</button>
+            {/** onSeleccion(g.id,g.nombre,g.descripcion) */}
           </div>
         ))}
       </section>
