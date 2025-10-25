@@ -16,7 +16,8 @@ const LeftArrow = ({ color }) => (
   </svg>
 );
 
-export default function BotonAtras({ color = '#ffffff', className = '', style = {} }) {
+export default function BotonAtras({ color = '#ffffff', className = '', style = {}, redirectUrl }) {
+
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
@@ -32,6 +33,9 @@ export default function BotonAtras({ color = '#ffffff', className = '', style = 
 
   const handleClick = () => {
     // Si estás en una ruta con grupo y tema, volvés al grupo
+    navigate(redirectUrl);
+    return
+
     const pathParts = location.pathname.split('/');
     if (pathParts[1] === 'galaxia' && pathParts.length >= 4) {
       const grupo = pathParts[2];

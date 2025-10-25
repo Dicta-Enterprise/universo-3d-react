@@ -38,7 +38,9 @@ export default function GalaxiaPorCategoria() {
   const { grupo, tema } = useParams();
   const categoriaId = categoriaIdPorGrupo(grupo);
 
+  const [categoriaIdBD, setCategoriaIdBD] = useState("");
   const [planetas, setPlanetas] = useState([]);
+  const [nombreGalaxia, setNombreGalaxia] = useState("");
   const [color, setColor] = useState(colorPorTema(tema));
 
   if (!grupo || !tema || !categoriaId) {
@@ -65,8 +67,10 @@ export default function GalaxiaPorCategoria() {
   useEffect(() => {
     fetchColorPlaneta(tema).then(res => {
       console.log("resultado colorFetch")
-      console.log(res.color)
+      console.log(res)
+      setNombreGalaxia(res.nombre)
       setColor(res.color)
+      setCategoriaIdBD(res.categoriaId)
       var r = document.querySelector(':root');
       r.style.setProperty('--accent', res.color);
     })
@@ -85,11 +89,11 @@ export default function GalaxiaPorCategoria() {
 
   return (
     <GalaxiaGenerica
-      titulo={`🌌 Galaxia de ${tema.replace("-", " ")}`}
+      titulo={`🌌 Galaxia de ${nombreGalaxia.replace("-", " ")}`}
       color={color}
       planetas={planetas}
       tipoFondo={fondo}
-      backUrl="/"
+      backUrl={"/categoria/"+categoriaIdBD}
     />
   );
 }

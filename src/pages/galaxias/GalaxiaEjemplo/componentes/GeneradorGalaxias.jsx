@@ -63,7 +63,7 @@ export default function GeneradorGalaxias({ scene, definiciones, grupo, onSelecc
   const defs = definiciones.gals.filter(g => g.estado);
   var counter = 0;
 
-  defs.forEach(({ id, nombre, color, posicion, rotacion }) => {
+  defs.forEach(({ id, nombre, descripcion, color, posicion, rotacion }) => {
     const particles = 9000;
     const radius = 5;
     const spread = 0.5;
@@ -128,8 +128,9 @@ export default function GeneradorGalaxias({ scene, definiciones, grupo, onSelecc
         galaxy.rotation.z += 0.0015;
       },
       onClick: () => {
-        onSeleccion(id,nombre);
+        onSeleccion(id,nombre,descripcion);
       },
+      nombre
     };
 
     scene.add(galaxy);

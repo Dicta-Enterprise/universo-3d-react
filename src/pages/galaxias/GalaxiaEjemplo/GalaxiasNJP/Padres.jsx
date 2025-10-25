@@ -22,6 +22,15 @@ export default function Padres(gals) {
   var init_backup;
   var lowestGalaxy = 0;
 
+  const onSeleccion = (id,nombre, descripcion) => {
+    setSelectedGalaxy({
+      title: `¿Ir a la galaxia de ${nombre.replace("-", " ")}?`,
+      descripcion,
+      id,
+    });
+    setShowCard(true); // Mostrar la tarjeta de confirmación directamente
+  };
+
   useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -101,8 +110,8 @@ export default function Padres(gals) {
           }
           //tamaño tablet
           galsR[i].position.x = i % 2 == 0?-6:6;
-          galsR[i].position.y = -14 * i - 12
-          init_backup[i] = -14 * i - 12
+          galsR[i].position.y = -20 * i - 12
+          init_backup[i] = -20 * i - 12
           requestAnimationFrame(animacion);
           def_pos()
           return;
@@ -116,8 +125,8 @@ export default function Padres(gals) {
         def_pos()
         */
         galsR[i].position.x = i % 2 == 0?-10:10;
-        galsR[i].position.y = -14 * i - 11.5
-        init_backup[i] = -14 * i - 11.5
+        galsR[i].position.y = -20 * i - 11.5
+        init_backup[i] = -20 * i - 11.5
         requestAnimationFrame(animacion);
         def_pos()
         
@@ -149,7 +158,7 @@ export default function Padres(gals) {
               .getElementsByTagName("body")[0]
               .setAttribute(
                 "style",
-                "height:" + (80.51 * Math.pow(Math.E,0.032*-lowestGalaxy)) + "vh !important"
+                "height:" + (80.51 * Math.pow(Math.E,0.0333*-lowestGalaxy)) + "vh !important"
               );
             console.log("lowest: " + lowestGalaxy);
             console.log(document.getElementsByTagName("body")[0].style);
@@ -240,12 +249,20 @@ export default function Padres(gals) {
           onClose={handleClose}
         />
       )}
-      <BotonAtras color="#ffffff" />
+      <BotonAtras color="#ffffff" redirectUrl={"/"} />
       <section style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"end", width:"100%", height:(window.innerWidth < 650?"90":"80")+"vh", boxSizing:"border-box", textAlign:"center"}}>
             <h1 className='titulo-grande anim-entry' style={{margin:"0 5rem"}}>EXPLORA LAS 4 GALAXIAS DE SEGURIDAD EN LÍNEA</h1>
-            <p className='quicksand' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Identifica los peligros y las áreas clave para proteger a tu hijo en el mundo digital</p>
+            <p className='quicksand text-responsive' style={{margin:(window.innerWidth < 420?"0rem 1rem 10rem 1rem":"5rem"), fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center", textShadow:"0 0 20px black"}}>Identifica los peligros y las áreas clave para proteger a tu hijo en el mundo digital</p>
         </section>
-      
+        <section style={{position:"relative", width:"100vw",display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", gap:"65rem", marginTop:"35rem", zIndex:"999"}}>
+        {gals?.gals?.map((g,i) => (
+          <div className="galaxy-info texts-blacker" key={i} style={{position:"relative", width:"50%",marginLeft:(i%2==0?"auto":"0"),marginRight:(i%2==1?"auto":"0"),display:"flex", flexDirection:"column",alignItems:"center",justifyContent:"center", padding:"2rem 3rem", boxSizing:"border-box"}}>
+            <h2 style={{position:"relative", color:"white", fontSize:"40px"}}>{g.nombre}</h2>
+            <p style={{position:"relative", color:"white", fontSize:"28px"}}>{g.descripcion}</p>
+            <button className="btn-galaxia" style={{backgroundColor:g.color, color:"white"}} onClick={() => navigate("/galaxia/padres/"+g.id)}>¡Quiero saber más!</button>
+          </div>
+        ))}
+      </section>
       <div ref={containerRef} />
     </>
   );

@@ -5,10 +5,7 @@
         margin: 0;
         overflow: auto;
         height: 400vh; /* Valor para PC */
-    }
-    .app-container{
-        height: 100vh; /* Valor para PC */
-
+        overflow-x: hidden;
     }
     .app-container{
         height: 100vh; /* Valor para PC */
@@ -253,6 +250,45 @@
   .titulo-individual > span:hover {
     color: bisque;
   }
+
+  .btn-galaxia {
+    padding: 1rem 1.5rem;
+    border-radius: .5rem;
+    border: none;
+    transition: all 200ms ease;
+    cursor: pointer;
+  }
+
+  .btn-galaxia:hover {
+    transform: scale(104%);
+    transition: all 200ms ease;
+  }
+
+  .fondo-categoria{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index:1;
+    backdrop-filter: brightness(120%) saturate(50%);
+  }
+
+  .texts-blacker > *:not(button) {
+    text-shadow: 0 0 4px black,0 0 4px black,0 0 4px black;
+  }
+
+
+  @media only screen and (max-width:650px) {
+    section:has(>.galaxy-info){
+      gap: 120rem !important;
+    }
+    .galaxy-info {
+      width: 100% !important;
+    }
+    .text-responsive {
+      margin: 0 1rem !important;
+    }
+  }
+  
 
   @media only screen and (max-width: 420px){
     h1.titulo-grande {
