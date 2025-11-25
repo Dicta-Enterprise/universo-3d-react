@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quicksand:wght@300..700&display=swap');
-
+:root{
+  --color-padres: rgb(137, 131, 115);
+  --color-jovenes: rgb(124, 135, 56);
+  --color-ninos: rgb(54, 147, 65);
+}
     body {
         margin: 0;
         overflow: auto;
@@ -160,6 +164,33 @@
     cursor: pointer;
     transition: all 500ms ease;
   }
+  .boton-categoria-Niños {
+    border: solid 2px var(--color-ninos) !important;
+    background-color: rgba(0, 0, 0, 0.651) !important;
+    box-shadow: 0 0 10px 0px var(--color-ninos) !important;
+  }
+  .boton-categoria-Niños:hover {
+    background-color: var(--color-ninos) !important;
+    box-shadow: 0 0 0px 0px var(--color-ninos) !important;
+  }
+  .boton-categoria-Jovenes {
+    border: solid 2px var(--color-jovenes) !important;
+    background-color: rgba(0, 0, 0, 0.651) !important;
+    box-shadow: 0 0 10px 0px var(--color-jovenes) !important;
+  }
+  .boton-categoria-Jovenes:hover {
+    background-color: var(--color-jovenes) !important;
+    box-shadow: 0 0 0px 0px var(--color-jovenes) !important;
+  }
+  .boton-categoria-Padres {
+    border: solid 2px var(--color-padres) !important;
+    background-color: rgba(0, 0, 0, 0.651) !important;
+    box-shadow: 0 0 10px 0px var(--color-padres) !important;
+  }
+  .boton-categoria-Padres:hover {
+    background-color: var(--color-padres) !important;
+    box-shadow: 0 0 0px 0px var(--color-padres) !important;
+  }
 
   .category-card > button:hover {
     background-color: rgb(224, 224, 224);
@@ -240,6 +271,28 @@
 
     }
   }
+
+  .animation-entry3d {
+    animation: appear3d 3s linear 1;
+  }
+  
+
+  @keyframes appear3d {
+    0% { 
+      transform: translateY(0px) scale(0%);
+     }
+     50%{
+      transform: translateY(50px) scale(0%);
+
+     }
+    100% { 
+      transform: translateY(0px) scale(100%);
+
+      
+     }
+  }
+
+
   .anim-entry {
     animation: appear 1s linear 1;
   }

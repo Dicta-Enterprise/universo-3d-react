@@ -19,8 +19,8 @@ export default function ThreeScene({ onLoad }) {
 
     const [cohetesData,setCohetesData] = useState();
 
-    const textoTitulo = "ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL"
-    const { displayText, isTypingComplete } = useTypeWriter(textoTitulo, 100);
+    const textoTitulo = "¿La clave para un viaje sin peligros? \nNavegar de forma segura es la clave para un viaje virtual sin peligros."
+    const { displayText, isTypingComplete } = useTypeWriter(textoTitulo, 20);
 
     var botonCoheteActivo = false;
 
@@ -1201,7 +1201,7 @@ export default function ThreeScene({ onLoad }) {
     return (
         <div id='principal' style={{position:"relative"}}>
         <div style={{color:"white",position:"relative", zIndex:999, display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"start", width:"100%", height:"62vh", boxSizing:"border-box", textAlign:"center"}}>
-            <h1 className='titulo-grande' style={{margin:"0 5rem"}}>{displayText}{!isTypingComplete && <span className="cursor">|</span>}</h1>
+            <h1 className='titulo-grande animation-entry3d' style={{margin:"0 5rem"}}>ANTICÍPATE Y ENFRENTA CON EXITO LOS DESAFÍOS EN LA ERA DIGITAL</h1>
         </div>
         <p className='quicksand' style={{margin:"5rem", fontSize:"1.5rem",position:"relative", zIndex:999,color:"white", textAlign:"center"}}>Aprende a cuidar la salud física, mental y social de tu familia en internet</p>
         <div id='btns_categorias'>
@@ -1209,10 +1209,8 @@ export default function ThreeScene({ onLoad }) {
         </div>
         <div style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-100":"-120")+"vh", height:"10rem", left:"0px"}} className='category-info quicksand'>
             <LetterTitle>¡Bienvenido a un universo digital plagado de amenazas como estafas y ciberacoso!</LetterTitle>
-            <p className='quicksand' style={{margin:"0 2rem", fontSize:"1.5rem", color:"white", textAlign:"center", fontWeight:"bolder"}}>¿La clave para un viaje sin peligros?</p>
-            <p className='quicksand' style={{margin:"0 2rem", fontSize:"1.5rem", color:"white", textAlign:"center"}}>Navegar de forma segura es la clave para un viaje virtual sin peligros.</p>
-        </div>
-        <div style={{position:"absolute", zIndex:999, bottom:"-205vh", height:"10rem", left:"0px"}} className='category-info quicksand'>
+            <p className='quicksand' style={{margin:"0 2rem", fontSize:"1.5rem", color:"white", textAlign:"center"}}>{displayText}{!isTypingComplete && <span className="cursor" style={{fontSize:"1.5rem"}}>|</span>}</p>
+            <br />
             <p className='quicksand' style={{fontSize:"1.5rem", textAlign:"center", margin:"0"}}>¿Cuál es tu papel en este viaje?</p>
             <p className='quicksand' style={{fontSize:"1.5rem", textAlign:"center", margin:"0"}}>Elige tu rol:</p>
         </div>
@@ -1226,7 +1224,7 @@ export default function ThreeScene({ onLoad }) {
                     <div key={coh.id} style={{position:"absolute", zIndex:999, bottom:(window.innerWidth >1250?"-300":"-320")+"vh", width:(window.innerWidth >1250?"15":"12")+"rem", height:"10rem", left:(window.innerWidth/2 + coh.x * ((window.innerWidth >1250?"300":"240"))-(window.innerWidth >1250?"120":"96"))+"px"}} className='category-card quicksand'>
                     <div>
                     </div>
-                    <button onClick={() => goToCategory(coh)} className='quicksand'><h4>{coh.nombre}</h4>
+                    <button onClick={() => goToCategory(coh)} className={'quicksand boton-categoria-'+(coh.nombre)}><h4>{coh.nombre}</h4>
                         <p>{coh.nombre == "Niños"?"9 - 12 años":(coh.nombre == "Jovenes"?"13 - 17 años":<br></br>)}</p></button>
                     </div>
                 ):
