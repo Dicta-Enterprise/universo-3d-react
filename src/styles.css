@@ -1,20 +1,27 @@
     body {
         margin: 0;
         overflow: auto;
-        height: 200vh; /* Valor para PC */
+        /* Subido de 200vh a 340vh: con la fase "Anticípate..." nueva de por medio, el scroll total
+           que hace falta para llegar a los cohetes (ahora en 1000px, antes 400) y seguir teniendo
+           espacio para explorarlos ya no cabía en 200vh */
+        height: 340vh; /* Valor para PC */
+        /* Mismo tono que la parte de arriba de FONDO MD extend.png: mientras carga el JS/Three.js
+           (puede tardar un par de segundos) se ve este azul en vez de un flash en negro (o blanco,
+           según el modo claro/oscuro del navegador) antes de que aparezca el fondo real. */
+        background-color: #222a6b;
     }
 
     /* Estilos para tablet */
     @media (max-width: 1245px) {
         body {
-            height: 230vh;
+            height: 370vh;
         }
     }
 
     /* Estilos para móvil */
     @media (max-width: 712px) {
         body {
-            height: 310vh;
+            height: 450vh;
         }
     }
 
@@ -74,4 +81,475 @@
     .sections-container.hidden {
         opacity: 0;  /* Hace que las secciones desaparezcan suavemente */
     }
-    
+
+    /* Tipografía de marca */
+    @font-face {
+        font-family: 'Fredoka';
+        src: url('/assets/fonts/Fredoka-VariableFont.ttf') format('truetype-variations');
+        font-weight: 300 700;
+        font-display: swap;
+    }
+
+    /* Tipografía de los mensajes (distinta a la del título, look "máquina de escribir") */
+    @font-face {
+        font-family: 'Courier Prime';
+        src: url('/assets/fonts/CourierPrime-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-display: swap;
+    }
+
+    /* Contenedor del título de apertura (fase 0): centrado en pantalla, sobre el canvas */
+    .titulo-intro {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    /* Título "Mundo Dictariano" con efecto máquina de escribir */
+    .titulo-maquina-escribir {
+        font-family: 'Fredoka', 'Courier New', monospace;
+        font-weight: 700;
+        font-size: clamp(2.2rem, 8vw, 4.5rem);
+        line-height: 1.15;
+        letter-spacing: 0.02em;
+        color: #33fd66;
+        text-shadow: 0 0 18px rgba(51, 253, 102, 0.55), 2px 2px 10px black;
+        text-align: center;
+        white-space: pre-line; /* Respeta el salto de línea entre MUNDO y DICTARIANO */
+    }
+
+    .cursor-maquina-escribir {
+        display: inline-block;
+        margin-left: 2px;
+        animation: parpadeo-cursor 0.8s steps(1) infinite;
+    }
+
+    @keyframes parpadeo-cursor {
+        0%, 50% { opacity: 1; }
+        50.01%, 100% { opacity: 0; }
+    }
+
+    /* Fase 1: "El mundo que protege a tu familia", debajo del planeta ya revelado.
+       top/left/transform (posición y escala) los pone Home.jsx por inline style, siguiendo la
+       posición real del planeta 3D en pantalla -- por eso aquí no se fijan. */
+    /* El ancho/text-align van aquí (no en el span de adentro): max-width no funciona en un
+       elemento inline como el span, así que el que controla dónde se envuelve el texto (y
+       centra el cursor con él) tiene que ser este contenedor en bloque. */
+    .frase-protege {
+        position: fixed;
+        z-index: 2;
+        pointer-events: none;
+        width: min(90vw, 28rem);
+        text-align: center;
+    }
+
+    .frase-protege-texto {
+        /* A propósito distinta a la del título (Fredoka): look "máquina de escribir" */
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-weight: 400;
+        font-size: clamp(1.1rem, 3vw, 1.6rem);
+        line-height: 1.4;
+        color: #f2f2f2;
+        text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    /* "Desliza para comenzar": aparece solo cuando la frase ya terminó de escribirse.
+       Fija abajo de la pantalla -- a propósito NO sigue al planeta como la frase de arriba. */
+    .desliza-hint {
+        position: fixed;
+        bottom: 6vh;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: clamp(0.85rem, 2.2vw, 1rem);
+        color: #cfd3f0;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .desliza-hint--visible {
+        opacity: 1;
+    }
+
+    /* Fase 2 "Anticípate..." (diseño de Figma) */
+
+    /* Etiqueta "MUNDO DICTARIANO" junto al planeta ya en la esquina (fases 2 y 3) -- posición y
+       escala las pone Home.jsx por inline style, siguiendo al planeta real, igual que frase-protege. */
+    .mundo-badge {
+        position: fixed;
+        z-index: 2;
+        pointer-events: none;
+        transform: translate(-50%, 4px);
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: #33fd66;
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7);
+        white-space: nowrap;
+    }
+
+    .anticipate-pantalla {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        z-index: 2;
+        padding: 0 5vw;
+        box-sizing: border-box;
+    }
+
+    .anticipate-titulo {
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: clamp(1.1rem, 3.2vw, 1.7rem);
+        color: #f2f2f2;
+        text-align: center;
+        text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+        max-width: 36rem;
+    }
+
+    .anticipate-input {
+        width: min(90vw, 24rem);
+        padding: 0.7rem 1.1rem;
+        border-radius: 999px;
+        border: none;
+        outline: none;
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: 0.95rem;
+        text-align: center;
+        background: #ffffff;
+        color: #1a1a2e;
+    }
+
+    .anticipate-input::placeholder {
+        color: #8a8aa0;
+    }
+
+    .anticipate-botones {
+        display: flex;
+        gap: 2.2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .anticipate-boton-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .anticipate-burbuja {
+        background: #ffffff;
+        color: #1a1a2e;
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: 0.72rem;
+        line-height: 1.3;
+        text-align: center;
+        padding: 0.5rem 0.7rem;
+        border-radius: 0.8rem;
+        max-width: 9.5rem;
+        position: relative;
+    }
+
+    .anticipate-burbuja::after {
+        content: '';
+        position: absolute;
+        bottom: -7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 7px 6px 0 6px;
+        border-style: solid;
+        border-color: #ffffff transparent transparent transparent;
+    }
+
+    .anticipate-boton {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: 2px solid #33fd66;
+        background: rgba(10, 14, 36, 0.5);
+        color: #33fd66;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        animation: anticipate-latido 1.8s ease-in-out infinite;
+    }
+
+    .anticipate-boton svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    @keyframes anticipate-latido {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+    }
+
+    .anticipate-guia {
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: clamp(0.85rem, 2.2vw, 1rem);
+        color: #cfd3f0;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .anticipate-guia--visible {
+        opacity: 1;
+        animation: anticipate-flotar 2.4s ease-in-out infinite;
+    }
+
+    @keyframes anticipate-flotar {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(6px); }
+    }
+
+    /* Iconos de musica/sonido de la esquina */
+    .iconos-esquina {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 3;
+        display: flex;
+        align-items: flex-start; /* el icono nuevo de abajo es más alto (trae su etiqueta) -- sin esto se estiraba raro */
+        gap: 10px;
+    }
+
+    /* Ícono "MUNDO DICTARIANO" de la fila música/sonido: esfera chiquita girando, aparte del
+       planeta grande que se desvanece hacia la esquina. Mismo tamaño que los botones de
+       música/sonido. */
+    .icono-mundo-girando {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        pointer-events: none;
+    }
+
+    .icono-mundo-girando-canvas {
+        /* position/top/left: la regla genérica "canvas {...}" de arriba (pensada solo para el
+           canvas principal de fondo) también aplica aquí por defecto -- mismo bug ya visto y
+           corregido en .demo-traje-canvas, se previene aquí desde el inicio. */
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: block;
+    }
+
+    .icono-mundo-girando-texto {
+        font-family: 'Fredoka', 'Courier New', monospace;
+        font-weight: 700;
+        font-size: 0.56rem;
+        line-height: 1.15;
+        letter-spacing: 0.02em;
+        color: #33fd66;
+        text-align: center;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+        white-space: nowrap;
+    }
+
+    @media (max-width: 712px) {
+        .icono-mundo-girando-canvas {
+            width: 36px;
+            height: 36px;
+        }
+        .icono-mundo-girando-texto {
+            font-size: 0.5rem;
+        }
+    }
+
+    .icono-esquina-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        line-height: 0;
+    }
+
+    .icono-esquina-btn img {
+        width: 44px;
+        height: 44px;
+        display: block;
+        transition: opacity 0.2s ease, transform 0.15s ease;
+    }
+
+    .icono-esquina-btn:hover img {
+        transform: scale(1.08);
+    }
+
+    .icono-esquina-apagado {
+        opacity: 0.4;
+    }
+
+    @media (max-width: 712px) {
+        .iconos-esquina {
+            top: 14px;
+            right: 14px;
+            gap: 8px;
+        }
+        .icono-esquina-btn img {
+            width: 36px;
+            height: 36px;
+        }
+    }
+
+    /* Demo técnico del traje personalizable (DemoTrajeAstronauta.jsx). Esquina opuesta a los
+       iconos de musica/sonido, para que no se encimen. Panel independiente, no toca el resto
+       del layout. */
+    .demo-traje {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(10, 14, 36, 0.55);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 14px;
+        padding: 10px;
+    }
+
+    .demo-traje-canvas-wrap {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        flex-shrink: 0;
+    }
+
+    .demo-traje-canvas {
+        /* position/top/left: la regla genérica "canvas {...}" de arriba (pensada solo para el
+           canvas principal de fondo) también aplica aquí por defecto y lo saca de su lugar
+           (position:fixed, pegado a toda la pantalla) -- por eso hay que pisarla explícito. */
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .demo-traje-cargando {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cfd3e6;
+        font-size: 11px;
+    }
+
+    .demo-traje-texto {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 6px;
+    }
+
+    .demo-traje-titulo {
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .demo-traje-colores {
+        display: flex;
+        gap: 6px;
+    }
+
+    .demo-traje-swatch {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.55);
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .demo-traje-swatch--activo {
+        border-color: #fff;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+    }
+
+    .demo-traje-nota {
+        color: #9aa0c0;
+        font-size: 9.5px;
+        font-style: italic;
+    }
+
+    @media (max-width: 712px) {
+        .demo-traje {
+            bottom: 14px;
+            left: 14px;
+            gap: 8px;
+            padding: 8px;
+        }
+        .demo-traje-canvas-wrap {
+            width: 84px;
+            height: 84px;
+        }
+    }
+
+    /* Botón de prueba del segundo efecto de estrellas (parpadeo).
+       Esquina opuesta a música/sonido (arriba-izquierda), para no mezclarse con esos ni con el
+       demo del traje (abajo-izquierda, solo aparece junto a los cohetes). */
+    .icono-estrellas-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 3;
+        width: 44px;
+        height: 44px;
+        padding: 9px;
+        background: rgba(10, 14, 36, 0.4);
+        border: 2px solid #8a92b8;
+        border-radius: 10px;
+        color: #8a92b8;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .icono-estrellas-btn svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .icono-estrellas-btn:hover {
+        transform: scale(1.08);
+    }
+
+    .icono-estrellas-btn--activo {
+        border-color: #4ade80;
+        color: #4ade80;
+    }
+
+    @media (max-width: 712px) {
+        .icono-estrellas-btn {
+            top: 14px;
+            left: 14px;
+            width: 36px;
+            height: 36px;
+            padding: 7px;
+        }
+    }
