@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -8,10 +8,38 @@ import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRe
 
 
 
-export default function ThreeScene({ onLoad }) {
+const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, estrellasAlternas, mostrarAstronautas }, ref) {
     const navigate = useNavigate();
+    const revealPlanetRef = useRef(() => {});
+    const moveToCornerRef = useRef(() => {});
+    const moveToCenterRef = useRef(() => {});
+    const resetIntroRef = useRef(() => {});
+    // Guarda siempre la última versión de onPlanetTransform sin tener que meterla en las
+    // dependencias del useEffect grande de más abajo (eso reconstruiría toda la escena 3D
+    // de nuevo cada vez que Home.jsx pasara una función con identidad distinta).
+    const onPlanetTransformRef = useRef(onPlanetTransform);
+    useEffect(() => { onPlanetTransformRef.current = onPlanetTransform; }, [onPlanetTransform]);
+    // Segundo efecto de estrellas (parpadeo): el de por defecto (el fondo fijo de siempre) no
+    // se toca; este es aparte, apagado salvo que el botón de la esquina lo prenda. Mismo patrón
+    // de ref que onPlanetTransform, para no reconstruir la escena.
+    const estrellasAlternasRef = useRef(estrellasAlternas);
+    useEffect(() => { estrellasAlternasRef.current = estrellasAlternas; }, [estrellasAlternas]);
+    // Pantalla "Anticípate..." (diseño de Figma): los 4 astronautas flotando solo se
+    // ven en esa fase -- Home.jsx manda cuándo, con el mismo patrón de ref de arriba.
+    const mostrarAstronautasRef = useRef(mostrarAstronautas);
+    useEffect(() => { mostrarAstronautasRef.current = mostrarAstronautas; }, [mostrarAstronautas]);
+
+    useImperativeHandle(ref, () => ({
+        revealPlanet: () => revealPlanetRef.current(),
+        moveToCorner: () => moveToCornerRef.current(),
+        moveToCenter: () => moveToCenterRef.current(),
+        resetIntro: () => resetIntroRef.current(),
+    }), []);
 
     useEffect(() => {
+
+        // Evita volver a descargar/decodificar un mismo archivo (cohete, texturas) si ya se pidió antes
+        THREE.Cache.enabled = true;
 
         // Crea la escena, cámara y renderizador
         const scene = new THREE.Scene();
@@ -25,12 +53,354 @@ export default function ThreeScene({ onLoad }) {
         const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
         scene.background = spaceTexture;
 
-        // Crea la esfera (planeta) con la textura de la Tierra
-        const planetTexture = new THREE.TextureLoader().load('/assets/earthx5400x2700.jpg');
+        // --- Segundo efecto de estrellas (parpadeo) ---
+        // Aparte del fondo de arriba (que no se toca, sigue siendo el de siempre): un grupo de
+        // estrellas que brillan y parpadean de verdad, pensado para probarlo con el botón de la
+        // esquina y comparar contra el fondo fijo -- empieza APAGADO (visible=false), así que si
+        // nadie lo prende, nada cambia de cómo se ve hoy la página.
+        const ESTRELLAS_ALTERNAS_CANTIDAD = 220;
+        const estrellasAlternasGroup = new THREE.Group();
+        const estrellasAlternas = [];
+        for (let i = 0; i < ESTRELLAS_ALTERNAS_CANTIDAD; i++) {
+            const tamano = 0.04 + Math.random() * 0.07;
+            const geometry = new THREE.SphereGeometry(tamano, 6, 6);
+            // depthWrite:false es la parte clave -- sin esto, estas estrellas (aunque transparentes)
+            // "tapaban" a las partículas que ya se movían (quedaban escritas en el buffer de
+            // profundidad, y Three.js las usaba para ocultar lo que hubiera detrás). Sin este
+            // ajuste, al prender el parpadeo las partículas que ya se movían desaparecían.
+            const material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, depthWrite: false });
+            const estrella = new THREE.Mesh(geometry, material);
+            // Dispersas en una especie de domo grande alrededor del recorrido de la cámara
+            // (la cámara va de z=3 a z=13 con el scroll), para que se vean durante todo el scroll.
+            const angulo = Math.random() * Math.PI * 2;
+            const radio = 25 + Math.random() * 45;
+            const posicionBase = new THREE.Vector3(
+                Math.cos(angulo) * radio,
+                (Math.random() - 0.5) * 50,
+                Math.sin(angulo) * radio - 10,
+            );
+            estrella.position.copy(posicionBase);
+            estrella.userData.posicionBase = posicionBase;
+            estrella.userData.fase = Math.random() * Math.PI * 2;
+            estrella.userData.velocidad = 0.0015 + Math.random() * 0.002;
+            // Para que floten un poco, no solo que parpadeen quietas
+            estrella.userData.faseFlote = Math.random() * Math.PI * 2;
+            estrella.userData.velocidadFlote = 0.0004 + Math.random() * 0.0006;
+            estrella.userData.amplitudFlote = 0.6 + Math.random() * 1.2;
+            estrellasAlternasGroup.add(estrella);
+            estrellasAlternas.push(estrella);
+        }
+        estrellasAlternasGroup.visible = false;
+        scene.add(estrellasAlternasGroup);
+
+        // Las dos son mutuamente excluyentes: con el botón prendido se ven SOLO las que
+        // parpadean (las que ya se movían se ocultan); apagado, vuelve a ser como siempre.
+        function actualizarEstrellasAlternas() {
+            const activo = estrellasAlternasRef.current;
+            estrellasAlternasGroup.visible = activo;
+            particlesGroup.visible = !activo;
+            if (!activo) return;
+            const ahora = performance.now();
+            estrellasAlternas.forEach((estrella) => {
+                // Mismo truco que ya se usaba en Landing/ThreeSceneBackground.jsx: escala pulsando
+                // con una onda seno, desfasada por estrella para que no parpadeen todas a la vez.
+                const pulso = 1 + 0.5 * Math.sin(ahora * estrella.userData.velocidad + estrella.userData.fase);
+                estrella.scale.setScalar(pulso);
+                estrella.material.opacity = 0.5 + 0.5 * pulso;
+                // Flote suave alrededor de su posición base, en vez de quedarse fijas
+                const { posicionBase, velocidadFlote, faseFlote, amplitudFlote } = estrella.userData;
+                estrella.position.y = posicionBase.y + Math.sin(ahora * velocidadFlote + faseFlote) * amplitudFlote;
+                estrella.position.x = posicionBase.x + Math.cos(ahora * velocidadFlote * 0.8 + faseFlote) * amplitudFlote * 0.6;
+            });
+        }
+
+        // --- Fondo largo ---
+        // Imagen muy alta (5692x25732) que va detrás de todo lo demás, delante de las estrellas
+        // (las estrellas de scene.background no se tocan, se siguen viendo alrededor). Al hacer
+        // scroll se desliza verticalmente de arriba a abajo, dando sensación de ir avanzando.
+        // Es hija de la cámara para que siempre cubra toda la pantalla sin importar cómo se
+        // mueva la cámara (igual que un fondo fijo detrás de todo).
+        const fondoLargoTexture = new THREE.TextureLoader().load('/assets/fondo-md-extend.png');
+        fondoLargoTexture.wrapS = THREE.ClampToEdgeWrapping;
+        fondoLargoTexture.wrapT = THREE.ClampToEdgeWrapping;
+        const FONDO_LARGO_ASPECT = 5692 / 25732; // ancho / alto reales del PNG
+        const FONDO_LARGO_DISTANCIA = 80; // detrás del planeta/cohetes (que usan z hasta -50)
+        const fondoLargoGeometry = new THREE.PlaneGeometry(1, 1);
+        const fondoLargoMaterial = new THREE.MeshBasicMaterial({ map: fondoLargoTexture, depthWrite: false });
+        const fondoLargo = new THREE.Mesh(fondoLargoGeometry, fondoLargoMaterial);
+        fondoLargo.position.z = -FONDO_LARGO_DISTANCIA;
+        fondoLargo.renderOrder = -1; // se dibuja antes que el resto, para quedar siempre detrás
+        camera.add(fondoLargo);
+        scene.add(camera); // una cámara con hijos debe estar en la escena para que se rendericen
+
+        // Recalcula el tamaño del plano para que cubra toda la pantalla a su distancia fija,
+        // y cuánto de la imagen se ve de una vez (como "background-size: cover", recortando
+        // por altura ya que la imagen es mucho más alta que ancha).
+        function actualizarFondoLargo() {
+            const alturaVisible = 2 * FONDO_LARGO_DISTANCIA * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+            const anchoVisible = alturaVisible * camera.aspect;
+            fondoLargo.scale.set(anchoVisible, alturaVisible, 1);
+            fondoLargoTexture.repeat.set(1, Math.min(FONDO_LARGO_ASPECT / camera.aspect, 1));
+        }
+        actualizarFondoLargo();
+
+        // progress: 0 = inicio del scroll (arriba de la imagen), 1 = final (abajo de la imagen)
+        function actualizarDesplazamientoFondoLargo(progress) {
+            fondoLargoTexture.offset.y = (1 - fondoLargoTexture.repeat.y) * (1 - progress);
+        }
+
+        // Crea la esfera (planeta) con la textura del ícono de Mundo Dictariano
+        const planetTexture = new THREE.TextureLoader().load('/assets/TTNN.png');
         const planetGeometry = new THREE.SphereGeometry(1, 32, 32);
-        const planetMaterial = new THREE.MeshStandardMaterial({ map: planetTexture });
+        // MeshBasicMaterial a propósito (no MeshStandardMaterial): ese respondía a la luz
+        // direccional y le dejaba una sombra marcada en un lado. Con esta, el planeta se ve
+        // siempre parejo, como el ícono plano del Figma, sin afectar la luz de cohetes/astronautas.
+        const planetMaterial = new THREE.MeshBasicMaterial({ map: planetTexture });
         const planet = new THREE.Mesh(planetGeometry, planetMaterial);
         scene.add(planet);
+
+        // El planeta arranca oculto: aparece con la transición de entrada (ver revealPlanet)
+        planet.visible = false;
+        const PLANET_FINAL_Y = 0;
+        const PLANET_START_Y = -2.2;
+        planet.position.y = PLANET_START_Y;
+        planet.scale.setScalar(0.05);
+
+        let planetReveal = null; // { startTime, duration } mientras la animación de entrada corre
+        // Se guarda para que moveToCenter sepa a qué tamaño volver (es el mismo escalaFinal de
+        // revealPlanet, pero esa variable era local a esa función nada más).
+        let escalaRevelada = 1;
+
+        function easeOutBack(t) {
+            const c1 = 1.70158;
+            const c3 = c1 + 1;
+            return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+        }
+
+        revealPlanetRef.current = () => {
+            if (planet.visible) return; // Evita reiniciar la animación si ya se reveló
+            planet.visible = true;
+            planet.material.opacity = 1; // por si quedó en 0 de un desvanecido anterior (resetIntro ya lo hace, esto es doble seguro)
+            // En pantallas angostas (celulares) el mundo grande se ve desproporcionado si queda
+            // del mismo tamaño que en laptop, así que su tamaño final es un poco menor ahí.
+            const escalaFinal = window.innerWidth <= 700 ? 0.65 : 1;
+            escalaRevelada = escalaFinal;
+            planetReveal = { startTime: performance.now(), duration: 1800, escalaFinal };
+        };
+
+        function updatePlanetReveal() {
+            if (!planetReveal) return;
+            const elapsed = performance.now() - planetReveal.startTime;
+            const t = Math.min(elapsed / planetReveal.duration, 1);
+            const eased = easeOutBack(t);
+            planet.scale.setScalar(0.05 + eased * (planetReveal.escalaFinal - 0.05));
+            planet.position.y = PLANET_START_Y + eased * (PLANET_FINAL_Y - PLANET_START_Y);
+            if (t >= 1) planetReveal = null;
+        }
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Encuentra el punto del mundo que cae justo en (ndcX, ndcY) de la pantalla
+        // (coordenadas -1..1) sobre el plano z = targetZ, para mandar el planeta a una esquina.
+        function screenToWorld(ndcX, ndcY, targetZ) {
+            const punto = new THREE.Vector3(ndcX, ndcY, 0.5).unproject(camera);
+            const direccion = punto.sub(camera.position).normalize();
+            const distancia = (targetZ - camera.position.z) / direccion.z;
+            return camera.position.clone().add(direccion.multiplyScalar(distancia));
+        }
+
+        // Punto de la pantalla (NDC) y escala donde debe quedar el planeta al ir a la esquina.
+        // Se reutiliza también al redimensionar la ventana, para que no se desalinee.
+        // En pantallas angostas se acerca un poco al centro (~1%) para no quedar pegado al borde.
+        function obtenerNdcEsquina() {
+            return window.innerWidth <= 712
+                ? { x: 0.78, y: 0.72 }
+                : { x: 0.8, y: 0.74 };
+        }
+        // Se manda más lejos de la cámara (en vez de dejarlo a la misma distancia que al centro)
+        // y se compensa con más escala: así se evita el efecto "huevo" que da una esfera real
+        // cuando queda muy hacia la orilla de una cámara de ángulo amplio.
+        const ESQUINA_TARGET_Z = -6;
+        const ESQUINA_ESCALA = 0.65;
+        // Debe coincidir con la duración de "transition" de .titulo-intro en styles.css,
+        // para que el planeta y el texto se muevan juntos, como un solo bloque.
+        const ESQUINA_DURACION_MS = 1600;
+
+        let cornerMove = null; // { startTime, duration, from, to, scaleFrom, scaleTo, opacityFrom, opacityTo, alTerminarOcultar }
+        let enEsquina = false; // true una vez que el planeta ya llegó (o está yendo) a la esquina
+        planet.material.transparent = true; // hace falta desde ya para poder desvanecerlo
+
+        // Antes el planeta llegaba a la esquina y se quedaba ahí parqueado todo "Anticípate...".
+        // Ahora se desvanece EN EL CAMINO hacia la esquina, llegando invisible justo cuando
+        // empieza esa pantalla (en vez de encogerse y quedarse de golpe, o quedarse visible
+        // estorbando).
+        moveToCornerRef.current = () => {
+            if (!planet.visible || cornerMove) return;
+            enEsquina = true;
+            const ndc = obtenerNdcEsquina();
+            const destino = screenToWorld(ndc.x, ndc.y, ESQUINA_TARGET_Z);
+            cornerMove = {
+                startTime: performance.now(),
+                duration: ESQUINA_DURACION_MS,
+                from: planet.position.clone(),
+                to: destino,
+                scaleFrom: planet.scale.x,
+                scaleTo: ESQUINA_ESCALA,
+                opacityFrom: planet.material.opacity,
+                opacityTo: 0,
+                alTerminarOcultar: true,
+            };
+        };
+
+        // Camino de regreso: igual que moveToCorner pero al revés -- reaparece (fade in) mientras
+        // regresa del punto de la esquina al centro. Se usa cuando el usuario vuelve de la
+        // pantalla "Anticípate..." a la de la frase bajo el planeta.
+        moveToCenterRef.current = () => {
+            if (cornerMove) return; // ya no se revisa planet.visible: ahora normalmente está oculto en este punto
+            enEsquina = false;
+            planet.visible = true;
+            planet.material.opacity = 0;
+            const ndc = obtenerNdcEsquina();
+            cornerMove = {
+                startTime: performance.now(),
+                duration: ESQUINA_DURACION_MS,
+                from: screenToWorld(ndc.x, ndc.y, ESQUINA_TARGET_Z), // reaparece desde el punto de la esquina
+                to: new THREE.Vector3(0, PLANET_FINAL_Y, 0),
+                scaleFrom: ESQUINA_ESCALA,
+                scaleTo: escalaRevelada,
+                opacityFrom: 0,
+                opacityTo: 1,
+                alTerminarOcultar: false,
+            };
+        };
+
+        // Vuelve el planeta a su estado de antes de revelarse (oculto, chiquito, centrado),
+        // cancelando cualquier animación en curso. Se usa cuando el usuario hace scroll de
+        // vuelta hasta arriba del todo, para que la intro se pueda ver de nuevo desde cero.
+        resetIntroRef.current = () => {
+            planetReveal = null;
+            cornerMove = null;
+            enEsquina = false;
+            planet.visible = false;
+            planet.position.set(0, PLANET_START_Y, 0);
+            planet.scale.setScalar(0.05);
+            planet.material.opacity = 1; // para que la próxima revelación no arranque invisible
+        };
+
+        function updateCornerMove() {
+            if (!cornerMove) return;
+            const elapsed = performance.now() - cornerMove.startTime;
+            const t = Math.min(elapsed / cornerMove.duration, 1);
+            const eased = easeInOutCubic(t);
+            planet.position.lerpVectors(cornerMove.from, cornerMove.to, eased);
+            planet.scale.setScalar(cornerMove.scaleFrom + (cornerMove.scaleTo - cornerMove.scaleFrom) * eased);
+            planet.material.opacity = cornerMove.opacityFrom + (cornerMove.opacityTo - cornerMove.opacityFrom) * eased;
+            if (t >= 1) {
+                if (cornerMove.alTerminarOcultar) planet.visible = false;
+                cornerMove = null;
+            }
+        }
+
+        // Si la ventana cambia de tamaño mientras el planeta está en la esquina, recalcula su
+        // posición para ese nuevo ancho/alto — si no, se queda "congelado" en el punto del
+        // mundo 3D que le tocaba con el tamaño anterior, y se desalinea del texto (que sí es CSS
+        // responsivo).
+        function realinearEsquinaSiAplica() {
+            if (!enEsquina || cornerMove) return;
+            const ndc = obtenerNdcEsquina();
+            planet.position.copy(screenToWorld(ndc.x, ndc.y, ESQUINA_TARGET_Z));
+        }
+
+        // --- 4 astronautas flotando, pantalla "Anticípate..." (diseño de Figma) ---
+        // Representan niño/joven/padre-madre. Todavía no se ha entregado el modelo real (el de la
+        // carita de mascota) -- mientras tanto se usa el mismo astronauta de muestra del demo de
+        // personalización de color (DemoTrajeAstronauta.jsx), con un color distinto cada uno nada
+        // más para distinguirlos. Cambiar ASTRONAUTA_FLOTANTE_URL cuando llegue el definitivo.
+        const ASTRONAUTA_FLOTANTE_URL = '/assets/demo/astronauta-ejemplo-placeholder.glb';
+        const astronautasFlotantes = [];
+        const ASTRONAUTAS_COLORES = [0x60a5fa, 0xfb7185, 0x4ade80, 0xfbbf24]; // provisional, no son los colores finales de las mascotas
+        // Posiciones en coordenadas de PANTALLA (NDC -1..1), no del mundo 3D -- lejos del bloque
+        // de texto central (arriba y abajo de él), para que no se crucen con las letras. Se
+        // convierten a un punto del mundo 3D
+        // con screenToWorld, la misma función que ya usa el planeta para ir a la esquina -- pero
+        // OJO: hay que llamarla en el momento en que se muestran, no antes, porque la cámara se
+        // sigue moviendo con el scroll (si se calcula una sola vez al cargar la página, cuando de
+        // verdad aparecen ya no corresponde a esos NDC y vuelven a cruzarse con el texto).
+        const ASTRONAUTAS_NDC = [
+            { x: 0.72, y: 0.62 },   // arriba-derecha, encima del texto
+            { x: -0.78, y: 0.5 },   // arriba-izquierda
+            { x: -0.7, y: -0.72 },  // abajo-izquierda, debajo de los botones
+            { x: 0.76, y: -0.68 },  // abajo-derecha
+        ];
+        const ASTRONAUTA_TARGET_Z = -4;
+
+        new GLTFLoader().load(
+            ASTRONAUTA_FLOTANTE_URL,
+            (gltf) => {
+                ASTRONAUTAS_NDC.forEach((ndc, i) => {
+                    const clon = gltf.scene.clone(true);
+                    clon.traverse((child) => {
+                        if (child.isMesh && child.material) {
+                            child.material = child.material.clone();
+                            child.material.color.set(ASTRONAUTAS_COLORES[i]);
+                        }
+                    });
+                    clon.scale.setScalar(0.001); // arranca en 0 para la entrada con "pop"
+                    clon.visible = false;
+                    clon.userData.ndc = ndc;
+                    clon.userData.posicionBase = null; // se calcula al activarse, ver más abajo
+                    clon.userData.fase = Math.random() * Math.PI * 2;
+                    clon.userData.escalaDestino = window.innerWidth <= 700 ? 0.55 : 0.85;
+                    scene.add(clon);
+                    astronautasFlotantes.push(clon);
+                });
+            },
+            undefined,
+            (error) => console.error('Astronautas flotantes: no se pudo cargar el modelo de muestra.', error),
+        );
+
+        let astronautasEstabanActivos = false;
+
+        function actualizarAstronautasFlotantes() {
+            if (astronautasFlotantes.length === 0) return; // todavía cargando
+            const activo = mostrarAstronautasRef.current;
+            const ahora = performance.now();
+
+            if (activo && !astronautasEstabanActivos) {
+                // Se acaba de activar: calcula AHORA dónde cae cada NDC, con la cámara de este
+                // instante (ver nota de arriba -- esto es lo que corrige que se crucen con el texto).
+                astronautasFlotantes.forEach((a) => {
+                    a.userData.posicionBase = screenToWorld(a.userData.ndc.x, a.userData.ndc.y, ASTRONAUTA_TARGET_Z);
+                    a.position.copy(a.userData.posicionBase);
+                });
+            }
+            if (!activo && astronautasEstabanActivos) {
+                // Se acaba de apagar: reinicia la escala a 0 para que la próxima vez que se
+                // muestren, vuelvan a aparecer con el mismo "pop" de entrada, no ya grandes de golpe.
+                astronautasFlotantes.forEach((a) => a.scale.setScalar(0.001));
+            }
+            astronautasEstabanActivos = activo;
+
+            astronautasFlotantes.forEach((a) => {
+                if (!activo) {
+                    a.visible = false;
+                    return;
+                }
+                a.visible = true;
+                // Flote libre alrededor de su posición base
+                const { posicionBase, fase } = a.userData;
+                a.position.x = posicionBase.x + Math.cos(ahora * 0.0003 + fase) * 0.35;
+                a.position.y = posicionBase.y + Math.sin(ahora * 0.00035 + fase) * 0.3;
+                a.rotation.y += 0.0025;
+                a.rotation.z = Math.sin(ahora * 0.0004 + fase) * 0.08;
+                // Entrada con un pequeño "pop" (como el planeta al revelarse) en vez de aparecer de golpe
+                if (a.scale.x < a.userData.escalaDestino) {
+                    a.scale.setScalar(Math.min(a.userData.escalaDestino, a.scale.x + 0.025));
+                }
+            });
+        }
 
         // Añade luz para que el planeta sea visible
 
@@ -42,9 +412,10 @@ export default function ThreeScene({ onLoad }) {
         directionalLight.position.set(3, 3, 3); // Ubica la luz en una posición lejana y diagonal al planeta
         scene.add(directionalLight);
 
-        // Luz ambiental para rellenar sombras
+        // Luz ambiental para rellenar sombras (antes no se agregaba a la escena,
+        // por eso el lado sin luz directa se veía demasiado oscuro)
         const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Luz suave en todo el ambiente
-        // scene.add(ambientLight);
+        scene.add(ambientLight);
 
         const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x333333, 0.9); // Azul cielo y gris oscuro para el suelo
         // scene.add(hemisphereLight);
@@ -158,30 +529,8 @@ export default function ThreeScene({ onLoad }) {
             }
         }*/
 
-        const loader2 = new OBJLoader();
-        let ufo; // Variable para el platillo
-
-        // Cargar el modelo del platillo
-        loader2.load(
-            '/assets/platillo/UFO.obj', // Ruta del modelo
-            function (object) {
-                ufo = object;
-
-                // Posición inicial del platillo fuera de la cámara, en el lado derecho
-                ufo.position.set(30, 0, -50); // Posición inicial: a la derecha (X positivo) y lejos en Z
-                ufo.scale.set(0.5, 0.5, 0.5); // Ajustar el tamaño si es necesario
-                scene.add(ufo); // Añadir a la escena
-                console.log('Platillo cargado con éxito');
-            },
-            function (xhr) {
-                // Progreso de carga
-                console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-            },
-            function (error) {
-                // Manejo de errores
-                console.error('Error cargando el platillo:', error);
-            }
-        );
+        // Nave/platillo: quitada de la vista inicial a pedido (solo quedan estrellas + planeta)
+        let ufo; // Se mantiene sin asignar para que animateUFO() no haga nada
 
         // Variables para el movimiento y escala del platillo
         let ufoSpeedZ = 0.1;     // Velocidad en Z (hacia adelante)
@@ -258,26 +607,8 @@ export default function ThreeScene({ onLoad }) {
         }
 
 
-        // Cargar el modelo 3D del meteorito
-        const loader1 = new GLTFLoader();
-        let meteorite;
-
-        // Cargar el modelo del meteorito
-        loader1.load('/assets/meteor/meteor.glb', function (gltf) {
-            meteorite = gltf.scene;
-
-            // Posición inicial del meteorito fuera de la cámara, en el lado izquierdo
-            meteorite.position.set(-30, 0, -50);  // Lejos de la cámara en Z
-            scene.add(meteorite);
-        },
-            function (xhr) {
-                // Monitoreo del progreso de carga
-                console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-            },
-            function (error) {
-                // Muestra cualquier error que ocurra
-                console.error('Error cargando el meteorito: ', error);
-            });
+        // Meteorito: quitado de la vista inicial a pedido (solo quedan estrellas + planeta)
+        let meteorite; // Se mantiene sin asignar para que animateMeteorite() no haga nada
 
         // Posición inicial de la cámara
         camera.position.z = 3;
@@ -350,171 +681,107 @@ export default function ThreeScene({ onLoad }) {
         
         */
         const rockets = [];
-        const moons = []; // Array para almacenar las lunas
 
-        function createMoon(position, index) {
-            const loader = new GLTFLoader();
-            const moonGroup = new THREE.Group();
-
-            loader.load(
-                '/assets/moon/scene.gltf',
-                function (gltf) {
-                    const moon = gltf.scene;
-                    
-                    // Ajustar la escala de la luna según el dispositivo
-                    const isMobile = window.innerWidth <= 768;
-                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-                    
-                    if (isMobile) {
-                        moon.scale.set(0.3, 0.3, 0.3);
-                    } else if (isTablet) {
-                        moon.scale.set(0.4, 0.4, 0.4);
-                    } else {
-                        moon.scale.set(0.1, 0.1, 0.1);
-                    }
-
-                    // Añadir material con efecto de resplandor
-                    moon.traverse((child) => {
-                        if (child.isMesh) {
-                            const material = new THREE.MeshStandardMaterial({
-                                ...child.material,
-                                emissive: new THREE.Color(0xf4e99b), // Color cálido para la luna
-                                emissiveIntensity: 0.2,
-                                roughness: 0.8,
-                                metalness: 0.2
-                            });
-                            child.material = material;
-                        }
-                    });
-
-                    // Crear luz para la luna
-                    const moonLight = new THREE.PointLight(0xf4e99b, 1, 10);
-                    moonLight.position.set(0, 0, 0);
-                    moonGroup.add(moonLight);
-
-                    moonGroup.add(moon);
-                    scene.add(moonGroup);
-                    moons.push(moonGroup);
-
-                    // Configurar parámetros de órbita
-                    moonGroup.userData.orbitRadius = 2.5; // Radio de la órbita
-                    moonGroup.userData.orbitSpeed = 0.01; // Velocidad de la órbita
-                    moonGroup.userData.orbitAngle = index * (Math.PI * 2 / 3); // Ángulo inicial (distribuido)
-                    moonGroup.userData.orbitHeight = 0.5; // Altura de la órbita
-                },
-                undefined,
-                function (error) {
-                    console.error('Error al cargar el modelo de la luna:', error);
-                }
-            );
-        }
-
-        // Función para animar la órbita de las lunas
-        function animateMoons() {
-            moons.forEach((moon, index) => {
-                if (moon.userData.orbitRadius) {
-                    // Actualizar ángulo de órbita
-                    moon.userData.orbitAngle += moon.userData.orbitSpeed;
-                    
-                    // Calcular nueva posición
-                    const x = Math.cos(moon.userData.orbitAngle) * moon.userData.orbitRadius;
-                    const z = Math.sin(moon.userData.orbitAngle) * moon.userData.orbitRadius;
-                    const y = moon.userData.orbitHeight;
-                    
-                    // Aplicar posición
-                    moon.position.set(x, y, z);
-                    
-                    // Hacer que la luna mire hacia el planeta
-                    moon.lookAt(0, 0, 0);
-                }
-            });
-        }
+        // Piezas del cohete infantil (Kenney Space Kit, CC0) y cómo apilarlas verticalmente
+        const PIEZAS_COHETE = [
+            { name: 'rocket_baseA', offsetY: 0 },
+            { name: 'rocket_finsA', offsetY: 0 },
+            { name: 'rocket_sidesA', offsetY: 1.15 },
+            { name: 'rocket_topA', offsetY: 2.15 },
+        ];
+        const CENTRO_PIEZAS_COHETE = new THREE.Vector3(-2.0, 0, -1.5);
 
         function createRocket(position, index) {
             const loader = new GLTFLoader();
             const rocketGroup = new THREE.Group();
+            const rocket = new THREE.Group(); // Ensambla las piezas del cohete
+            let piezasCargadas = 0;
 
-            loader.load(
-                '/assets/cohete/scene.gltf',
-                function (gltf) {
-                    const rocket = gltf.scene;
-                    
-                    // Ajustar la escala del cohete según el dispositivo
-                    const isMobile = window.innerWidth <= 768;
-                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-                    
-                    if (isMobile) {
-                        rocket.scale.set(5, 5, 5);
-                    } else if (isTablet) {
-                        rocket.scale.set(4, 4, 4);
-                    } else {
-                        rocket.scale.set(5, 5, 5);
-                    }
-                    
-                    // Ajustar la rotación inicial
-                    rocket.rotation.y = Math.PI;
+            PIEZAS_COHETE.forEach(({ name, offsetY }) => {
+                loader.load(
+                    `/assets/cohete_kenney/${name}.glb`,
+                    function (gltf) {
+                        const pieza = gltf.scene;
+                        pieza.position.add(CENTRO_PIEZAS_COHETE);
+                        pieza.position.y += offsetY;
+                        rocket.add(pieza);
 
-                    // Agregar efecto de resplandor y materiales interactivos
-                    rocket.traverse((child) => {
-                        if (child.isMesh) {
-                            const material = new THREE.MeshStandardMaterial({
-                                ...child.material,
-                                emissive: new THREE.Color(0x000000),
-                                emissiveIntensity: 0
-                            });
-                            child.material = material;
-                            child.userData.originalColor = material.color.clone();
+                        piezasCargadas++;
+                        if (piezasCargadas < PIEZAS_COHETE.length) return;
+
+                        // Todas las piezas cargaron: ensamblar el cohete completo
+                        // Ajustar la escala del cohete según el dispositivo
+                        const isMobile = window.innerWidth <= 768;
+                        const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
+                        if (isMobile) {
+                            rocket.scale.set(0.1, 0.1, 0.1);
+                        } else if (isTablet) {
+                            rocket.scale.set(0.13, 0.13, 0.13);
+                        } else {
+                            rocket.scale.set(0.16, 0.16, 0.16);
                         }
-                    });
-                    
-                    // Ajustar posición de los cohetes según el dispositivo
-                    if (isMobile) {
-                        const yOffset = 0.4;
-                        rocketGroup.position.set(
-                            0,
-                            position.y - index * yOffset,
-                            position.z + index * 1.5
-                        );
-                    } else if (isTablet) {
-                        const xOffset = 1.5;
-                        rocketGroup.position.set(
-                            position.x * xOffset,
-                            position.y,
-                            position.z
-                        );
-                    } else {
-                        rocketGroup.position.set(position.x, position.y, position.z);
+
+                        // Ajustar la rotación inicial
+                        rocket.rotation.y = Math.PI;
+
+                        // Agregar efecto de resplandor y materiales interactivos
+                        rocket.traverse((child) => {
+                            if (child.isMesh) {
+                                const material = new THREE.MeshStandardMaterial({
+                                    ...child.material,
+                                    emissive: new THREE.Color(0x000000),
+                                    emissiveIntensity: 0
+                                });
+                                child.material = material;
+                                child.userData.originalColor = material.color.clone();
+                            }
+                        });
+
+                        // Ajustar posición de los cohetes según el dispositivo
+                        if (isMobile) {
+                            const xOffset = 0.55; // Separa los 3 cohetes en horizontal para que no se amontonen
+                            rocketGroup.position.set(
+                                position.x * xOffset,
+                                position.y,
+                                position.z
+                            );
+                        } else if (isTablet) {
+                            const xOffset = 1.5;
+                            rocketGroup.position.set(
+                                position.x * xOffset,
+                                position.y,
+                                position.z
+                            );
+                        } else {
+                            rocketGroup.position.set(position.x, position.y, position.z);
+                        }
+
+                        // Agregar un bounding box para mejorar la detección de clics
+                        const box = new THREE.Box3().setFromObject(rocket);
+                        const helper = new THREE.Box3Helper(box, 0xffff00);
+                        helper.visible = false;
+                        rocketGroup.add(helper);
+
+                        rocketGroup.add(rocket);
+                        scene.add(rocketGroup);
+                        rockets.push(rocketGroup);
+
+                        rocketGroup.userData.url = position.url;
+                        rocketGroup.userData.isHovered = false;
+                    },
+                    undefined,
+                    function (error) {
+                        console.error(`Error al cargar la pieza del cohete (${name}):`, error);
                     }
-
-                    // Agregar un bounding box para mejorar la detección de clics
-                    const box = new THREE.Box3().setFromObject(rocket);
-                    const helper = new THREE.Box3Helper(box, 0xffff00);
-                    helper.visible = false;
-                    rocketGroup.add(helper);
-
-                    rocketGroup.add(rocket);
-                    scene.add(rocketGroup);
-                    rockets.push(rocketGroup);
-
-                    rocketGroup.userData.url = position.url;
-                    rocketGroup.userData.isHovered = false;
-                },
-                undefined,
-                function (error) {
-                    console.error('Error al cargar el modelo del cohete:', error);
-                }
-            );
+                );
+            });
         }
 
-        // Crear cohetes y sus lunas correspondientes
+        // Crear cohetes
         createRocket({ x: -1, y: -0.6, z: 5, url: '/ninos' }, 0);
-        //createMoon({ x: -1, y: -0.6, z: 5 }, 0);
-        
         createRocket({ x: 0, y: -0.6, z: 5, url: '/jovenes' }, 1);
-        createMoon({ x: 0, y: -0.6, z: 5 }, 1);
-        
         createRocket({ x: 1, y: -0.6, z: 5, url: '/padres' }, 2);
-        //createMoon({ x: 1, y: -0.6, z: 5 }, 2);
 
         // Raycaster para detección de clics
         const raycaster = new THREE.Raycaster();
@@ -528,9 +795,9 @@ export default function ThreeScene({ onLoad }) {
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects([...rockets, ...moons], true);
+            const intersects = raycaster.intersectObjects(rockets, true);
 
-            // Resetear todos los cohetes y lunas
+            // Resetear todos los cohetes
             rockets.forEach(rocket => {
                 if (rocket.userData.isHovered) {
                     rocket.traverse(child => {
@@ -543,14 +810,6 @@ export default function ThreeScene({ onLoad }) {
                     });
                     rocket.userData.isHovered = false;
                 }
-            });
-
-            moons.forEach(moon => {
-                moon.traverse(child => {
-                    if (child.isMesh) {
-                        child.material.emissiveIntensity = 0.2;
-                    }
-                });
             });
 
             // Resaltar el objeto hover
@@ -567,13 +826,6 @@ export default function ThreeScene({ onLoad }) {
                         }
                     });
                     object.userData.isHovered = true;
-                } else if (moons.includes(object)) {
-                    // Es una luna
-                    object.traverse(child => {
-                        if (child.isMesh) {
-                            child.material.emissiveIntensity = 0.8;
-                        }
-                    });
                 }
                 document.body.style.cursor = 'pointer';
             } else {
@@ -705,14 +957,15 @@ export default function ThreeScene({ onLoad }) {
         window.addEventListener('mousemove', handleHover);
         window.addEventListener('click', handleClick);
         // Agregar soporte para toques en dispositivos móviles
-        window.addEventListener('touchstart', (event) => {
+        function handleTouchStart(event) {
             const touch = event.touches[0];
             const clickEvent = new MouseEvent('click', {
                 clientX: touch.clientX,
                 clientY: touch.clientY
             });
             handleClick(clickEvent);
-        });
+        }
+        window.addEventListener('touchstart', handleTouchStart);
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -729,272 +982,97 @@ export default function ThreeScene({ onLoad }) {
             const progress = Math.min(scrollY / maxScrollY, 1);
             camera.position.z = cameraStartZ + progress * (cameraEndZ - cameraStartZ);
             camera.position.y = cameraStartY + progress * (cameraEndY - cameraStartY);
-        
+            actualizarDesplazamientoFondoLargo(progress);
+
             // Mostrar los cohetes progresivamente
             const isMobile = window.innerWidth <= 768;
             const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-            rockets.forEach((rocket, index) => {
-                if (isMobile) {
-                    const threshold = maxScrollY * (0.3 + index * 0.1); // Más escalonado en móvil
-                    rocket.visible = scrollY > threshold;
-                } else if (isTablet) {
-                    const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
-                    rocket.visible = scrollY > threshold;
-                } else {
-                    const threshold = maxScrollY * 0.2; // Todos visibles al mismo tiempo
-                    rocket.visible = scrollY > threshold;
-                }
+            // maxScrollY * 0.5 = 1000 -- debe ser el mismo valor que UMBRAL_COHETES en Home.jsx
+            // (se corrió de 0.2/400 a 0.5/1000 para hacerle espacio a la fase "Anticípate..."
+            // nueva, que va entre la frase del planeta y los cohetes).
+            const UMBRAL_COHETES_SCROLL = maxScrollY * 0.5;
+            rockets.forEach((rocket) => {
+                rocket.visible = scrollY > UMBRAL_COHETES_SCROLL;
             });
         
             // Marcar que el scrolling terminó
             isScrolling = false;
         }
         
-        // Escuchar el evento de scroll
-        let isInRocketSection = false;
+        // El planeta ya no se desvanece solo con el scroll -- ahora Home.jsx manda explícitamente
+        // moveToCorner()/moveToCenter() en el momento justo de cada cambio de fase (ver fase
+        // "Anticípate..."), así que esta función ya no hace falta.
 
-        // Modificar handleScroll para ocultar/mostrar el sol y las lunas igual que el planeta
-        function handleScroll() {
-            const scrollY = window.scrollY;
-            // Verifica si el scroll ha llegado a la sección de las naves
-            if (scrollY > 500 && !isInRocketSection) {
-                isInRocketSection = true;
-                // Inicia la desaparición del planeta
-                planet.material.transparent = true;
-                planet.material.opacity = 1;
-                const fadeOutPlanet = () => {
-                    if (planet.material.opacity > 0) {
-                        planet.material.opacity -= 0.05;
-                        requestAnimationFrame(fadeOutPlanet);
-                    } else {
-                        planet.visible = false;
-                    }
-                };
-                fadeOutPlanet();
-                // --- Fade out del sol ---
-                if (sunGroup) {
-                    sunGroup.traverse((child) => {
-                        if (child.material && 'opacity' in child.material) {
-                            child.material.transparent = true;
-                            child.material.opacity = 1;
-                        }
-                    });
-                    const fadeOutSun = () => {
-                        let anyVisible = false;
-                        sunGroup.traverse((child) => {
-                            if (child.material && 'opacity' in child.material) {
-                                if (child.material.opacity > 0) {
-                                    child.material.opacity -= 0.05;
-                                    anyVisible = true;
-                                } else {
-                                    child.material.opacity = 0;
-                                }
-                            }
-                        });
-                        if (anyVisible) {
-                            requestAnimationFrame(fadeOutSun);
-                        } else {
-                            sunGroup.visible = false;
-                        }
-                    };
-                    fadeOutSun();
-                }
-                // --- Fade out de las lunas ---
-                moons.forEach((moonGroup) => {
-                    moonGroup.traverse((child) => {
-                        if (child.material && 'opacity' in child.material) {
-                            child.material.transparent = true;
-                            child.material.opacity = 1;
-                        }
-                    });
-                    const fadeOutMoon = () => {
-                        let anyVisible = false;
-                        moonGroup.traverse((child) => {
-                            if (child.material && 'opacity' in child.material) {
-                                if (child.material.opacity > 0) {
-                                    child.material.opacity -= 0.05;
-                                    anyVisible = true;
-                                } else {
-                                    child.material.opacity = 0;
-                                }
-                            }
-                        });
-                        if (anyVisible) {
-                            requestAnimationFrame(fadeOutMoon);
-                        } else {
-                            moonGroup.visible = false;
-                        }
-                    };
-                    fadeOutMoon();
-                });
-            }
-            // Restaurar el planeta, el sol y las lunas cuando el scroll vuelva a la parte superior
-            if (scrollY < 500 && isInRocketSection) {
-                isInRocketSection = false;
-                planet.visible = true;
-                planet.material.opacity = 1;
-                // --- Fade in del sol ---
-                if (sunGroup) {
-                    sunGroup.visible = true;
-                    sunGroup.traverse((child) => {
-                        if (child.material && 'opacity' in child.material) {
-                            child.material.opacity = 0;
-                            child.material.transparent = true;
-                        }
-                    });
-                    const fadeInSun = () => {
-                        let anyFading = false;
-                        sunGroup.traverse((child) => {
-                            if (child.material && 'opacity' in child.material) {
-                                if (child.material.opacity < 1) {
-                                    child.material.opacity += 0.05;
-                                    anyFading = true;
-                                } else {
-                                    child.material.opacity = 1;
-                                }
-                            }
-                        });
-                        if (anyFading) {
-                            requestAnimationFrame(fadeInSun);
-                        }
-                    };
-                    fadeInSun();
-                }
-                // --- Fade in de las lunas ---
-                moons.forEach((moonGroup) => {
-                    moonGroup.visible = true;
-                    moonGroup.traverse((child) => {
-                        if (child.material && 'opacity' in child.material) {
-                            child.material.opacity = 0;
-                            child.material.transparent = true;
-                        }
-                    });
-                    const fadeInMoon = () => {
-                        let anyFading = false;
-                        moonGroup.traverse((child) => {
-                            if (child.material && 'opacity' in child.material) {
-                                if (child.material.opacity < 1) {
-                                    child.material.opacity += 0.05;
-                                    anyFading = true;
-                                } else {
-                                    child.material.opacity = 1;
-                                }
-                            }
-                        });
-                        if (anyFading) {
-                            requestAnimationFrame(fadeInMoon);
-                        }
-                    };
-                    fadeInMoon();
-                });
-            }
-        }
-        
-        window.addEventListener('scroll', () => {
+        function handleScrollEvent() {
             scrollY = window.scrollY;
-            handleScroll();
 
             if (!isScrolling) {
                 isScrolling = true;
                 requestAnimationFrame(updateOnScroll);
             }
-        });
+        }
+        window.addEventListener('scroll', handleScrollEvent);
 
-        // Crear el sol
-        let sunGroup = null; // Referencia global al grupo del sol
-        function createSun() {
-            sunGroup = new THREE.Group();
-            const loader = new GLTFLoader();
-
-            loader.load(
-                '/assets/sun/scene.gltf',
-                function (gltf) {
-                    const sun = gltf.scene;
-                    
-                    // Ajustar la escala del sol según el dispositivo
-                    const isMobile = window.innerWidth <= 768;
-                    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-                    
-                    if (isMobile) {
-                        sun.scale.set(0.05, 0.05, 0.05);
-                    } else if (isTablet) {
-                        sun.scale.set(0.1, 0.1, 0.1);
-                    } else {
-                        sun.scale.set(0.2, 0.2, 0.2);
-                    }
-
-                    // Añadir material con efecto de resplandor
-                    sun.traverse((child) => {
-                        if (child.isMesh) {
-                            const material = new THREE.MeshStandardMaterial({
-                                ...child.material,
-                                emissive: new THREE.Color(0xffd700), // Color dorado
-                                emissiveIntensity: 1.0,
-                                roughness: 0.2,
-                                metalness: 0.8,
-                                transparent: true,
-                                opacity: 1
-                            });
-                            child.material = material;
-                        }
-                    });
-
-                    // Crear luz para el sol
-                    const sunLight = new THREE.PointLight(0xffd700, 2, 50);
-                    sunLight.position.set(0, 0, 0);
-                    sunGroup.add(sunLight);
-
-                    // Posicionar el sol en la esquina superior derecha
-                    if (isMobile) {
-                        sunGroup.position.set(5, 3, -10);
-                    } else if (isTablet) {
-                        sunGroup.position.set(8, 4, -15);
-                    } else {
-                        sunGroup.position.set(10, 5, -20);
-                    }
-
-                    sunGroup.add(sun);
-                    scene.add(sunGroup);
-                },
-                undefined,
-                function (error) {
-                    console.error('Error al cargar el modelo del sol:', error);
-                }
-            );
+        let animationFrameId;
+        // Avisa dónde quedó el planeta en la pantalla (en % de ancho/alto) y qué tan grande se ve
+        // ahora comparado con cuando se reveló -- así el texto HTML que va debajo (en Home.jsx)
+        // se puede mover/achicar junto con él y no se quedan desincronizados cuando la cámara se
+        // aleja o se vuelve a acercar con el scroll. Se llama en cada frame (no solo al scrollear)
+        // para que también se vea sincronizado durante la animación de entrada del planeta.
+        function notificarTransformPlaneta() {
+            if (!onPlanetTransformRef.current || !planet.visible) return;
+            camera.updateMatrixWorld();
+            const centro = planet.position.clone();
+            const borde = planet.position.clone();
+            borde.y -= planet.scale.y; // punto del borde inferior de la esfera, en espacio mundo
+            const ndcCentro = centro.project(camera);
+            const ndcBorde = borde.project(camera);
+            const xPct = (ndcCentro.x * 0.5 + 0.5) * 100;
+            const yPct = (1 - (ndcCentro.y * 0.5 + 0.5)) * 100;
+            // Qué tan abajo del centro queda el borde de la esfera, en % de pantalla -- así el
+            // texto se puede dejar justo debajo del planeta (no de su centro) sin importar qué
+            // tan grande se vea en ese momento.
+            const radioPct = Math.max((1 - (ndcBorde.y * 0.5 + 0.5)) * 100 - yPct, 0);
+            const distanciaActual = camera.position.distanceTo(planet.position);
+            const distanciaBase = Math.abs(cameraStartZ); // distancia cuando se revela (cámara en z=3, planeta en z=0)
+            const escala = distanciaActual > 0 ? distanciaBase / distanciaActual : 1;
+            onPlanetTransformRef.current({ xPct, yPct, radioPct, escala, opacidad: planet.material.opacity });
         }
 
-        // Crear el sol
-        createSun();
-
-        // Modificar la función animate para eliminar la animación del sol
         function animate() {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
             planet.rotation.y += 0.004;
-            animateMoons();
-            animateUFO();
+            updatePlanetReveal();
+            updateCornerMove();
             animateParticles();
-            animateMeteorite();
+            actualizarEstrellasAlternas();
+            actualizarAstronautasFlotantes();
+            notificarTransformPlaneta();
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
+        function handleResize() {
             const width = window.innerWidth;
             const height = window.innerHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
-        
-            // Recalcular posiciones de los cohetes y lunas
+            actualizarFondoLargo();
+
+            // El planeta de la esquina depende de la cámara recién actualizada, así que va después
+            realinearEsquinaSiAplica();
+
+            // Recalcular posiciones de los cohetes
             const isMobile = width <= 768;
             const isTablet = width > 768 && width <= 1024;
             
             rockets.forEach((rocket, index) => {
                 if (isMobile) {
-                    const yOffset = 0.4;
+                    const xOffset = 0.55; // Igual que en createRocket: separa en horizontal
                     rocket.position.set(
-                        0,
-                        -0.6 - index * yOffset,
-                        5 + index * 1.5
+                        (index - 1) * xOffset,
+                        -0.6,
+                        5
                     );
                 } else if (isTablet) {
                     const xOffset = 1.5;
@@ -1010,13 +1088,10 @@ export default function ThreeScene({ onLoad }) {
                         5
                     );
                 }
-                // Actualizar posición de la luna correspondiente
-                if (moons[index]) {
-                    updateMoonPosition(moons[index], index);
-                }
             });
-        });
-        
+        }
+        window.addEventListener('resize', handleResize);
+
         // Llamamos a onLoad para indicar que Three.js ha cargado y la animación ha comenzado
         if (onLoad) {
             onLoad();
@@ -1025,12 +1100,30 @@ export default function ThreeScene({ onLoad }) {
         // Iniciar la animación
         animate();
 
-        // Limpiar el renderizado al desmontar el componente
+        // Limpiar todo al desmontar el componente: sin esto, un remount (StrictMode,
+        // o cualquier cambio futuro) dejaba escuchadores y un segundo bucle de animación
+        // huérfanos corriendo para siempre, duplicando cámaras/cohetes "fantasma".
         return () => {
+            cancelAnimationFrame(animationFrameId);
+            window.removeEventListener('mousemove', handleHover);
+            window.removeEventListener('click', handleClick);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('scroll', handleScrollEvent);
+            window.removeEventListener('resize', handleResize);
+            camera.remove(fondoLargo);
+            fondoLargoGeometry.dispose();
+            fondoLargoMaterial.dispose();
+            fondoLargoTexture.dispose();
+            estrellasAlternas.forEach((estrella) => {
+                estrella.geometry.dispose();
+                estrella.material.dispose();
+            });
             document.body.removeChild(renderer.domElement);
         };
 
     }, [navigate, onLoad]); // Dependencia de onLoad para asegurarnos de que funcione correctamente
 
     return null;
-}
+});
+
+export default ThreeScene;
