@@ -1,17 +1,28 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import BackButton from '../components/BackButton';
+import VolverARoles from '../components/VolverARoles';
+import FondoUniverso from '../components/FondoUniverso';
+import { reproducirClic } from '../components/sonidos';
+import { crearLlegadaCohete } from '../components/llegadaCohete';
+import { posicionesMovilFigma, orientarGalaxiaMovil, restaurarGalaxia } from '../components/disposicionMovil';
+import ControlesSuperiores from '../components/ControlesSuperiores';
+import { crearEtiquetasGalaxias } from '../components/etiquetasGalaxias';
+
+// true cuando la página se cierra. Todos los bucles de animación y temporizadores de este archivo lo consultan y se
+// detienen: como "Volver a roles" ya no recarga la página, nada puede quedar corriendo detrás de la pantalla siguiente.
+let desmontado = false;
 
 export default function Padres() {
     useEffect(() => {
+        desmontado = false;
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // alpha: el fondo lo pone <FondoUniverso />
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
     
-        scene.background = new THREE.Color(0x000000);
+        scene.background = null; // fondo oficial: <FondoUniverso /> (antes: negro)
 
         const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
         scene.add(ambientLight);
@@ -387,11 +398,14 @@ export default function Padres() {
             const isMobile = window.innerWidth < 768; // Definir si es móvil según el ancho de la pantalla
         
             if (isMobile) {
+                // Móvil: distribución de Figma (orden de esta página: [Social, Digitales, Física, Mental]); ver disposicionMovil.js
+                const m = posicionesMovilFigma({ fov: 50, distancia: 28, radio: 5, z: -4 }).posiciones;
+                const v = (i) => new THREE.Vector3(m[i].x, m[i].y, m[i].z);
                 return [
-                    { position: new THREE.Vector3(0, 10, -4), rotation: { x: Math.PI / 5, y: 0, z: 0 } },
-                    { position: new THREE.Vector3(0, 5, -4), rotation: { x: Math.PI / 5, y: Math.PI / 2, z: 0 } },
-                    { position: new THREE.Vector3(0, -4, -4), rotation: { x: Math.PI / 17, y: Math.PI, z: 0 } },
-                    { position: new THREE.Vector3(0, -10, -4), rotation: { x: Math.PI / 20, y: -Math.PI / 2, z: 0 } },
+                    { position: v(0), rotation: { x: Math.PI / 5, y: 0, z: 0 } },
+                    { position: v(1), rotation: { x: Math.PI / 5, y: Math.PI / 2, z: 0 } },
+                    { position: v(2), rotation: { x: Math.PI / 17, y: Math.PI, z: 0 } },
+                    { position: v(3), rotation: { x: Math.PI / 20, y: -Math.PI / 2, z: 0 } },
                 ];
             } else {
                 return [
@@ -403,16 +417,23 @@ export default function Padres() {
             }
         }
         
+        // Escala de las galaxias: 1 en escritorio; en móvil la que hace caber la fila de dos galaxias
+        const escalaGalaxias = () => (window.innerWidth < 768 ? posicionesMovilFigma({ fov: 50, distancia: 28, radio: 5, z: -4 }).escala : 1);
+
         // Función para actualizar las posiciones de las galaxias
         const updateGalaxyData = () => {
             const newData = getGalaxyPositions(); // Obtener nuevos datos (posición y rotación)
             galaxies.forEach((galaxy, index) => {
                 galaxy.position.copy(newData[index].position); // Actualizar posición
+                galaxy.scale.setScalar(escalaGalaxias()); // móvil: más chicas para la distribución de Figma
                 galaxy.rotation.set(
                     newData[index].rotation.x,
                     newData[index].rotation.y,
                     newData[index].rotation.z
                 ); // Actualizar rotación
+                // móvil: proporción ovalada de la galaxia morada de referencia; escritorio: orientación original
+                if (window.innerWidth < 768) orientarGalaxiaMovil(galaxy, camera, 'y');
+                else restaurarGalaxia(galaxy);
             });
         };
 
@@ -428,6 +449,7 @@ export default function Padres() {
         initialPositions.forEach((data, index) => {
             createGalaxy(data.position, colors[index], data.rotation); // Crear galaxia con posición y rotación
         });
+        galaxies.forEach((galaxy) => galaxy.scale.setScalar(escalaGalaxias()));
 
         // Escuchar cambios de tamaño de pantalla para actualizar las posiciones de las galaxias
         window.addEventListener('resize', updateGalaxyData);
@@ -442,6 +464,10 @@ export default function Padres() {
         galaxyPositions.forEach((pos, index) => createGalaxy(pos, colors[index], rotations[index]));*/
 
         camera.position.set(0, 0, 24);
+        if (window.innerWidth < 768) galaxies.forEach((galaxy) => orientarGalaxiaMovil(galaxy, camera, 'y'));
+
+        // Llegada del cohete: oscuridad -> aproximación -> destello -> órbita (ver components/llegadaCohete.js)
+        const llegada = crearLlegadaCohete({ scene, camera, getGalaxias: () => galaxies });
 
         const highlightGalaxy = (galaxy) => {
             if (!galaxy) return;
@@ -497,7 +523,7 @@ export default function Padres() {
         
             // Animación de titilación
             const animateStars = () => {
-                requestAnimationFrame(animateStars);
+                if (!desmontado) requestAnimationFrame(animateStars);
                 starMaterial.opacity = 0.6 + Math.sin(Date.now() * 0.001) * 0.2; // Variar opacidad
             };
             animateStars();
@@ -524,7 +550,7 @@ export default function Padres() {
         
             // Animación sutil
             const animateNebula = () => {
-                requestAnimationFrame(animateNebula);
+                if (!desmontado) requestAnimationFrame(animateNebula);
                 nebula.material.opacity = 0.5 + Math.sin(Date.now() * 0.001) * 0.2; // Cambiar opacidad
             };
             animateNebula();
@@ -563,79 +589,13 @@ export default function Padres() {
         });*/
 
 
-        let selectedGalaxyIndex = -1;
-
-        // Crear contenedor de texto central responsive
-        const centralDiv = document.createElement('div');
-        centralDiv.style.position = 'absolute';
-        centralDiv.style.top = '50%';
-        centralDiv.style.left = '50%';
-        centralDiv.style.transform = 'translate(-50%, -50%)';
-        centralDiv.style.color = '#ffffff';
-        centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-        centralDiv.style.textAlign = 'center';
-        centralDiv.style.background = 'rgba(0, 0, 0, 0.4)';
-        centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-        centralDiv.style.borderRadius = '15px';
-        centralDiv.style.display = 'flex';
-        centralDiv.style.flexDirection = 'column';
-        centralDiv.style.alignItems = 'center';
-        centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-        centralDiv.style.maxWidth = '450px';
-        centralDiv.style.backdropFilter = 'blur(10px)';
-        centralDiv.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-        centralDiv.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4)';
-        document.body.appendChild(centralDiv);
-
-        const centralText = document.createElement('p');
-        centralText.textContent = "¿A dónde vamos a ir hoy? (Seleccione una de las siguientes galaxias)";
-        centralText.style.margin = '0';
-        centralText.style.fontWeight = '300';
-        centralText.style.letterSpacing = '0.5px';
-        centralText.style.lineHeight = '1.5';
-        centralDiv.appendChild(centralText);
-
-        const confirmButton = document.createElement('button');
-        confirmButton.textContent = "Confirmar";
-        confirmButton.style.marginTop = '20px';
-        confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-        confirmButton.style.background = 'linear-gradient(135deg,rgb(255, 233, 110) 0%,rgb(213, 175, 52) 50%,rgb(169, 121, 0) 100%)';
-        confirmButton.style.color = 'black';
-        confirmButton.style.border = 'none';
-        confirmButton.style.borderRadius = '8px';
-        confirmButton.style.cursor = 'pointer';
-        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '18px';
-        confirmButton.style.fontWeight = '700';
-        confirmButton.style.letterSpacing = '1px';
-        confirmButton.style.boxShadow = '0 4px 15px rgba(218, 165, 32, 0.3)';
-        confirmButton.style.transition = 'all 0.3s ease';
-        confirmButton.style.display = 'none';
-
-        confirmButton.addEventListener('mouseenter', () => {
-            confirmButton.style.transform = 'translateY(-2px)';
-            confirmButton.style.boxShadow = '0 6px 15px rgba(218, 165, 32, 0.3)';
-        });
-
-        confirmButton.addEventListener('mouseleave', () => {
-            confirmButton.style.transform = 'translateY(0)';
-            confirmButton.style.boxShadow = '0 4px 15px rgba(218, 165, 32, 0.3)';
-            gala
-        });
-
-        centralDiv.appendChild(confirmButton);
-
-        // Actualizar estilos en resize
-        window.addEventListener('resize', () => {
-            centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-            centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-            centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-            confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-            confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        });
+        // (Se eliminó el cuadro central "¿A dónde vamos a ir hoy?": las galaxias se eligen con un clic o con su etiqueta)
 
         const moveToGalaxy = (galaxy, title, url) => {
             if (isAnimating) return;
             isAnimating = true;
+            etiquetas.bloquear(); // ya no se aceptan más elecciones
+            llegada.entrarEnGalaxia(galaxy); // el cohete entra en la galaxia elegida
             
             // Hacer invisibles las galaxias no seleccionadas
             galaxies.forEach(g => {
@@ -646,15 +606,18 @@ export default function Padres() {
                 }
             });
 
-            const duration = 1.5;
+            const duration = 0.9;
             const distance = 9;
             const direction = new THREE.Vector3().subVectors(camera.position, galaxy.position).normalize();
             const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
             const startPosition = new THREE.Vector3().copy(camera.position);
             let elapsed = 0;
+            let ultimoT = performance.now();   // el avance depende del TIEMPO real, no de los frames (en pantallas de 30 fps duraba el doble)
 
             const animateMove = () => {
-                elapsed += 0.01;
+                const ahoraT = performance.now();
+                elapsed += Math.min((ahoraT - ultimoT) / 1000, 0.05);
+                ultimoT = ahoraT;
                 const t = Math.min(elapsed / duration, 1);
                 const easeT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
@@ -662,16 +625,25 @@ export default function Padres() {
                 camera.lookAt(galaxy.position);
 
                 if (t < 1) {
-                    requestAnimationFrame(animateMove);
+                    if (!desmontado) requestAnimationFrame(animateMove);
                 } else {
-                    window.location.href = url;
+                    if (!desmontado) window.location.href = url;
                 }
             };
 
             animateMove();
         };
 
+        // Etiquetas verdes de las galaxias (Figma): pulsar una también inicia la animación de entrada
+        const etiquetas = crearEtiquetasGalaxias({
+            camera,
+            getGalaxias: () => galaxies,
+            puedeMostrar: () => llegada.puedeElegir(),
+            onElegir: (i) => moveToGalaxy(galaxies[i], galaxyTitles[i], galaxyUrls[i]),
+        });
+
         const onClick = (event) => {
+            if (!llegada.puedeElegir()) return; // todavía llegando desde la oscuridad
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -688,28 +660,17 @@ export default function Padres() {
                 const galaxyIndex = galaxies.indexOf(targetGalaxy);
 
                 if (galaxyIndex !== -1) {
-                    selectedGalaxyIndex = galaxyIndex;
+                    reproducirClic(); // ABRIR-BOTON.wav al seleccionar una galaxia
 
                     galaxyMaterials[galaxyIndex].size = 0.08;
                     galaxyMaterials[galaxyIndex].opacity = 1;
 
-                    centralText.textContent = `Iremos a ${galaxyTitles[galaxyIndex]}, ¿Correcto?`;
-                    confirmButton.style.display = 'block';
+                    // Sin cuadro de confirmación: elegir la galaxia inicia directamente la animación de siempre
+                    moveToGalaxy(galaxies[galaxyIndex], galaxyTitles[galaxyIndex], galaxyUrls[galaxyIndex]);
                 }
             }
         };
         
-        confirmButton.addEventListener('click', () => {
-            if (selectedGalaxyIndex !== -1) {
-                centralDiv.style.display = 'none';
-                moveToGalaxy(galaxies[selectedGalaxyIndex], galaxyTitles[selectedGalaxyIndex], galaxyUrls[selectedGalaxyIndex]);
-                setTimeout(() => {
-                    centralDiv.style.display = 'flex'; // Mostrar el centralDiv
-                    isAnimating = false;
-                }, 900); // Retraso adicional (opcional)
-            }
-        });
-
         renderer.domElement.addEventListener('click', onClick);
         
         let speed = 0.1;
@@ -728,11 +689,12 @@ export default function Padres() {
                 trail.position.y -= speed;
 
                 if (trail.position.y > -20) {
-                    requestAnimationFrame(dropStar);
+                    if (!desmontado) requestAnimationFrame(dropStar);
                 } else {
                     trail.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
 
                     setTimeout(() => {
+                        if (desmontado) return;
                         currentStarIndex++;
                         animateShootingStar(currentStarIndex);
                     }, 500);
@@ -744,6 +706,7 @@ export default function Padres() {
 
         //Final prueba
         const animate = () => {
+            if (desmontado) return;
             requestAnimationFrame(animate);
             galaxies.forEach((galaxy, index) => {
                 const speed = 0.001 + index * 0.0003;
@@ -781,6 +744,8 @@ export default function Padres() {
                 }
             });
 
+            llegada.actualizar();
+            etiquetas.actualizar();
             renderer.render(scene, camera);
         };
 
@@ -797,17 +762,21 @@ export default function Padres() {
         });
 
         return () => {
+            desmontado = true;
+            llegada.dispose();
+            etiquetas.dispose();
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
             renderer.domElement.removeEventListener('mousemove', onMouseMove);
-            centralDiv.remove();
         };
     
     }, []);
     
     return (
         <>
-            <BackButton color={'#CCAC00'} background= {'none'}/>
+            <FondoUniverso />
+            <ControlesSuperiores />
+            <VolverARoles />
         </>
     )
 }

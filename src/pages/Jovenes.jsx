@@ -1,29 +1,32 @@
 import React, { useEffect } from 'react';
 import * as THREE from 'three';
-import BackButton from '../components/BackButton';
+import VolverARoles from '../components/VolverARoles';
+import FondoUniverso from '../components/FondoUniverso';
+import { reproducirClic } from '../components/sonidos';
+import { crearLlegadaCohete } from '../components/llegadaCohete';
+import { posicionesMovilFigma, orientarGalaxiaMovil, restaurarGalaxia } from '../components/disposicionMovil';
+import ControlesSuperiores from '../components/ControlesSuperiores';
+import { crearEtiquetasGalaxias } from '../components/etiquetasGalaxias';
 
 function App() {
     return (
-        <div className="min-h-screen bg-[#0a0014] flex items-center justify-center">
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1a0b2e] via-[#0a0014] to-[#1a0b2e] opacity-90"></div>
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `
-            radial-gradient(circle at 20% 35%, rgba(76, 0, 255, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 75% 44%, rgba(255, 0, 128, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 46% 52%, rgba(0, 255, 255, 0.15) 0%, transparent 50%)
-          `,
-                    backgroundBlendMode: 'screen'
-                }}></div>
-            </div>
+        <div className="min-h-screen flex items-center justify-center">
+            {/* Fondo oficial (antes: capas de degradado morado propias de esta página) */}
+            <FondoUniverso />
+            <ControlesSuperiores />
             <Galaxias />
-            <BackButton color={'#7b2fdd'} background= {'none'}/>
+            <VolverARoles />
         </div>
     );
 }
 
+// true cuando la página se cierra. Todos los bucles de animación y temporizadores de este archivo lo consultan y se
+// detienen: como "Volver a roles" ya no recarga la página, nada puede quedar corriendo detrás de la pantalla siguiente.
+let desmontado = false;
+
 function Galaxias() {
     useEffect(() => {
+        desmontado = false; // esta pantalla está viva: los bucles de animación pueden correr
         // Configuración inicial de Three.js
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -43,8 +46,7 @@ function Galaxias() {
         document.body.appendChild(renderer.domElement);
 
         // Fondo y luces
-        const backgroundColor = new THREE.Color('#0a0014');
-        scene.background = backgroundColor;
+        scene.background = null; // fondo oficial: <FondoUniverso /> (antes: color #0a0014)
 
         const ambientLight = new THREE.AmbientLight(0x2a1f3d, 1.5);//0x2a1f3d, 1.5
         scene.add(ambientLight);
@@ -135,7 +137,7 @@ function Galaxias() {
                 // Hacer que el anillo también rote lentamente
                 function animateRing() {
                     ring.rotation.z += 0.001;
-                    requestAnimationFrame(animateRing);
+                    if (!desmontado) requestAnimationFrame(animateRing);
                 }
                 animateRing();
             }
@@ -144,7 +146,7 @@ function Galaxias() {
             function animatePlanet() {
                 planet.rotation.y += 0.01; // Rota lentamente sobre su eje 0.002
                 planet.rotation.x += 0.01; // Rota lentamente sobre su eje 0.002
-                requestAnimationFrame(animatePlanet);
+                if (!desmontado) requestAnimationFrame(animatePlanet);
             }
             animatePlanet();
 
@@ -506,11 +508,12 @@ const animateShootingStar = (index) => {
         trail.position.y -= speed;
 
         if (trail.position.y > -20) {
-            requestAnimationFrame(dropStar);
+            if (!desmontado) requestAnimationFrame(dropStar);
         } else {
             trail.position.set(initialPosition.x, initialPosition.y, initialPosition.z);
 
             setTimeout(() => {
+                if (desmontado) return;
                 currentStarIndex++;
                 animateShootingStar(currentStarIndex);
             }, 500);
@@ -600,13 +603,9 @@ function updateShootingStars() {
         function getGalaxyPositions() {
             const isMobile = window.innerWidth < 768; // Definir si es móvil según el ancho de la pantalla
         
+            // Móvil: distribución de Figma (orden de esta página: [Social, Digitales, Física, Mental]); ver disposicionMovil.js
             return isMobile
-                ? [
-                    new THREE.Vector3(0, 10, 0),
-                    new THREE.Vector3(0, 5, 0),
-                    new THREE.Vector3(0, -4, 0),
-                    new THREE.Vector3(0, -10, 0),
-                ]
+                ? posicionesMovilFigma({ fov: 40, distancia: 36, radio: 5 }).posiciones.map((p) => new THREE.Vector3(p.x, p.y, p.z))
                 : [
                     new THREE.Vector3(-15, 1, 0),
                     new THREE.Vector3(15, 1, 0),
@@ -620,6 +619,9 @@ function updateShootingStars() {
             const newPositions = getGalaxyPositions();
             galaxies.forEach((galaxy, index) => {
                 galaxy.position.copy(newPositions[index]);
+                // móvil: proporción ovalada de la galaxia morada de referencia; escritorio: orientación original
+                if (window.innerWidth < 768) orientarGalaxiaMovil(galaxy, camera, 'y');
+                else restaurarGalaxia(galaxy);
             });
         };
 
@@ -666,73 +668,7 @@ function updateShootingStars() {
         let isAnimating = false;
 
         // Crear contenedor de texto central responsive
-        const centralDiv = document.createElement('div');
-        centralDiv.style.position = 'absolute';
-        centralDiv.style.top = '50%';
-        centralDiv.style.left = '50%';
-        centralDiv.style.transform = 'translate(-50%, -50%)';
-        centralDiv.style.color = '#ffffff';
-        centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-        centralDiv.style.textAlign = 'center';
-        centralDiv.style.background = 'linear-gradient(180deg, rgba(26, 11, 46, 0.9) 0%, rgba(10, 0, 20, 0.9) 100%)';
-        centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-        centralDiv.style.borderRadius = '15px';
-        centralDiv.style.display = 'flex';
-        centralDiv.style.flexDirection = 'column';
-        centralDiv.style.alignItems = 'center';
-        centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-        centralDiv.style.maxWidth = '450px';
-        centralDiv.style.backdropFilter = 'blur(10px)';
-        centralDiv.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-        centralDiv.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4)';
-        document.body.appendChild(centralDiv);
-
-        const centralText = document.createElement('p');
-        centralText.textContent = "¿A dónde vamos a ir hoy? (Seleccione una de las siguientes galaxias)";
-        centralText.style.margin = '0';
-        centralText.style.fontWeight = '300';
-        centralText.style.letterSpacing = '0.5px';
-        centralText.style.lineHeight = '1.5';
-        centralDiv.appendChild(centralText);
-
-        const confirmButton = document.createElement('button');
-        confirmButton.textContent = "Confirmar";
-        confirmButton.style.marginTop = '20px';
-        confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-        confirmButton.style.background = 'linear-gradient(135deg, #7b2fdd 0%, #ff3366 100%)';
-        confirmButton.style.color = 'white';
-        confirmButton.style.border = 'none';
-        confirmButton.style.borderRadius = '8px';
-        confirmButton.style.cursor = 'pointer';
-        confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '18px';
-        confirmButton.style.fontWeight = '700';
-        confirmButton.style.letterSpacing = '1px';
-        confirmButton.style.boxShadow = '0 4px 15px rgba(123, 47, 221, 0.3)';
-        confirmButton.style.transition = 'all 0.3s ease';
-        confirmButton.style.display = 'none';
-
-        confirmButton.addEventListener('mouseenter', () => {
-            confirmButton.style.transform = 'translateY(-2px)';
-            confirmButton.style.boxShadow = '0 6px 20px rgba(123, 47, 221, 0.4)';
-        });
-
-        confirmButton.addEventListener('mouseleave', () => {
-            confirmButton.style.transform = 'translateY(0)';
-            confirmButton.style.boxShadow = '0 4px 15px rgba(123, 47, 221, 0.3)';
-        });
-
-        centralDiv.appendChild(confirmButton);
-
-        // Actualizar estilos en resize
-        window.addEventListener('resize', () => {
-            centralDiv.style.fontSize = window.innerWidth < 768 ? '18px' : '24px';
-            centralDiv.style.padding = window.innerWidth < 768 ? '20px' : '30px';
-            centralDiv.style.width = window.innerWidth < 768 ? '90%' : '450px';
-            confirmButton.style.padding = window.innerWidth < 768 ? '10px 25px' : '12px 30px';
-            confirmButton.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
-        });
-
-        let selectedGalaxyIndex = -1;
+        // (Se eliminó el cuadro central "¿A dónde vamos a ir hoy?": las galaxias se eligen con un clic o con su etiqueta)
 
         const createGalaxy = (position, baseColor, rotation = { x: 0, y: 0, z: 0 }) => {
             const particles = 15000;
@@ -835,6 +771,10 @@ function updateShootingStars() {
         window.addEventListener('resize', updateGalaxyPositions);
 
         camera.position.set(0, 0, 36);
+        if (window.innerWidth < 768) galaxies.forEach((galaxy) => orientarGalaxiaMovil(galaxy, camera, 'y'));
+
+        // Llegada del cohete: oscuridad -> aproximación -> destello -> órbita (ver components/llegadaCohete.js)
+        const llegada = crearLlegadaCohete({ scene, camera, getGalaxias: () => galaxies });
         //camera.position.set(0, 0, 18);
         //camera.position.z = 30;  // Coloca la cámara más lejos de los planetas si es necesario
 
@@ -842,6 +782,8 @@ function updateShootingStars() {
         const moveToGalaxy = (galaxy, title, url) => {
             if (isAnimating) return;
             isAnimating = true;
+            etiquetas.bloquear(); // ya no se aceptan más elecciones
+            llegada.entrarEnGalaxia(galaxy); // el cohete entra en la galaxia elegida
             
             // Hacer invisibles las galaxias no seleccionadas
             galaxies.forEach(g => {
@@ -852,15 +794,18 @@ function updateShootingStars() {
                 }
             });
 
-            const duration = 1.5;
+            const duration = 0.9;
             const distance = 9;
             const direction = new THREE.Vector3().subVectors(camera.position, galaxy.position).normalize();
             const targetPosition = new THREE.Vector3().copy(galaxy.position).add(direction.multiplyScalar(distance));
             const startPosition = new THREE.Vector3().copy(camera.position);
             let elapsed = 0;
+            let ultimoT = performance.now();   // el avance depende del TIEMPO real, no de los frames (en pantallas de 30 fps duraba el doble)
 
             const animateMove = () => {
-                elapsed += 0.01;
+                const ahoraT = performance.now();
+                elapsed += Math.min((ahoraT - ultimoT) / 1000, 0.05);
+                ultimoT = ahoraT;
                 const t = Math.min(elapsed / duration, 1);
                 const easeT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
@@ -868,16 +813,25 @@ function updateShootingStars() {
                 camera.lookAt(galaxy.position);
 
                 if (t < 1) {
-                    requestAnimationFrame(animateMove);
+                    if (!desmontado) requestAnimationFrame(animateMove);
                 } else {
-                    window.location.href = url;
+                    if (!desmontado) window.location.href = url;
                 }
             };
 
             animateMove();
         };
 
+        // Etiquetas verdes de las galaxias (Figma): pulsar una también inicia la animación de entrada
+        const etiquetas = crearEtiquetasGalaxias({
+            camera,
+            getGalaxias: () => galaxies,
+            puedeMostrar: () => llegada.puedeElegir(),
+            onElegir: (i) => moveToGalaxy(galaxies[i], galaxyTitles[i], galaxyUrls[i]),
+        });
+
         const onClick = (event) => {
+            if (!llegada.puedeElegir()) return; // todavía llegando desde la oscuridad
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -894,27 +848,16 @@ function updateShootingStars() {
                 const galaxyIndex = galaxies.indexOf(targetGalaxy);
 
                 if (galaxyIndex !== -1) {
-                    selectedGalaxyIndex = galaxyIndex;
+                    reproducirClic(); // ABRIR-BOTON.wav al seleccionar una galaxia
 
                     galaxyMaterials[galaxyIndex].size = 0.08;
                     galaxyMaterials[galaxyIndex].opacity = 1;
 
-                    centralText.textContent = `Iremos a ${galaxyTitles[galaxyIndex]}, ¿Correcto?`;
-                    confirmButton.style.display = 'block';
+                    // Sin cuadro de confirmación: elegir la galaxia inicia directamente la animación de siempre
+                    moveToGalaxy(galaxies[galaxyIndex], galaxyTitles[galaxyIndex], galaxyUrls[galaxyIndex]);
                 }
             }
         };
-
-        confirmButton.addEventListener('click', () => {
-            if (selectedGalaxyIndex !== -1) {
-                centralDiv.style.display = 'none';
-                moveToGalaxy(galaxies[selectedGalaxyIndex], galaxyTitles[selectedGalaxyIndex], galaxyUrls[selectedGalaxyIndex]);
-                setTimeout(() => {
-                    centralDiv.style.display = 'flex'; // Mostrar el centralDiv
-                    isAnimating = false;
-                }, 900); // Retraso adicional (opcional)
-            }
-        });
 
         renderer.domElement.addEventListener('click', onClick);
 
@@ -930,6 +873,7 @@ function updateShootingStars() {
         let currentNebula = 0;
 
         const animate = () => {
+            if (desmontado) return;
             requestAnimationFrame(animate);
 
             // Crear una lista de velocidades únicas para cada anillo
@@ -992,18 +936,22 @@ function updateShootingStars() {
             }
 
             // Animar galaxias
+            // en móvil las galaxias se escalan para que quepan en la distribución de Figma; la "respiración" va encima
+            const escalaBase = window.innerWidth < 768 ? posicionesMovilFigma({ fov: 40, distancia: 36, radio: 5 }).escala : 1;
             galaxies.forEach((galaxy, index) => {
                 const speed = 0.0002 + index * 0.0001;
                 galaxy.rotation.y += speed;
 
                 const breathingSpeed = 0.001;
                 const breathingAmount = 0.1;
-                galaxy.scale.x = galaxy.scale.y = galaxy.scale.z = 1 + Math.sin(Date.now() * breathingSpeed) * breathingAmount;
+                galaxy.scale.x = galaxy.scale.y = galaxy.scale.z = escalaBase * (1 + Math.sin(Date.now() * breathingSpeed) * breathingAmount);
 
                 // Hacer la galaxia invisible usando la propiedad 'visible'
                 //galaxy.visible = true; // Esto ocultará el objeto sin eliminarlo de la escena
             });
 
+            llegada.actualizar();
+            etiquetas.actualizar();
             renderer.render(scene, camera);
         };
 
@@ -1011,10 +959,12 @@ function updateShootingStars() {
         animateShootingStar(currentStarIndex);
 
         return () => {
+            desmontado = true;
             window.removeEventListener('resize', updateSize);
+            llegada.dispose();
+            etiquetas.dispose();
             renderer.dispose();
             document.body.removeChild(renderer.domElement);
-            centralDiv.remove();
         };
     }, []);
 

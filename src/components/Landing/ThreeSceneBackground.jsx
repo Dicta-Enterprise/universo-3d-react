@@ -5,6 +5,7 @@ import BackButton from '../../components/BackButton';
 import DivCentral from '../../components/Planetas/DivCentral';
 import ControlButtons from '../../components/Planetas/ControlButtons';
 import InfoBox from '../../components/Planetas/InfoBox';
+import { reproducirClic } from '../../components/sonidos';
 
 const ThreeSceneBackground = ({ textures, planetUrls, showCarousel, initialPlanetIndex = 0 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialPlanetIndex); // Para el planeta principal
@@ -116,6 +117,7 @@ const ThreeSceneBackground = ({ textures, planetUrls, showCarousel, initialPlane
             // Si hay una intersección, redirigir a la URL correspondiente
             if (intersects.length > 0) {
                 const clickedPlanet = intersects[0].object;
+                reproducirClic(); // ABRIR-BOTON.wav al pulsar un planeta (esta navegación recarga la página)
                 window.location.href = clickedPlanet.userData.url;
             }
         };

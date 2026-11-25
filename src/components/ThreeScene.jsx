@@ -5,15 +5,28 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { getJourney, altoViaje, VIAJE_Y, rangoInicial, unidad, TOTAL_U } from './journey';
+import { reproducirClic, reproducirMotor, detenerMotor } from './sonidos'; // efectos de sonido // línea de tiempo compartida con SpaceJourney.jsx
 
 
 
-const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, estrellasAlternas, mostrarAstronautas }, ref) {
+const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, estrellasAlternas, mostrarAstronautas, onRocketClick }, ref) {
     const navigate = useNavigate();
     const revealPlanetRef = useRef(() => {});
     const moveToCornerRef = useRef(() => {});
     const moveToCenterRef = useRef(() => {});
     const resetIntroRef = useRef(() => {});
+    // Cohetes: preparar/cancelar/ejecutar el despegue (los llama Home.jsx a través de RocketCards)
+    const prepareLaunchRef = useRef(() => {});
+    const cancelLaunchRef = useRef(() => {});
+    const launchRef = useRef(() => 0);
+    // Secuencia de scroll del cohete elegido (giro + descenso + centrado). Los llama Home.jsx.
+    const armSequenceRef = useRef(() => {});
+    const disarmSequenceRef = useRef(() => {});
+    // Clic sobre un cohete 3D: NO abre un popup propio; avisa a Home para que use el MISMO popup
+    // de las tarjetas (así nunca hay dos popups distintos).
+    const onRocketClickRef = useRef(onRocketClick);
+    useEffect(() => { onRocketClickRef.current = onRocketClick; }, [onRocketClick]);
     // Guarda siempre la última versión de onPlanetTransform sin tener que meterla en las
     // dependencias del useEffect grande de más abajo (eso reconstruiría toda la escena 3D
     // de nuevo cada vez que Home.jsx pasara una función con identidad distinta).
@@ -34,6 +47,11 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         moveToCorner: () => moveToCornerRef.current(),
         moveToCenter: () => moveToCenterRef.current(),
         resetIntro: () => resetIntroRef.current(),
+        prepareLaunch: (index) => prepareLaunchRef.current(index),
+        cancelLaunch: () => cancelLaunchRef.current(),
+        launch: (index) => launchRef.current(index), // devuelve los ms que dura el despegue
+        armSequence: (index, startY) => armSequenceRef.current(index, startY),
+        disarmSequence: () => disarmSequenceRef.current(),
     }), []);
 
     useEffect(() => {
@@ -127,6 +145,25 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         const FONDO_LARGO_DISTANCIA = 80; // detrás del planeta/cohetes (que usan z hasta -50)
         const fondoLargoGeometry = new THREE.PlaneGeometry(1, 1);
         const fondoLargoMaterial = new THREE.MeshBasicMaterial({ map: fondoLargoTexture, depthWrite: false });
+        // Contraste del fondo (Figma): el PNG solo trae dos tonos y sus olas se ven muy sutiles. Aquí se
+        // reasignan esos dos tonos a otros con más separación (el oscuro baja al tono de las capas oscuras
+        // del Figma, #1b2362, y el claro sube un poco) para que las olas se vean más. SOLO afecta a este
+        // plano de fondo, no a los modelos. Valores RGB 0-255; cámbialos aquí para afinar.
+        const FONDO_PNG_OSCURO = [32, 40, 103];   // #202867 (tono oscuro real del PNG)
+        const FONDO_PNG_CLARO = [40, 49, 116];    // #283174 (tono claro real del PNG)
+        const FONDO_NUEVO_OSCURO = [27, 35, 98];  // #1b2362 (Figma)
+        const FONDO_NUEVO_CLARO = [46, 55, 126];  // un poco más claro que el Figma (#293074) para que se note
+        {
+            const f3 = (a) => `vec3(${a.map((v) => (v / 255).toFixed(5)).join(', ')})`;
+            const pendiente = FONDO_PNG_OSCURO.map((lo, i) =>
+                (FONDO_NUEVO_CLARO[i] - FONDO_NUEVO_OSCURO[i]) / (FONDO_PNG_CLARO[i] - lo));
+            const desplaz = FONDO_PNG_OSCURO.map((lo, i) => (FONDO_NUEVO_OSCURO[i] - lo * pendiente[i]) / 255);
+            fondoLargoMaterial.onBeforeCompile = (shader) => {
+                shader.fragmentShader = shader.fragmentShader
+                    .replace('void main() {', `const vec3 FONDO_S = ${f3(pendiente.map((v) => v * 255))};\nconst vec3 FONDO_T = ${f3(desplaz.map((v) => v * 255))};\nvoid main() {`)
+                    .replace('#include <map_fragment>', '#include <map_fragment>\n    diffuseColor.rgb = clamp(diffuseColor.rgb * FONDO_S + FONDO_T, 0.0, 1.0);');
+            };
+        }
         const fondoLargo = new THREE.Mesh(fondoLargoGeometry, fondoLargoMaterial);
         fondoLargo.position.z = -FONDO_LARGO_DISTANCIA;
         fondoLargo.renderOrder = -1; // se dibuja antes que el resto, para quedar siempre detrás
@@ -145,8 +182,15 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         actualizarFondoLargo();
 
         // progress: 0 = inicio del scroll (arriba de la imagen), 1 = final (abajo de la imagen)
+        // El desplazamiento del fondo oficial = scroll de la página (hasta 2000 px, como siempre) + un tramo extra,
+        // FONDO_PROGRESO_VIAJE, que avanza con el MISMO progreso suavizado del cohete durante el recorrido.
+        // Se reserva ese tramo (el scroll normal usa el resto) para que el fondo siga avanzando en el mismo sentido
+        // después de los 2000 px. Solo se mueve este plano de fondo: nada más de la interfaz.
+        const FONDO_PROGRESO_VIAJE = 0.08;   // fracción de la altura de la imagen que recorre durante el viaje (sutil)
+        let viajeFondo = 0;                  // 0..1: progreso del recorrido del cohete (lo actualiza actualizarCohetes)
         function actualizarDesplazamientoFondoLargo(progress) {
-            fondoLargoTexture.offset.y = (1 - fondoLargoTexture.repeat.y) * (1 - progress);
+            const p = progress * (1 - FONDO_PROGRESO_VIAJE) + FONDO_PROGRESO_VIAJE * viajeFondo;
+            fondoLargoTexture.offset.y = (1 - fondoLargoTexture.repeat.y) * (1 - p);
         }
 
         // Crea la esfera (planeta) con la textura del ícono de Mundo Dictariano
@@ -321,25 +365,39 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         const ASTRONAUTA_FLOTANTE_URL = '/assets/demo/astronauta-ejemplo-placeholder.glb';
         const astronautasFlotantes = [];
         const ASTRONAUTAS_COLORES = [0x60a5fa, 0xfb7185, 0x4ade80, 0xfbbf24]; // provisional, no son los colores finales de las mascotas
-        // Posiciones en coordenadas de PANTALLA (NDC -1..1), no del mundo 3D -- lejos del bloque
-        // de texto central (arriba y abajo de él), para que no se crucen con las letras. Se
-        // convierten a un punto del mundo 3D
-        // con screenToWorld, la misma función que ya usa el planeta para ir a la esquina -- pero
-        // OJO: hay que llamarla en el momento en que se muestran, no antes, porque la cámara se
-        // sigue moviendo con el scroll (si se calcula una sola vez al cargar la página, cuando de
-        // verdad aparecen ya no corresponde a esos NDC y vuelven a cruzarse con el texto).
-        const ASTRONAUTAS_NDC = [
-            { x: 0.72, y: 0.62 },   // arriba-derecha, encima del texto
-            { x: -0.78, y: 0.5 },   // arriba-izquierda
-            { x: -0.7, y: -0.72 },  // abajo-izquierda, debajo de los botones
-            { x: 0.76, y: -0.68 },  // abajo-derecha
+        // Posiciones FINALES en coordenadas de PANTALLA (NDC -1..1), tomadas del Figma (Frame 74):
+        //   0 = arriba-izquierda, 1 = arriba-derecha, 2 = abajo-izquierda, 3 = abajo-derecha.
+        // Quedan fuera del bloque central (título, campo, botones y guía). Se convierten al mundo 3D en
+        // CADA frame con screenToWorld (la cámara se mueve con el scroll), así la composición no se desplaza.
+        const ASTRONAUTAS_NDC_PC = [
+            { x: -0.46, y: 0.36 }, { x: 0.29, y: 0.64 }, { x: -0.65, y: -0.40 }, { x: 0.73, y: -0.32 },
+        ];
+        const ASTRONAUTAS_NDC_MOVIL = [
+            { x: -0.55, y: 0.72 }, { x: 0.6, y: 0.62 }, { x: -0.62, y: -0.78 }, { x: 0.62, y: -0.8 },
+        ];
+        // Desde dónde entran: fuera de la pantalla, hacia el borde/esquina que les corresponde (flechas del Figma)
+        const ASTRONAUTAS_ENTRADA_NDC = [
+            { x: -1.6, y: 0.9 }, { x: 1.2, y: 1.7 }, { x: -1.6, y: -1.2 }, { x: 1.6, y: -1.2 },
+        ];
+        const ASTRONAUTAS_RETRASO_MS = [0, 350, 700, 1050]; // entrada escalonada
+        const ASTRONAUTAS_ENTRADA_MS = 1800;
+        const ASTRONAUTAS_SALIDA_MS = 700;
+        // Flote en gravedad cero: cada uno con su propio ritmo (fx, fy), alcance (ax, ay) e inclinación
+        // (rx, ry, rz en radianes). Son oscilaciones leves, nunca giros completos.
+        const ASTRONAUTAS_FLOTE = [
+            { fx: 0.00031, fy: 0.00042, ax: 0.30, ay: 0.26, rx: 0.06, ry: 0.35, rz: 0.10 },
+            { fx: 0.00026, fy: 0.00036, ax: 0.36, ay: 0.30, rx: 0.07, ry: 0.30, rz: 0.08 },
+            { fx: 0.00034, fy: 0.00029, ax: 0.26, ay: 0.34, rx: 0.05, ry: 0.40, rz: 0.12 },
+            { fx: 0.00023, fy: 0.00039, ax: 0.32, ay: 0.28, rx: 0.08, ry: 0.28, rz: 0.09 },
         ];
         const ASTRONAUTA_TARGET_Z = -4;
+        const astroReducirMov = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const astroSuave = (x) => 1 - Math.pow(1 - x, 3); // easeOutCubic
 
         new GLTFLoader().load(
             ASTRONAUTA_FLOTANTE_URL,
             (gltf) => {
-                ASTRONAUTAS_NDC.forEach((ndc, i) => {
+                ASTRONAUTAS_NDC_PC.forEach((_, i) => {
                     const clon = gltf.scene.clone(true);
                     clon.traverse((child) => {
                         if (child.isMesh && child.material) {
@@ -347,12 +405,11 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
                             child.material.color.set(ASTRONAUTAS_COLORES[i]);
                         }
                     });
-                    clon.scale.setScalar(0.001); // arranca en 0 para la entrada con "pop"
+                    clon.scale.setScalar(window.innerWidth <= 700 ? 0.55 : 0.85); // misma escala de siempre
                     clon.visible = false;
-                    clon.userData.ndc = ndc;
-                    clon.userData.posicionBase = null; // se calcula al activarse, ver más abajo
                     clon.userData.fase = Math.random() * Math.PI * 2;
-                    clon.userData.escalaDestino = window.innerWidth <= 700 ? 0.55 : 0.85;
+                    clon.userData.e = 0;       // presencia 0 (fuera) .. 1 (en su sitio)
+                    clon.userData.inicio = 0;  // cuándo empieza a entrar (ms)
                     scene.add(clon);
                     astronautasFlotantes.push(clon);
                 });
@@ -362,43 +419,48 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         );
 
         let astronautasEstabanActivos = false;
+        let astroUltimoMs = performance.now();
 
+        // Un solo punto de actualización (lo llama el bucle de animación que ya existe; no hay otro bucle)
         function actualizarAstronautasFlotantes() {
             if (astronautasFlotantes.length === 0) return; // todavía cargando
             const activo = mostrarAstronautasRef.current;
             const ahora = performance.now();
+            const dtMs = Math.min(ahora - astroUltimoMs, 100);
+            astroUltimoMs = ahora;
+            const destinos = window.innerWidth <= 700 ? ASTRONAUTAS_NDC_MOVIL : ASTRONAUTAS_NDC_PC;
 
             if (activo && !astronautasEstabanActivos) {
-                // Se acaba de activar: calcula AHORA dónde cae cada NDC, con la cámara de este
-                // instante (ver nota de arriba -- esto es lo que corrige que se crucen con el texto).
-                astronautasFlotantes.forEach((a) => {
-                    a.userData.posicionBase = screenToWorld(a.userData.ndc.x, a.userData.ndc.y, ASTRONAUTA_TARGET_Z);
-                    a.position.copy(a.userData.posicionBase);
-                });
-            }
-            if (!activo && astronautasEstabanActivos) {
-                // Se acaba de apagar: reinicia la escala a 0 para que la próxima vez que se
-                // muestren, vuelvan a aparecer con el mismo "pop" de entrada, no ya grandes de golpe.
-                astronautasFlotantes.forEach((a) => a.scale.setScalar(0.001));
+                // Recién activados: cada uno programa su entrada con su retraso
+                astronautasFlotantes.forEach((a, i) => { a.userData.inicio = ahora + (astroReducirMov ? 0 : ASTRONAUTAS_RETRASO_MS[i]); });
             }
             astronautasEstabanActivos = activo;
 
-            astronautasFlotantes.forEach((a) => {
-                if (!activo) {
-                    a.visible = false;
-                    return;
+            astronautasFlotantes.forEach((a, i) => {
+                const ud = a.userData;
+                if (activo) {
+                    if (ahora >= ud.inicio) ud.e = Math.min(1, ud.e + dtMs / (astroReducirMov ? 1 : ASTRONAUTAS_ENTRADA_MS));
+                } else {
+                    ud.e = Math.max(0, ud.e - dtMs / ASTRONAUTAS_SALIDA_MS); // sale por donde entró
                 }
+                if (ud.e <= 0.001) { a.visible = false; return; }
                 a.visible = true;
-                // Flote libre alrededor de su posición base
-                const { posicionBase, fase } = a.userData;
-                a.position.x = posicionBase.x + Math.cos(ahora * 0.0003 + fase) * 0.35;
-                a.position.y = posicionBase.y + Math.sin(ahora * 0.00035 + fase) * 0.3;
-                a.rotation.y += 0.0025;
-                a.rotation.z = Math.sin(ahora * 0.0004 + fase) * 0.08;
-                // Entrada con un pequeño "pop" (como el planeta al revelarse) en vez de aparecer de golpe
-                if (a.scale.x < a.userData.escalaDestino) {
-                    a.scale.setScalar(Math.min(a.userData.escalaDestino, a.scale.x + 0.025));
-                }
+
+                const k = astroSuave(ud.e);
+                const base = screenToWorld(destinos[i].x, destinos[i].y, ASTRONAUTA_TARGET_Z);
+                const fuera = screenToWorld(ASTRONAUTAS_ENTRADA_NDC[i].x, ASTRONAUTAS_ENTRADA_NDC[i].y, ASTRONAUTA_TARGET_Z);
+                a.position.copy(base).lerp(fuera, 1 - k);
+
+                // Flote: su amplitud crece al terminar de entrar (sin tirón)
+                const f = ASTRONAUTAS_FLOTE[i];
+                const amp = k * (astroReducirMov ? 0.35 : 1);
+                a.position.x += Math.cos(ahora * f.fx + ud.fase) * f.ax * amp;
+                a.position.y += Math.sin(ahora * f.fy + ud.fase) * f.ay * amp;
+                a.rotation.set(
+                    Math.sin(ahora * f.fy * 0.8 + ud.fase) * f.rx * amp,
+                    Math.sin(ahora * f.fx * 1.1 + ud.fase * 1.3) * f.ry * amp,
+                    Math.sin(ahora * f.fx * 1.3 + ud.fase) * f.rz * amp + (1 - k) * (i % 2 ? 0.5 : -0.5), // leve giro de llegada
+                );
             });
         }
 
@@ -414,7 +476,7 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
 
         // Luz ambiental para rellenar sombras (antes no se agregaba a la escena,
         // por eso el lado sin luz directa se veía demasiado oscuro)
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Luz suave en todo el ambiente
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Luz suave en todo el ambiente
         scene.add(ambientLight);
 
         const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x333333, 0.9); // Azul cielo y gris oscuro para el suelo
@@ -683,289 +745,439 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
         const rockets = [];
 
         // Piezas del cohete infantil (Kenney Space Kit, CC0) y cómo apilarlas verticalmente
-        const PIEZAS_COHETE = [
+        /*const PIEZAS_COHETE = [
             { name: 'rocket_baseA', offsetY: 0 },
             { name: 'rocket_finsA', offsetY: 0 },
             { name: 'rocket_sidesA', offsetY: 1.15 },
             { name: 'rocket_topA', offsetY: 2.15 },
         ];
-        const CENTRO_PIEZAS_COHETE = new THREE.Vector3(-2.0, 0, -1.5);
+        const CENTRO_PIEZAS_COHETE = new THREE.Vector3(-2.0, 0, -1.5);*/
+
+        // ====================================================================
+        // CAPA DE COHETES
+        // Los cohetes se dibujan en su PROPIO canvas transparente, por encima de las tarjetas HTML
+        // (RocketCards, z-index 5). Así quedan "parados" sobre cada tarjeta como en el diseño
+        // (nariz fuera de la tarjeta, llama dentro) y el fondo de la tarjeta no los tapa.
+        // Cámara ortográfica en píxeles CSS (1 unidad = 1 px). Cada cohete se ancla a SU tarjeta
+        // leyendo su posición real en pantalla en cada frame, así el diseño se mantiene igual en
+        // celular, tablet y escritorio sin números fijos, y se mueve junto con la tarjeta.
+        // ====================================================================
+        const RUTA_MODELO_COHETE = '/assets/cohete/Cohete-AlasRojas.glb'; // public/assets/cohete/Cohete-AlasRojas.glb
+        const FLAME_NODE_NAME = 'Rocket_Flame'; // nodo de la llama dentro del GLB (pivote en la boquilla)
+        const COHETE_ALTO_REL = 0.72;   // alto del cohete (con llama en reposo) = 72% del ancho de la tarjeta
+        const COHETE_NARIZ_REL = 0.40;  // la nariz sobresale 40% del ancho de la tarjeta por encima de su borde
+        const LANZAMIENTO_MS = 1100;    // duración del despegue tras pulsar "Aceptar"
+
+        // --- SECUENCIA DE SCROLL del cohete elegido (después de cerrar el modal) -----------------
+        // Los tramos de la línea de tiempo (salida, viaje, continuación) están en journey.js.
+        // Aquí solo se define cómo se mueve el cohete:
+        //   Tramo 1 (p de 0 a 1, ver getJourney): giro de 180 grados (nariz hacia abajo, como en Figma),
+        //     descenso desde su tarjeta y desplazamiento hasta el centro de la pantalla.
+        //   Salida: sube a la zona superior central y se achica (Frame 5).
+        //   Viaje: se queda arriba al centro con un leve vaivén, hasta que SpaceJourney lleva a la página de la etapa elegida.
+        // Todo depende de ud.seqD (distancia de scroll suavizada), así que va y vuelve con el scroll.
+        const SEQ_GIRO_FIN = 0.3;
+        const SEQ_DESCENSO_INICIO = 0.2;
+        const SEQ_CENTRADO_INICIO = 0.4;
+        const SEQ_ALTO_FINAL_H = 0.36;  // alto del cohete al llegar al centro = 36% del alto de la pantalla...
+        const SEQ_ALTO_FINAL_W = 0.55;  // ...sin pasar del 55% del ancho (celulares)
+        const SEQ_VIAJE_MARGEN_SUP = 0.13;  // zona libre del viaje: empieza al 13% del alto (debajo de los íconos de arriba)...
+        const SEQ_VIAJE_MARGEN_INF = 0.02;  // ...y termina 2% del alto antes de Frutia
+        const SEQ_VIAJE_VELOCIDAD = 0.55;   // rad/s: ~11 s por ida y vuelta (más alto = más rápido)
+        const reducirMovimiento = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        let seq = null; // { index, startY } mientras hay un cohete elegido y el modal está cerrado
+        let seqDSuave = 0; // distancia de scroll suavizada, común a todos los cohetes (para ocultar los no elegidos)
+
+        const rocketRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        rocketRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        rocketRenderer.setSize(window.innerWidth, window.innerHeight);
+        Object.assign(rocketRenderer.domElement.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            zIndex: '1001',        // sobre las tarjetas (5) y sobre el fondo oscuro del popup (1000)
+            pointerEvents: 'none', // nunca captura clics: los reciben las tarjetas y los botones
+        });
+        document.body.appendChild(rocketRenderer.domElement);
+
+        const rocketScene = new THREE.Scene();
+        const rocketCamera = new THREE.OrthographicCamera(
+            -window.innerWidth / 2, window.innerWidth / 2, window.innerHeight / 2, -window.innerHeight / 2, 0.1, 3000,
+        );
+        rocketCamera.position.z = 1000;
+        // Mismas luces que la escena principal, para que el cohete se vea igual que antes
+        const rocketDirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        rocketDirLight.position.set(3, 3, 3);
+        rocketScene.add(rocketDirLight);
+        rocketScene.add(new THREE.AmbientLight(0x404040, 1.5));
+
+        let capaCohetesSucia = false; // true = hay que dibujar una última vez (para borrar) al ocultarse
+
+        // El modelo se descarga/decodifica UNA sola vez; cada cohete es un clon (comparten geometría
+        // y textura en la GPU). Antes se cargaba 3 veces.
+        const modelosCohete = new Map();
+        function cargarModeloCohete(url) {
+            if (!modelosCohete.has(url)) {
+                modelosCohete.set(url, new Promise((resolve, reject) => {
+                    new GLTFLoader().load(url, resolve, undefined, reject);
+                }));
+            }
+            return modelosCohete.get(url);
+        }
+        let escenaActiva = true; // se pone en false al desmontar, para ignorar cargas que llegan tarde
 
         function createRocket(position, index) {
-            const loader = new GLTFLoader();
             const rocketGroup = new THREE.Group();
-            const rocket = new THREE.Group(); // Ensambla las piezas del cohete
-            let piezasCargadas = 0;
+            // Dejamos el grupo en escala 0 para que la animación de aparición funcione
+            rocketGroup.scale.set(0, 0, 0);
 
-            PIEZAS_COHETE.forEach(({ name, offsetY }) => {
-                loader.load(
-                    `/assets/cohete_kenney/${name}.glb`,
-                    function (gltf) {
-                        const pieza = gltf.scene;
-                        pieza.position.add(CENTRO_PIEZAS_COHETE);
-                        pieza.position.y += offsetY;
-                        rocket.add(pieza);
+            const modelPath = position.model || RUTA_MODELO_COHETE;
 
-                        piezasCargadas++;
-                        if (piezasCargadas < PIEZAS_COHETE.length) return;
+            cargarModeloCohete(modelPath).then((gltf) => {
+                if (!escenaActiva) return;
+                const rocket = gltf.scene.clone(true);
 
-                        // Todas las piezas cargaron: ensamblar el cohete completo
-                        // Ajustar la escala del cohete según el dispositivo
-                        const isMobile = window.innerWidth <= 768;
-                        const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+                // 1. Medidas reales del modelo (así no depende de en qué unidades se exportó)
+                rocket.updateMatrixWorld(true);
+                const box = new THREE.Box3().setFromObject(rocket);
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+                const modelH = size.y > 0 ? size.y : 1;
 
-                        if (isMobile) {
-                            rocket.scale.set(0.1, 0.1, 0.1);
-                        } else if (isTablet) {
-                            rocket.scale.set(0.13, 0.13, 0.13);
-                        } else {
-                            rocket.scale.set(0.16, 0.16, 0.16);
-                        }
+                rocket.rotation.y = Math.PI;
 
-                        // Ajustar la rotación inicial
-                        rocket.rotation.y = Math.PI;
-
-                        // Agregar efecto de resplandor y materiales interactivos
-                        rocket.traverse((child) => {
-                            if (child.isMesh) {
-                                const material = new THREE.MeshStandardMaterial({
-                                    ...child.material,
-                                    emissive: new THREE.Color(0x000000),
-                                    emissiveIntensity: 0
-                                });
-                                child.material = material;
-                                child.userData.originalColor = material.color.clone();
-                            }
-                        });
-
-                        // Ajustar posición de los cohetes según el dispositivo
-                        if (isMobile) {
-                            const xOffset = 0.55; // Separa los 3 cohetes en horizontal para que no se amontonen
-                            rocketGroup.position.set(
-                                position.x * xOffset,
-                                position.y,
-                                position.z
-                            );
-                        } else if (isTablet) {
-                            const xOffset = 1.5;
-                            rocketGroup.position.set(
-                                position.x * xOffset,
-                                position.y,
-                                position.z
-                            );
-                        } else {
-                            rocketGroup.position.set(position.x, position.y, position.z);
-                        }
-
-                        // Agregar un bounding box para mejorar la detección de clics
-                        const box = new THREE.Box3().setFromObject(rocket);
-                        const helper = new THREE.Box3Helper(box, 0xffff00);
-                        helper.visible = false;
-                        rocketGroup.add(helper);
-
-                        rocketGroup.add(rocket);
-                        scene.add(rocketGroup);
-                        rockets.push(rocketGroup);
-
-                        rocketGroup.userData.url = position.url;
-                        rocketGroup.userData.isHovered = false;
-                    },
-                    undefined,
-                    function (error) {
-                        console.error(`Error al cargar la pieza del cohete (${name}):`, error);
-                    }
-                );
-            });
-        }
-
-        // Crear cohetes
-        createRocket({ x: -1, y: -0.6, z: 5, url: '/ninos' }, 0);
-        createRocket({ x: 0, y: -0.6, z: 5, url: '/jovenes' }, 1);
-        createRocket({ x: 1, y: -0.6, z: 5, url: '/padres' }, 2);
-
-        // Raycaster para detección de clics
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        // Función para manejar el hover
-        function handleHover(event) {
-            const isMobile = window.innerWidth <= 768;
-            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(rockets, true);
-
-            // Resetear todos los cohetes
-            rockets.forEach(rocket => {
-                if (rocket.userData.isHovered) {
-                    rocket.traverse(child => {
-                        if (child.isMesh && child.userData.originalColor) {
-                            child.material.color.copy(child.userData.originalColor);
-                            child.material.transparent = false;
-                            child.material.opacity = 1;
-                            child.material.emissiveIntensity = 0;
-                        }
-                    });
-                    rocket.userData.isHovered = false;
+                // 2. Nodo de la llama (nombre real del GLB; si no existe, se busca por parecido)
+                let flameNode = rocket.getObjectByName(FLAME_NODE_NAME);
+                if (!flameNode) {
+                    rocket.traverse((o) => { if (!flameNode && /flame|fire|llama|exhaust/i.test(o.name)) flameNode = o; });
                 }
-            });
+                if (!flameNode) console.warn('No se encontró el nodo de la llama (' + FLAME_NODE_NAME + ') en', modelPath);
+                const dentroDeLlama = (obj) => {
+                    for (let p = obj; p; p = p.parent) if (p === flameNode) return true;
+                    return false;
+                };
 
-            // Resaltar el objeto hover
-            if (intersects.length > 0) {
-                const object = intersects[0].object.parent;
-                if (rockets.includes(object)) {
-                    // Es un cohete
-                    object.traverse(child => {
-                        if (child.isMesh && child.userData.originalColor) {
-                            child.material.color.setHex(0xffffff);
-                            child.material.transparent = true;
-                            child.material.opacity = 1;
-                            child.material.emissiveIntensity = isMobile ? 0.8 : (isTablet ? 0.6 : 0.5);
-                        }
-                    });
-                    object.userData.isHovered = true;
-                }
-                document.body.style.cursor = 'pointer';
-            } else {
-                document.body.style.cursor = 'default';
-            }
-        }
+                // 3. Materiales (iluminación plana)
+                const flameMats = [];
+                rocket.traverse((child) => {
+                    if (!child.isMesh) return;
+                    const originalColor = child.material.color ? child.material.color.clone() : new THREE.Color(0xffffff);
 
-        // Función para manejar clics
-        function handleClick(event) {
-            const isMobile = window.innerWidth <= 768;
-            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(rockets, true);
-
-            if (intersects.length > 0) {
-                const rocket = intersects[0].object.parent;
-                
-                // Efecto visual al hacer clic
-                rocket.traverse(child => {
-                    if (child.isMesh) {
-                        const originalScale = child.scale.clone();
-                        const scaleFactor = isMobile ? 1.3 : (isTablet ? 1.25 : 1.2);
-                        child.scale.multiplyScalar(scaleFactor);
-                        setTimeout(() => {
-                            child.scale.copy(originalScale);
-                        }, 200);
+                    if (flameNode && dentroDeLlama(child)) {
+                        // Llama: sin iluminación para que siempre se vea encendida
+                        child.material = new THREE.MeshBasicMaterial({ color: 0xffffff, map: child.material.map || null, vertexColors: !!child.material.vertexColors });
+                        flameMats.push(child.material);
+                        return;
                     }
+
+                    // vertexColors: el modelo trae el color pintado en los vértices (sin texturas)
+                    child.material = new THREE.MeshLambertMaterial({
+                        color: originalColor,
+                        map: child.material.map || null,
+                        vertexColors: !!child.material.vertexColors,
+                    });
+                    child.userData.originalColor = originalColor;
                 });
 
-                // Remover cualquier popup existente
-                const existingPopup = document.querySelector('.rocket-popup');
-                if (existingPopup) {
-                    document.body.removeChild(existingPopup);
+                // 4. Agregar a la capa de cohetes
+                rocketGroup.add(rocket);
+                rocketScene.add(rocketGroup);
+                rockets.push(rocketGroup);
+
+                // 5. Datos para animaciones, anclaje a la tarjeta y clics
+                const ud = rocketGroup.userData;
+                ud.url = position.url;
+                ud.index = index;
+                ud.inner = rocket;
+                ud.modelH = modelH;
+                ud.modelCenter = center;
+                ud.modelMinY = box.min.y;
+                ud.cardEl = null;
+                ud.floteOffset = index * 2;
+                ud.isAppearing = false;
+                ud.appearTime = 0;
+                ud.hit = [0, 0, 0, 0]; // x0, y0, x1, y1 en px, para clics/hover
+                ud.anchorBottomPy = 0;
+                ud.anchorAlto = 0;
+                // Llama
+                ud.flame = flameNode || null;
+                ud.flameMats = flameMats;
+                ud.speed = 0;            // ÚNICA entrada: 0 = reposo ... 1 = despegue (la intensidad de la llama sale de aquí)
+                ud.flameIntensity = 0;   // valor suavizado
+                ud.flameClock = 0;
+                ud.flamePhase = index * 1.7; // para que las 3 llamas no pulsen sincronizadas
+                // Estado del despegue: 'reposo' -> 'prelanzamiento' (clic en Elegir) -> 'despegue' (Aceptar)
+                ud.estado = 'reposo';
+                ud.shake = 0;            // vibración suavizada 0..1
+                ud.despegueInicio = 0;
+                ud.despegueDistancia = 0;
+                ud.seqD = 0;             // distancia de scroll suavizada desde que se cerró el modal (px)
+
+                // Si la página se recargó ya pasado el umbral, no llegaría ningún scroll nuevo
+                // (la aparición se dispara en actualizarCohetes, cuando su tarjeta ya se ve)
+
+                console.log("✅ Cohete cargado:", modelPath);
+            }).catch((error) => {
+                console.error('❌ Error al cargar el cohete:', error);
+            });
+        }
+
+        // Crear cohetes (la posición ya no se define aquí: sale de cada tarjeta)
+        createRocket({ url: '/ninos', model: RUTA_MODELO_COHETE }, 0);
+        createRocket({ url: '/jovenes', model: RUTA_MODELO_COHETE }, 1);
+        createRocket({ url: '/padres', model: RUTA_MODELO_COHETE }, 2);
+
+        // --- Animación de la llama ---------------------------------------------------------
+        // flameIntensity = f(speed). Pulsa creciendo y encogiendo de forma bien visible; al subir
+        // la intensidad la llama es más larga, más rápida y más brillante. Solo escala + pequeños
+        // giros + brillo del nodo de la llama (su pivote está en la boquilla, así que no se despega).
+        // Nada de setState ni objetos nuevos por frame.
+        function actualizarLlama(ud, dt) {
+            const flame = ud.flame;
+            if (!flame) return;
+            const lerp = THREE.MathUtils.lerp;
+
+            ud.flameIntensity = THREE.MathUtils.damp(ud.flameIntensity, THREE.MathUtils.clamp(ud.speed, 0, 1), 3, dt);
+            const i = ud.flameIntensity;
+
+            // Reloj propio: al acelerar, la llama pulsa más rápido sin saltos de fase
+            ud.flameClock += dt * (1 + i * 1.3);
+            const t = ud.flameClock + ud.flamePhase;
+
+            // Pulso 0..1 (crece/encoge): tres senos con frecuencias que no son múltiplos entre sí
+            const pulso = 0.5 + 0.5 * (Math.sin(t * 5.5) * 0.55 + Math.sin(t * 8.3 + 1.0) * 0.30 + Math.sin(t * 3.1 + 2.0) * 0.15);
+            // Parpadeo rápido (-1..1)
+            const flick = Math.sin(t * 23) * 0.5 + Math.sin(t * 31.7 + 0.6) * 0.5;
+
+            const largoMin = lerp(0.55, 1.5, i);
+            const largoMax = lerp(1.35, 2.3, i);
+            const largo = lerp(largoMin, largoMax, pulso) * (1 + flick * 0.04 * (0.5 + i));
+            // Más larga = más delgada (como una llama real). Tope ~1.08: más ancha asomaría por la boquilla
+            const ancho = lerp(1.05, 0.9, pulso);
+            flame.scale.set(
+                ancho * (1 + 0.03 * Math.sin(t * 13)),
+                largo,
+                ancho * (1 + 0.03 * Math.cos(t * 11.7)),
+            );
+
+            const vaiven = lerp(0.02, 0.06, i);
+            flame.rotation.x = Math.cos(t * 7.3) * vaiven;
+            flame.rotation.z = Math.sin(t * 6.1 + 0.7) * vaiven;
+
+            // Brillo (material sin luces: color > 1 aclara hacia amarillo/blanco)
+            const brillo = 0.9 + 0.35 * pulso + 0.25 * i;
+            for (let k = 0; k < ud.flameMats.length; k++) ud.flameMats[k].color.setScalar(brillo);
+        }
+
+        // --- Anclaje a la tarjeta + flote + vibración + despegue + llama --------------------
+        function actualizarCohetes(time, dt) {
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            const ahora = performance.now();
+
+            // Los cohetes NO elegidos se encogen hasta desaparecer junto con las tarjetas (y vuelven al subir)
+            const objetivoGlobal = seq ? Math.max(window.scrollY - seq.startY, 0) : 0;
+            seqDSuave = THREE.MathUtils.damp(seqDSuave, objetivoGlobal, 10, dt);
+            const salidaGlobal = getJourney(seqDSuave, 0, H).salida;
+            // Fondo sincronizado con el recorrido: mismo progreso suavizado que el cohete (estable si el scroll se detiene,
+            // retrocede si se sube). Sin secuencia activa vuelve a 0 y el fondo solo sigue al scroll normal.
+            viajeFondo = seq ? Math.min(seqDSuave / (rangoInicial(H) + TOTAL_U * unidad(H)), 1) : 0;
+            actualizarDesplazamientoFondoLargo(Math.min(window.scrollY / maxScrollY, 1));
+
+            for (let n = 0; n < rockets.length; n++) {
+                const g = rockets[n];
+                const ud = g.userData;
+
+                // 0. Disparo de la aparición: hay scroll suficiente Y la tarjeta de este cohete ya se ve
+                // (RocketCards muestra las tarjetas una a una tras escribir el texto). Se mira la opacidad
+                // real del envoltorio de la tarjeta, así no depende de ningún aviso entre componentes.
+                if (!ud.isAppearing && g.scale.x === 0 && window.scrollY > maxScrollY * 0.5) {
+                    if (!ud.cardEl || !ud.cardEl.isConnected) {
+                        ud.cardEl = document.querySelector('[data-rocket-card="' + ud.index + '"]');
+                    }
+                    const envoltorio = ud.cardEl && ud.cardEl.parentElement;
+                    if (envoltorio && parseFloat(getComputedStyle(envoltorio).opacity) > 0.6) {
+                        ud.isAppearing = true;
+                        ud.appearTime = ahora;
+                    }
                 }
 
-                // Crear y mostrar el popup
-                const popup = document.createElement('div');
-                popup.className = 'rocket-popup';
-                popup.style.cssText = `
-                    position: fixed;
-                    top: 80%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: rgba(0, 0, 0, 0.95);
-                    padding: 30px;
-                    border: 3px solid white;
-                    border-radius: 15px;
-                    color: white;
-                    text-align: center;
-                    z-index: 1000;
-                    min-width: 300px;
-                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-                    font-family: Arial, sans-serif;
-                `;
+                // 1. Animación de aparición
+                if (ud.isAppearing) {
+                    const elapsed = ahora - ud.appearTime;
+                    const duration = 1500;
+                    const t = Math.min(Math.max(elapsed / duration, 0), 1); // elapsed < 0 = todavía en su retraso
+                    const c1 = 1.70158;
+                    const c3 = c1 + 1;
+                    const ease = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+                    g.scale.setScalar(ease * ((seq && seq.index !== ud.index) ? 1 - salidaGlobal : 1));
+                }
+                if (g.scale.x <= 0) continue;
 
-                const message = document.createElement('p');
-                message.textContent = `¿Deseas ir a ${rocket.userData.url === '/ninos' ? 'Niños' : rocket.userData.url === '/jovenes' ? 'Jóvenes' : 'Padres'}?`;
-                message.style.cssText = `
-                    margin-bottom: 25px;
-                    font-size: 1.2em;
-                    color: #FF746C;
-                `;
-                popup.appendChild(message);
+                // 2. Dónde está AHORA su tarjeta en pantalla (sigue también la animación de entrada)
+                if (!ud.cardEl || !ud.cardEl.isConnected) {
+                    ud.cardEl = document.querySelector('[data-rocket-card="' + ud.index + '"]');
+                }
+                if (!ud.cardEl) continue;
+                const r = ud.cardEl.getBoundingClientRect();
+                if (r.width === 0) continue;
 
-                const buttonContainer = document.createElement('div');
-                buttonContainer.style.cssText = `
-                    display: flex;
-                    justify-content: center;
-                    gap: 15px;
-                `;
+                const cw = r.width;
+                const cxTarjeta = r.left + cw / 2;
+                const altoTarjeta = cw * COHETE_ALTO_REL;
+                const baseTarjeta = r.top + cw * (COHETE_ALTO_REL - COHETE_NARIZ_REL); // punta de la llama en reposo
+                ud.anchorBottomPy = baseTarjeta;
+                ud.anchorAlto = altoTarjeta;
 
-                const acceptButton = document.createElement('button');
-                acceptButton.textContent = 'Aceptar';
-                acceptButton.style.cssText = `
-                    padding: 10px 25px;
-                    background: #4CAF50;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-size: 1em;
-                    transition: background 0.3s;
-                `;
-                acceptButton.onmouseover = () => {
-                    acceptButton.style.background = '#45a049';
-                };
-                acceptButton.onmouseout = () => {
-                    acceptButton.style.background = '#4CAF50';
-                };
-                acceptButton.onclick = () => {
-                    document.body.removeChild(popup);
-                    window.location.href = rocket.userData.url;
-                };
+                // 2b. Secuencia de scroll: solo el cohete elegido tiene objetivo > 0; los demás se quedan en 0.
+                // La distancia se suaviza (damp) para evitar saltos; al parar el scroll converge y queda quieto.
+                const objetivoD = (seq && seq.index === ud.index) ? Math.max(window.scrollY - seq.startY, 0) : 0;
+                ud.seqD = THREE.MathUtils.damp(ud.seqD, objetivoD, 10, dt);
+                if (Math.abs(ud.seqD - objetivoD) < 0.5) ud.seqD = objetivoD;
+                // Sonido del motor: arranca en el instante en que el cohete elegido empieza a moverse y se
+                // corta si el scroll vuelve al punto de partida (así puede volver a sonar desde el principio)
+                const enMarcha = !!seq && seq.index === ud.index && ud.seqD > 6;
+                if (enMarcha && !ud.motorSonando) { ud.motorSonando = true; reproducirMotor(); }
+                else if (!enMarcha && ud.motorSonando && ud.seqD < 1) { ud.motorSonando = false; detenerMotor(); }
+                const j = getJourney(ud.seqD, 0, H);
+                const p = j.p;
+                const clamp01 = THREE.MathUtils.clamp;
+                const giroT = easeInOutCubic(clamp01(p / SEQ_GIRO_FIN, 0, 1));
+                const yT = easeInOutCubic(clamp01((p - SEQ_DESCENSO_INICIO) / (1 - SEQ_DESCENSO_INICIO), 0, 1));
+                const xT = easeInOutCubic(clamp01((p - SEQ_CENTRADO_INICIO) / (1 - SEQ_CENTRADO_INICIO), 0, 1));
+                const altoFinal = Math.max(altoTarjeta, Math.min(H * SEQ_ALTO_FINAL_H, W * SEQ_ALTO_FINAL_W));
+                const centroTarjeta = baseTarjeta - altoTarjeta / 2;
 
-                const cancelButton = document.createElement('button');
-                cancelButton.textContent = 'Cancelar';
-                cancelButton.style.cssText = `
-                    padding: 10px 25px;
-                    background: #f44336;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-size: 1em;
-                    transition: background 0.3s;
-                `;
-                cancelButton.onmouseover = () => {
-                    cancelButton.style.background = '#da190b';
-                };
-                cancelButton.onmouseout = () => {
-                    cancelButton.style.background = '#f44336';
-                };
-                cancelButton.onclick = () => {
-                    document.body.removeChild(popup);
-                };
+                // Tramo 1: de su tarjeta al centro de la pantalla
+                let cx = cxTarjeta + (W / 2 - cxTarjeta) * xT;
+                let centroY = centroTarjeta + (H / 2 - centroTarjeta) * yT;
+                let alto = altoTarjeta + (altoFinal - altoTarjeta) * yT;
+                // Salida: del centro (grande) a arriba al centro (pequeño)
+                const sal = j.salida;
+                centroY += (H * VIAJE_Y - centroY) * sal;
+                alto += (altoViaje(W, H) - alto) * sal;
+                // Viaje: el cohete recorre de arriba a abajo (y de vuelta) TODO el espacio libre, solo en el eje Y.
+                // Zona libre = desde debajo de los íconos de la parte superior hasta justo encima de Frutia (se mide
+                // en cada frame, así se adapta a cualquier tamaño de pantalla). Movimiento senoidal = frena suave
+                // en cada extremo, y arranca desde donde ya está el cohete (se mezcla con 'sal', sin tirones).
+                if (!reducirMovimiento && sal > 0) {
+                    if (!ud.frutiaEl || !ud.frutiaEl.isConnected) ud.frutiaEl = document.querySelector('.viaje-frutia');
+                    const frutiaTop = ud.frutiaEl ? ud.frutiaEl.getBoundingClientRect().top : H * 0.82;
+                    const limiteSup = H * SEQ_VIAJE_MARGEN_SUP;                 // debajo de los íconos de arriba
+                    const limiteInf = Math.min(frutiaTop, H) - H * SEQ_VIAJE_MARGEN_INF; // encima de Frutia
+                    const medio = (limiteSup + limiteInf) / 2;
+                    const mitadRecorrido = Math.max((limiteInf - limiteSup - alto) / 2, 0); // el cohete entero cabe en la zona
+                    const yOscila = medio + Math.sin(time * SEQ_VIAJE_VELOCIDAD + ud.floteOffset) * mitadRecorrido;
+                    centroY += (yOscila - H * VIAJE_Y) * sal;
+                }
+                const anguloCohete = giroT * Math.PI; // viaje: nariz hacia abajo
+                const bottomPy = centroY + alto / 2; // base del cohete (el resto del código trabaja con la base)
 
-                buttonContainer.appendChild(acceptButton);
-                buttonContainer.appendChild(cancelButton);
-                popup.appendChild(buttonContainer);
+                // 3. Tamaño del cohete: el alto del modelo -> "alto" píxeles; origen centrado y en su base
+                const s = alto / ud.modelH;
+                ud.inner.scale.setScalar(s);
+                ud.inner.position.set(ud.modelCenter.x * s, -ud.modelMinY * s - alto / 2, ud.modelCenter.z * s); // el grupo gira sobre el CENTRO del cohete
 
-                document.body.appendChild(popup);
+                // 4. Vibración (prelanzamiento/despegue) y flote (se calma mientras vibra)
+                const shakeObjetivo = ud.estado === 'prelanzamiento' ? 1 : (ud.estado === 'despegue' ? 0.6 : 0);
+                ud.shake = THREE.MathUtils.damp(ud.shake, shakeObjetivo, 6, dt);
+                const amp = cw * 0.022 * ud.shake;
+                const dx = (Math.sin(time * 57) * 0.6 + Math.sin(time * 39.3 + 1.7) * 0.4) * amp;
+                const dyShake = (Math.sin(time * 49 + 0.8) * 0.6 + Math.sin(time * 33.1) * 0.4) * amp * 0.7;
+                const flote = Math.sin(time * 2 + ud.floteOffset) * cw * 0.045 * (1 - ud.shake) * (1 - clamp01(p * 5, 0, 1)); // se calma al empezar la secuencia
+                g.rotation.z = (Math.sin(time * 43) * 0.5 + Math.sin(time * 29 + 1) * 0.5) * 0.035 * ud.shake
+                    + anguloCohete; // viaje: gira 180 grados hasta quedar con la nariz hacia abajo (0 fuera de la secuencia)
+
+                // 5. Despegue: aceleración constante hacia arriba hasta salir de la pantalla
+                let lift = 0;
+                if (ud.estado === 'despegue') {
+                    const t = Math.min((ahora - ud.despegueInicio) / LANZAMIENTO_MS, 1);
+                    lift = ud.despegueDistancia * t * t;
+                }
+
+                const py = bottomPy + flote + dyShake - lift;
+                g.position.set(cx + dx - W / 2, H / 2 - (py - alto / 2), 0);
+
+                // 6. Zona de clic/hover (px de pantalla), algo más generosa que el cohete
+                const mitad = Math.max(alto * 0.35, 22);
+                ud.hit[0] = cx - mitad;
+                ud.hit[1] = py - alto - 8;
+                ud.hit[2] = cx + mitad;
+                ud.hit[3] = py + alto * 0.25;
+
+                // 7. Llama (en la secuencia se va alargando a medida que el cohete avanza)
+                if (ud.estado === 'reposo') ud.speed = Math.min(p * 4, 1) * 0.85;
+                actualizarLlama(ud, dt);
             }
         }
 
-        // Agregar event listeners
+        // --- Despegue: lo controla RocketCards (botón Elegir / popup) vía Home.jsx -----------
+        function buscarCohete(index) {
+            for (let n = 0; n < rockets.length; n++) if (rockets[n].userData.index === index) return rockets[n];
+            return null;
+        }
+        // Clic en "Elegir": el cohete se prepara (vibra y la llama se alarga al máximo)
+        prepareLaunchRef.current = (index) => {
+            rockets.forEach((g) => {
+                const ud = g.userData;
+                if (ud.index === index) { ud.estado = 'prelanzamiento'; ud.speed = 1; }
+                else { ud.estado = 'reposo'; ud.speed = 0; }
+            });
+        };
+        // "Cancelar": todo vuelve poco a poco a reposo
+        cancelLaunchRef.current = () => {
+            rockets.forEach((g) => { g.userData.estado = 'reposo'; g.userData.speed = 0; });
+        };
+        // "Aceptar": despega. Devuelve cuánto dura, para que RocketCards navegue justo al terminar
+        launchRef.current = (index) => {
+            const g = buscarCohete(index);
+            if (!g) return 0;
+            const ud = g.userData;
+            ud.estado = 'despegue';
+            ud.speed = 1;
+            ud.despegueInicio = performance.now();
+            reproducirMotor(); // el motor suena justo cuando empieza el despegue
+            ud.despegueDistancia = ud.anchorBottomPy + ud.anchorAlto * 0.35; // hasta que la llama larga también salga
+            return LANZAMIENTO_MS;
+        };
+
+        // Secuencia de scroll: Home.jsx la arma al cerrar el modal (con el scroll de ese momento como inicio)
+        armSequenceRef.current = (index, startY) => { seq = { index, startY }; };
+        disarmSequenceRef.current = () => { seq = null; }; // los cohetes vuelven suavemente a su tarjeta
+
+        // Hover y clic sobre los cohetes: prueba directa contra su zona en pantalla (ud.hit), más
+        // fácil de acertar con el dedo que un raycast contra un cohete de ~40px.
+        function rocketEnPunto(x, y) {
+            for (let n = 0; n < rockets.length; n++) {
+                const g = rockets[n];
+                if (g.scale.x < 0.9 || g.userData.seqD > 20) continue; // en la secuencia el cohete ya no abre el modal
+                const h = g.userData.hit;
+                if (x >= h[0] && x <= h[2] && y >= h[1] && y <= h[3]) return g;
+            }
+            return null;
+        }
+
+        function handleHover(event) {
+            const cursor = rocketEnPunto(event.clientX, event.clientY) ? 'pointer' : 'default';
+            if (document.body.style.cursor !== cursor) document.body.style.cursor = cursor;
+        }
+
+        // Clic en un cohete = lo mismo que pulsar "Elegir" en su tarjeta: se abre el ÚNICO popup
+        // (el de RocketCards). Este archivo ya no crea ningún popup propio.
+        function handleClick(event) {
+            // Los clics en botones/enlaces/popup son de la interfaz, no del cohete que quede detrás
+            if (event.target && event.target.closest && event.target.closest('button, a, input, .rocket-popup-overlay, .nave-modal-overlay')) return;
+            const g = rocketEnPunto(event.clientX, event.clientY);
+            if (g && onRocketClickRef.current) {
+                reproducirClic(); // el cohete 3D no es un elemento HTML: el escuchador global no lo ve
+                onRocketClickRef.current(g.userData.index);
+            }
+        }
+
+        // Agregar event listeners. (Se quitó el listener de touchstart que lanzaba un clic falso:
+        // en celular el toque ya genera su propio clic, así que el cohete reaccionaba DOS veces.)
         window.addEventListener('mousemove', handleHover);
         window.addEventListener('click', handleClick);
-        // Agregar soporte para toques en dispositivos móviles
-        function handleTouchStart(event) {
-            const touch = event.touches[0];
-            const clickEvent = new MouseEvent('click', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            handleClick(clickEvent);
-        }
-        window.addEventListener('touchstart', handleTouchStart);
 
         // Actualizar visibilidad y posición en función del scroll
         const maxScrollY = 2000;
@@ -992,7 +1204,18 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
             // nueva, que va entre la frase del planeta y los cohetes).
             const UMBRAL_COHETES_SCROLL = maxScrollY * 0.5;
             rockets.forEach((rocket) => {
-                rocket.visible = scrollY > UMBRAL_COHETES_SCROLL;
+                const deberiaVerse = window.scrollY > UMBRAL_COHETES_SCROLL;
+                // La aparición la dispara actualizarCohetes (cuando su tarjeta ya se ve). Aquí solo el reinicio:
+                if (!deberiaVerse) {
+                    // Si subimos el scroll, se reinician
+                    rocket.userData.isAppearing = false;
+                    rocket.scale.set(0, 0, 0);
+                    rocket.userData.estado = 'reposo';
+                    rocket.userData.speed = 0;
+                    rocket.userData.shake = 0;
+                    rocket.userData.seqD = 0;
+                    seq = null;
+                }
             });
         
             // Marcar que el scrolling terminó
@@ -1039,6 +1262,8 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
             onPlanetTransformRef.current({ xPct, yPct, radioPct, escala, opacidad: planet.material.opacity });
         }
 
+        let ultimoFrameCohetes = performance.now();
+
         function animate() {
             animationFrameId = requestAnimationFrame(animate);
             planet.rotation.y += 0.004;
@@ -1048,47 +1273,42 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
             actualizarEstrellasAlternas();
             actualizarAstronautasFlotantes();
             notificarTransformPlaneta();
+            // Tiempo global para las animaciones
+            const time = performance.now() * 0.001;
+            // Animaciones de los cohetes (anclaje a su tarjeta, flote, vibración, despegue y llama)
+            const ahoraMs = performance.now();
+            const dt = Math.min((ahoraMs - ultimoFrameCohetes) / 1000, 0.1); // segundos; tope por si la pestaña estuvo en segundo plano
+            ultimoFrameCohetes = ahoraMs;
+            actualizarCohetes(time, dt);
+
             renderer.render(scene, camera);
+
+            // Capa de cohetes: solo se dibuja si hay alguno visible (y una última vez para borrarse)
+            let hayCohetes = false;
+            for (let n = 0; n < rockets.length; n++) if (rockets[n].scale.x > 0) { hayCohetes = true; break; }
+            if (hayCohetes || capaCohetesSucia) {
+                rocketRenderer.render(rocketScene, rocketCamera);
+                capaCohetesSucia = hayCohetes;
+            }
         }
 
-        function handleResize() {
+                function handleResize() {
             const width = window.innerWidth;
             const height = window.innerHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
             actualizarFondoLargo();
-
-            // El planeta de la esquina depende de la cámara recién actualizada, así que va después
             realinearEsquinaSiAplica();
 
-            // Recalcular posiciones de los cohetes
-            const isMobile = width <= 768;
-            const isTablet = width > 768 && width <= 1024;
-            
-            rockets.forEach((rocket, index) => {
-                if (isMobile) {
-                    const xOffset = 0.55; // Igual que en createRocket: separa en horizontal
-                    rocket.position.set(
-                        (index - 1) * xOffset,
-                        -0.6,
-                        5
-                    );
-                } else if (isTablet) {
-                    const xOffset = 1.5;
-                    rocket.position.set(
-                        (index - 1) * xOffset,
-                        -0.6,
-                        5
-                    );
-                } else {
-                    rocket.position.set(
-                        index - 1,
-                        -0.6,
-                        5
-                    );
-                }
-            });
+            // Capa de cohetes: solo cambia el tamaño del lienzo; la posición de cada cohete se
+            // recalcula en cada frame a partir de su tarjeta, así que no hay nada que reubicar.
+            rocketRenderer.setSize(width, height);
+            rocketCamera.left = -width / 2;
+            rocketCamera.right = width / 2;
+            rocketCamera.top = height / 2;
+            rocketCamera.bottom = -height / 2;
+            rocketCamera.updateProjectionMatrix();
         }
         window.addEventListener('resize', handleResize);
 
@@ -1107,7 +1327,6 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
             cancelAnimationFrame(animationFrameId);
             window.removeEventListener('mousemove', handleHover);
             window.removeEventListener('click', handleClick);
-            window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('scroll', handleScrollEvent);
             window.removeEventListener('resize', handleResize);
             camera.remove(fondoLargo);
@@ -1119,6 +1338,28 @@ const ThreeScene = forwardRef(function ThreeScene({ onLoad, onPlanetTransform, e
                 estrella.material.dispose();
             });
             document.body.removeChild(renderer.domElement);
+
+            // Capa de cohetes
+            escenaActiva = false;
+            prepareLaunchRef.current = () => {};
+            cancelLaunchRef.current = () => {};
+            launchRef.current = () => 0;
+            detenerMotor();
+            armSequenceRef.current = () => {};
+            disarmSequenceRef.current = () => {};
+            rockets.forEach((g) => {
+                g.traverse((o) => { if (o.isMesh && o.material) o.material.dispose(); });
+            });
+            modelosCohete.forEach((promesa) => promesa.then((gltf) => {
+                gltf.scene.traverse((o) => {
+                    if (o.isMesh) {
+                        o.geometry.dispose();
+                        if (o.material && o.material.map) o.material.map.dispose();
+                    }
+                });
+            }).catch(() => {}));
+            rocketRenderer.dispose();
+            if (rocketRenderer.domElement.parentNode) rocketRenderer.domElement.parentNode.removeChild(rocketRenderer.domElement);
         };
 
     }, [navigate, onLoad]); // Dependencia de onLoad para asegurarnos de que funcione correctamente
