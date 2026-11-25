@@ -1,12 +1,22 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import ThreeScene from '../components/ThreeScene';
 import DemoTrajeAstronauta from '../components/DemoTrajeAstronauta';
-import IconoMundoGirando from '../components/IconoMundoGirando';
+import ControlesSuperiores from '../components/ControlesSuperiores';
+import BotonImagen from '../components/BotonImagen';
+import { VELOCIDAD_ESCRITURA_MS } from '../components/escritura';
+import RocketCards from '../components/RocketCards';
+import SpaceJourney from '../components/SpaceJourney';
+import ControlesViaje from '../components/ControlesViaje';
+import { reproducirTecla, reproducirCampana, detenerEscritura } from '../components/sonidos';
+import { bloquearScroll, liberarScroll } from '../components/bloqueoScroll';
+import { TOTAL_U } from '../components/journey';
 
 const TITULO = 'MUNDO\nDICTARIANO';
 const FRASE_PROTEGE = 'El mundo que protege a tu familia';
 const FRASE_ANTICIPATE = 'Anticípate y enfrenta los riesgos de la era digital';
-const VELOCIDAD_TIPEO_MS = 220; // Lento a propósito, efecto máquina de escribir
+const VELOCIDAD_TIPEO_MS = VELOCIDAD_ESCRITURA_MS; // velocidad central de escritura (components/escritura.js)
 const UMBRAL_REVELAR_MUNDO = 40; // Bajando: a partir de aquí se pasa a la fase 1 (ya no es por tiempo)
 const UMBRAL_VOLVER_AL_INICIO = 10; // Subiendo: por debajo de esto se reinicia todo, listo para verse de nuevo
 // Fase 2 "Anticípate..." (diseño de Figma): va DESPUÉS de la frase bajo el planeta y
@@ -18,6 +28,9 @@ const UMBRAL_VOLVER_A_FRASE = 350; // Subiendo: fase 2 -> 1 (un poco antes, mism
 // uno, hay que cambiar el otro, para que la fase y los cohetes aparezcan exactamente juntos.
 const UMBRAL_COHETES = 1000; // Bajando: fase 2 -> 3
 const UMBRAL_VOLVER_A_ANTICIPATE = 950; // Subiendo: fase 3 -> 2
+// Guía "Desliza para seguir la exploración": se oculta cuando el scroll avanza más de esto (px)
+// desde donde se cerró el modal, y vuelve a mostrarse si se regresa a ese punto.
+const GUIA_OCULTAR_PX = 30;
 
 // Escribe un texto letra por letra, arrancando cada vez que "texto" cambia (o cada vez que
 // cambia "resetKey" -- se usa para forzar que se vuelva a escribir el mismo texto, cuando el
@@ -30,6 +43,9 @@ function useMaquinaDeEscribir(texto, velocidadMs, onChar, onDone, resetKey) {
     useEffect(() => {
         setEscrito('');
         if (!texto) return; // Nada que escribir todavía (ej. esta fase no está activa)
+        // Con prefers-reduced-motion el texto se completa casi de golpe (y el scroll se libera enseguida)
+        const reducir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const intervaloMs = reducir ? 12 : velocidadMs;
         let i = 0;
         const intervalo = setInterval(() => {
             i += 1;
@@ -37,10 +53,14 @@ function useMaquinaDeEscribir(texto, velocidadMs, onChar, onDone, resetKey) {
             onChar(texto[i - 1]);
             if (i >= texto.length) {
                 clearInterval(intervalo);
+                detenerEscritura(); // último carácter escrito: el sonido de escritura se corta de inmediato
                 onDone();
             }
-        }, velocidadMs);
-        return () => clearInterval(intervalo);
+        }, intervaloMs);
+        return () => {
+            clearInterval(intervalo);
+            detenerEscritura(); // el texto se canceló o se desmontó: no debe quedar sonando
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [texto, velocidadMs, resetKey]);
 
@@ -48,6 +68,13 @@ function useMaquinaDeEscribir(texto, velocidadMs, onChar, onDone, resetKey) {
 }
 
 export default function Home() {
+    // "Volver a roles" (desde las galaxias de Niño, Joven y Padre) llega con state.seleccion: se salta la portada y se
+    // aterriza directamente en la selección de cohetes (ver el efecto "aterrizar en la selección" más abajo)
+    const location = useLocation();
+    const navigate = useNavigate();
+    const volviendoRef = useRef(!!(location.state && location.state.seleccion));
+    const aterrizoRef = useRef(false);
+
     const [loading, setLoading] = useState(true); // Secciones visibles mientras Three.js no esté listo
     // Flujo por fases, una a la vez -- nunca se ven dos juntas, cada una solo se ve mientras el
     // scroll está "ahí" (ni antes ni después), y vuelve a aparecer si se regresa a su tramo:
@@ -60,29 +87,52 @@ export default function Home() {
     // Ninguna fase desaparece por tiempo, solo por scroll. Si se regresa a una fase ya vista,
     // su texto se vuelve a escribir desde cero (no se queda a medias ni ya completo).
     const [fase, setFase] = useState(0);
-    const [tituloListo, setTituloListo] = useState(false); // Terminó de escribirse, esperando scroll
+    const [tituloListo, setTituloListo] = useState(volviendoRef.current); // Terminó de escribirse, esperando scroll
     const [tituloVersion, setTituloVersion] = useState(0); // Cambia para forzar que el título se reescriba
     const [fraseTerminada, setFraseTerminada] = useState(false); // Para mostrar "Desliza para comenzar" (fase 1)
     const [anticipateTerminado, setAnticipateTerminado] = useState(false); // Para mostrar "Desliza para comenzar" (fase 2)
+    // Bloqueo de scroll mientras se escriben los textos introductorios (ver más abajo y bloqueoScroll.js).
+    // `avanzando`: la fase actual se alcanzó bajando; al regresar hacia arriba NO se bloquea (el texto se reescribe
+    // igual, pero no se atrapa a quien está volviendo).
+    const [avanzando, setAvanzando] = useState(!volviendoRef.current); // al volver a roles no se bloquea el scroll
+    const [escribiendoCards, setEscribiendoCards] = useState(false); // el texto de las tarjetas (fase 3) se está escribiendo
     const [nombreUsuario, setNombreUsuario] = useState(''); // Campo opcional de la fase 2, todavía no se envía a ningún lado
     // Dónde quedó el planeta 3D en la pantalla ahora mismo (lo manda ThreeScene en cada frame).
     // La frase se mueve/achica siguiendo estos valores, para que no se desenganchen cuando la
     // cámara se aleja o se vuelve a acercar con el scroll.
     const [planetaTransform, setPlanetaTransform] = useState({ xPct: 50, yPct: 50, radioPct: 18, escala: 1, opacidad: 1 });
     const threeSceneRef = useRef(null);
-    const sonidoTecla = useRef(null);
-    const sonidoCampana = useRef(null);
-    // Los 2 iconos de la esquina (musica/sonido). El de sonido silencia de verdad el efecto de
-    // maquina de escribir que ya teniamos. El de musica, por ahora, solo cambia de aspecto --
-    // todavia no hay ninguna pista de musica de fondo conectada (pendiente de confirmar cual usar).
-    const [sonidoActivo, setSonidoActivo] = useState(true);
-    const [musicaActiva, setMusicaActiva] = useState(true);
+    const rocketCardsRef = useRef(null);
+    // Etapa elegida (0 = Niño, 1 = Joven, 2 = Padre). Se guarda al pulsar "Elegir" y se conserva
+    // al abrir/cerrar el modal. `secuencia` solo existe con el modal CERRADO: { index, startY }.
+    const etapaElegidaRef = useRef(null); // { index, url } -- única fuente de la etapa elegida (url sale de RocketCards)
+    // Capas que se desvanecen al salir de la pantalla de selección (SpaceJourney les escribe el opacity por ref)
+    const cardsLayerRef = useRef(null);
+    // Barra superior y pantalla "Anticípate": ControlesViaje mide los huecos de cada una para mover
+    // los botones de Historia y Personalización con el scroll
+    const barraRef = useRef(null);
+    const pantallaRef = useRef(null);
+    // Panel flotante "Ejemplo: traje personalizable" (DemoTrajeAstronauta): oculto al cargar; lo abre/cierra el
+    // icono del astronauta de la barra superior. El componente queda montado (solo se oculta) para no perder
+    // la selección de color al cerrarlo.
+    const [panelTrajeAbierto, setPanelTrajeAbierto] = useState(false);
+    const alternarPanelTraje = useCallback(() => setPanelTrajeAbierto((v) => !v), []);
+    useEffect(() => {
+        if (!panelTrajeAbierto) return undefined;
+        const alPulsar = (e) => { if (e.key === 'Escape') setPanelTrajeAbierto(false); };
+        window.addEventListener('keydown', alPulsar);
+        return () => window.removeEventListener('keydown', alPulsar);
+    }, [panelTrajeAbierto]);
+    useEffect(() => { if (fase < 2) setPanelTrajeAbierto(false); }, [fase]); // sin barra superior no hay panel
+    const demoLayerRef = useRef(null);
+    const [secuencia, setSecuencia] = useState(null);
+    const [guiaVisible, setGuiaVisible] = useState(false);
+    // Los iconos de la esquina (música / sonido / logotipo) los pinta <ControlesSuperiores />, el mismo componente que usan
+    // las páginas de Niño, Joven y Padre. El de sonido es el interruptor GLOBAL de audio (sonidos.js).
     // Botón de prueba del segundo efecto de estrellas (parpadeo) sin tocar el fondo de siempre --
     // apagado por defecto, así nadie ve nada distinto si no lo activa.
     const [estrellasAlternas, setEstrellasAlternas] = useState(false);
     // Los 4 astronautas flotando solo se ven en la fase 2 ("Anticípate...")
-    const sonidoActivoRef = useRef(sonidoActivo);
-    useEffect(() => { sonidoActivoRef.current = sonidoActivo; }, [sonidoActivo]);
     // Se actualiza DENTRO de handleScroll (no en un useEffect aparte) a propósito: un useEffect
     // solo corre después de que React vuelve a renderizar, y en ese ratito de por medio el
     // intervalo de la máquina de escribir (que sigue vivo con el valor viejo de "fase" en su
@@ -133,6 +183,9 @@ export default function Home() {
                 setAnticipateTerminado(false);
             }
 
+            if (nueva > fase) setAvanzando(true);
+            else if (nueva < fase) setAvanzando(false);
+
             faseRef.current = nueva; // sincrónico, antes que nada dependa del próximo render
             if (nueva !== fase) setFase(nueva);
         }
@@ -145,40 +198,13 @@ export default function Home() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [fase, tituloListo]);
 
-    useEffect(() => {
-        sonidoTecla.current = new Audio('/assets/sounds/typewriter-key.mp3');
-        sonidoCampana.current = new Audio('/assets/sounds/typewriter-bell.mp3');
 
-        // El navegador bloquea play() hasta que haya una interacción real del usuario (clic,
-        // toque o tecla) en la página -- por eso no se escuchaba nada: el título empieza a
-        // escribirse solo, sin que nadie haya tocado nada todavía. En cuanto pasa la primera
-        // interacción, se "desbloquean" los 2 sonidos (play + pause inmediato) para que de ahí
-        // en adelante sí suenen sin pedir otra interacción.
-        function desbloquearAudio() {
-            [sonidoTecla.current, sonidoCampana.current].forEach((audio) => {
-                audio?.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(() => {});
-            });
-        }
-        window.addEventListener('pointerdown', desbloquearAudio, { once: true });
-        window.addEventListener('keydown', desbloquearAudio, { once: true });
-        return () => {
-            window.removeEventListener('pointerdown', desbloquearAudio);
-            window.removeEventListener('keydown', desbloquearAudio);
-        };
-    }, []);
-
+    // Una pulsación por cada letra, justo cuando aparece (la llama useMaquinaDeEscribir). El silencio global lo
+    // aplica sonidos.js; el corte al terminar el texto lo hace el propio useMaquinaDeEscribir.
     const handleChar = useCallback((char) => {
-        if (!sonidoActivoRef.current) return; // Silenciado con el icono de la esquina
         if (faseRef.current === 3) return; // En cohetes no se está escribiendo nada -- no debe sonar
-        // Los navegadores pueden bloquear el audio hasta que haya una interacción del usuario;
-        // se ignora el error en vez de dejarlo romper la escritura del texto.
-        const sonido = char === '\n' ? sonidoCampana.current : sonidoTecla.current;
-        if (!sonido) return;
-        sonido.currentTime = 0;
-        sonido.play().catch(() => {});
+        if (char === '\n') reproducirCampana();
+        else reproducirTecla();
     }, []);
 
     // --- Fase 0: título -> esperar a que el usuario haga scroll ---
@@ -186,7 +212,7 @@ export default function Home() {
         setTituloListo(true);
     }, []);
 
-    const tituloEscrito = useMaquinaDeEscribir(TITULO, VELOCIDAD_TIPEO_MS, handleChar, handleTituloTerminado, tituloVersion);
+    const tituloEscrito = useMaquinaDeEscribir(volviendoRef.current ? '' : TITULO, VELOCIDAD_TIPEO_MS, handleChar, handleTituloTerminado, tituloVersion);
 
     // --- Fase 1: "El mundo que protege a tu familia" -> al terminar, muestra "Desliza para
     // comenzar". Al pasar texto de '' a FRASE_PROTEGE (y viceversa, cada vez que se entra/sale
@@ -215,10 +241,87 @@ export default function Home() {
         handleAnticipateTerminado,
     );
 
+    // --- Aterrizar en la selección de cohetes al volver desde una galaxia -------------------------------
+    // Cuando la escena 3D ya cargó, se coloca el scroll donde las tres tarjetas y sus cohetes quedan completamente a
+    // la vista. Las fases se recalculan solas con ese scroll (ya sin esperar la escritura de la portada) y se
+    // limpia el aviso de la ruta para que recargar la página no repita el salto.
+    useEffect(() => {
+        if (loading || !volviendoRef.current || aterrizoRef.current) return;
+        aterrizoRef.current = true;
+        window.scrollTo(0, UMBRAL_COHETES + 60);
+        navigate('.', { replace: true, state: null });
+    }, [loading, navigate]);
+
+    // --- Bloqueo de scroll durante la escritura de los textos introductorios -----------------------------
+    // Mientras se escribe el texto de la fase en la que está el usuario, la página no se puede desplazar
+    // (rueda, teclado, gestos táctiles ni barra). La escritura sigue sola, sin depender del scroll, y el
+    // scroll se libera automáticamente al escribirse el último carácter. Cada fase lleva su propio estado
+    // de finalización (tituloListo / fraseTerminada / anticipateTerminado / texto de las tarjetas). Salida
+    // segura: bloqueoScroll.js lo libera solo tras maxMs, aunque algo fallara.
+    const escribiendo = avanzando && (
+        (fase === 0 && !tituloListo)
+        || (fase === 1 && !fraseTerminada)
+        || (fase === 2 && !anticipateTerminado)
+        || (fase === 3 && escribiendoCards)
+    );
+    useEffect(() => {
+        if (!escribiendo) {
+            liberarScroll('escritura');
+            return undefined;
+        }
+        bloquearScroll('escritura', { maxMs: 20000 });
+        return () => liberarScroll('escritura');
+    }, [escribiendo]);
+
     // Se pasa a ThreeScene; lo llama en cada frame con dónde quedó el planeta en pantalla.
     const handlePlanetTransform = useCallback((t) => {
         setPlanetaTransform(t);
     }, []);
+
+    // --- Cohetes: modal de la nave (en RocketCards) + secuencia de scroll del cohete elegido ---
+    // Elegir -> se registra la etapa; el cohete se prepara (vibra) detrás del modal y cualquier
+    // secuencia anterior se desarma (el cohete vuelve a su tarjeta mientras el modal tapa la pantalla)
+    const handleRocketElegir = useCallback((index, url) => {
+        etapaElegidaRef.current = { index, url };
+        setSecuencia(null);
+        threeSceneRef.current?.disarmSequence();
+        threeSceneRef.current?.prepareLaunch(index);
+    }, []);
+    // Cerrar el modal -> el cohete se calma y se arma la secuencia de scroll para la etapa elegida,
+    // tomando como punto de partida el scroll de este momento (por eso no hay saltos)
+    const handleRocketCerrarModal = useCallback(() => {
+        const etapa = etapaElegidaRef.current;
+        if (!etapa) return;
+        const startY = window.scrollY;
+        threeSceneRef.current?.cancelLaunch();
+        threeSceneRef.current?.armSequence(etapa.index, startY);
+        setSecuencia({ index: etapa.index, url: etapa.url, startY });
+    }, []);
+    // Clic sobre el cohete 3D = lo mismo que pulsar "Elegir" (abre el mismo y único popup)
+    const handleRocketClick = useCallback((index) => {
+        rocketCardsRef.current?.elegir(index);
+    }, []);
+
+    // Si se sale de la fase de los cohetes (scroll hacia arriba), la selección y la secuencia se reinician
+    useEffect(() => {
+        if (fase !== 3) {
+            setSecuencia(null);
+            threeSceneRef.current?.disarmSequence();
+        }
+    }, [fase]);
+
+    // Guía "Desliza para seguir la exploración": visible con el modal cerrado y mientras el scroll
+    // no haya avanzado desde donde se cerró; desaparece cuando empieza la animación del cohete
+    useEffect(() => {
+        if (!secuencia) {
+            setGuiaVisible(false);
+            return undefined;
+        }
+        const actualizar = () => setGuiaVisible(window.scrollY - secuencia.startY < GUIA_OCULTAR_PX);
+        window.addEventListener('scroll', actualizar, { passive: true });
+        actualizar();
+        return () => window.removeEventListener('scroll', actualizar);
+    }, [secuencia]);
 
     // Función que se pasa a ThreeScene para avisar que Three.js ya está listo.
     // useCallback evita que ThreeScene reciba una referencia nueva en cada render
@@ -229,47 +332,22 @@ export default function Home() {
 
     return (
         <div className="app-container">
-            <div className="iconos-esquina">
-                <button
-                    type="button"
-                    className="icono-esquina-btn"
-                    onClick={() => setMusicaActiva((v) => !v)}
-                    aria-pressed={musicaActiva}
-                    aria-label={musicaActiva ? 'Apagar música' : 'Encender música'}
-                >
-                    <img src="/assets/icons/icono-musica.png" alt="" className={musicaActiva ? '' : 'icono-esquina-apagado'} />
-                </button>
-                <button
-                    type="button"
-                    className="icono-esquina-btn"
-                    onClick={() => setSonidoActivo((v) => !v)}
-                    aria-pressed={sonidoActivo}
-                    aria-label={sonidoActivo ? 'Silenciar sonido' : 'Activar sonido'}
-                >
-                    <img src="/assets/icons/icono-sonido.png" alt="" className={sonidoActivo ? '' : 'icono-esquina-apagado'} />
-                </button>
-                {/* Reemplaza al "mundo-badge" anterior (el que seguía la posición 3D del planeta
-                    grande mientras se desvanecía): un ícono fijo en esta fila, aparte del planeta
-                    grande que se desvanece hacia la esquina -- son esferas independientes, cada
-                    una con su propia animación. Aparece justo cuando el planeta grande ya terminó
-                    de desvanecerse. */}
-                {(fase === 2 || fase === 3) && <IconoMundoGirando />}
-            </div>
+            <ControlesSuperiores barraRef={barraRef} mundoAbierto={fase === 2 || fase === 3}>
+                {/* Huecos de Historia y Personalización (ver ControlesViaje.jsx): cerrados hasta que el scroll los abre */}
+                <div className="barra-slot" data-slot="historia" aria-hidden="true" />
+                <div className="barra-slot" data-slot="personalizar" aria-hidden="true" />
+            </ControlesSuperiores>
 
             {/* Botón de prueba: segundo efecto de estrellas (parpadeo), aparte de los iconos de
                 música/sonido para no mezclarlos -- esquina opuesta. */}
-            <button
-                type="button"
+            <BotonImagen
                 className={`icono-estrellas-btn ${estrellasAlternas ? 'icono-estrellas-btn--activo' : ''}`}
+                src="/assets/estrella.png"
                 onClick={() => setEstrellasAlternas((v) => !v)}
-                aria-pressed={estrellasAlternas}
-                aria-label={estrellasAlternas ? 'Usar fondo de estrellas normal' : 'Probar estrellas con parpadeo'}
+                pressed={estrellasAlternas}
+                etiqueta={estrellasAlternas ? 'Usar fondo de estrellas normal' : 'Probar estrellas con parpadeo'}
                 title={estrellasAlternas ? 'Estrellas: parpadeo (clic para volver al fondo normal)' : 'Probar: estrellas con parpadeo'}
-            >
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5 2.3-7.2-6-4.6h7.6z" />
-                </svg>
-            </button>
+            />
 
             <ThreeScene
                 ref={threeSceneRef}
@@ -277,8 +355,47 @@ export default function Home() {
                 onPlanetTransform={handlePlanetTransform}
                 estrellasAlternas={estrellasAlternas}
                 mostrarAstronautas={fase === 2}
+                onRocketClick={handleRocketClick}
             />
+            {/* Envoltorio con z-index 5 (el mismo de las tarjetas): al bajar su opacity no pierde su capa */}
+            <div ref={cardsLayerRef} style={{ position: 'relative', zIndex: 5 }}>
+                <RocketCards
+                    ref={rocketCardsRef}
+                    onElegir={handleRocketElegir}
+                    onCerrarModal={handleRocketCerrarModal}
+                    onEscribiendo={setEscribiendoCards}
+                    mostrarGuia={guiaVisible}
+                />
+            </div>
+            {/* Da al documento el recorrido de scroll de TODA la secuencia (scroll al cerrar el modal +
+                tramo del cohete + TOTAL_U unidades de journey.js + una pantalla). Ver journey.js. */}
+            {secuencia && createPortal(
+                <div
+                    aria-hidden="true"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: 1,
+                        height: `calc(${secuencia.startY}px + max(500px, 120vh) + ${TOTAL_U} * max(100vh, 500px) + 100vh)`,
+                        pointerEvents: 'none',
+                        visibility: 'hidden',
+                    }}
+                />,
+                document.body,
+            )}
 
+            {/* Viaje espacial -> Frutia -> fundido -> página de la etapa elegida (su galaxia y la llegada del cohete).
+                Solo existe con una etapa elegida y el modal cerrado; al subir por encima de la fase 3 se desmonta. */}
+            {secuencia && (
+                <SpaceJourney
+                    key={`${secuencia.index}-${secuencia.startY}`}
+                    startY={secuencia.startY}
+                    rutaBase={secuencia.url}
+                    cardsLayerRef={cardsLayerRef}
+                    demoLayerRef={demoLayerRef}
+                />
+            )}
             {fase === 0 && (
                 <div className="titulo-intro">
                     <span className="titulo-maquina-escribir">
@@ -313,43 +430,36 @@ export default function Home() {
             )}
 
             {fase === 2 && (
-                <div className="anticipate-pantalla">
+                <div className="anticipate-pantalla" ref={pantallaRef}>
+                    {/* El texto completo (invisible) reserva su espacio: al escribirse no se mueve nada */}
                     <span className="anticipate-titulo">
-                        {anticipateEscrito}
-                        <span className="cursor-maquina-escribir">|</span>
+                        <span className="anticipate-titulo__fantasma" aria-hidden="true">{FRASE_ANTICIPATE}</span>
+                        <span className="anticipate-titulo__texto">
+                            {anticipateEscrito}
+                            <span className="cursor-maquina-escribir">|</span>
+                        </span>
                     </span>
 
+                    {/* Campo y globos aparecen juntos cuando el título termina de escribirse (anticipateTerminado) */}
                     <input
                         type="text"
-                        className="anticipate-input"
+                        className={`anticipate-input anticipate-revelable ${anticipateTerminado ? 'anticipate-revelable--on' : ''}`}
                         placeholder="Ingresa tu nombre aquí (Opcional)"
                         value={nombreUsuario}
                         onChange={(e) => setNombreUsuario(e.target.value)}
                         maxLength={40}
+                        tabIndex={anticipateTerminado ? 0 : -1}
                     />
 
-                    <div className="anticipate-botones">
+                    <div className={`anticipate-botones anticipate-revelable ${anticipateTerminado ? 'anticipate-revelable--on' : ''}`}>
+                        {/* Los botones reales son los de ControlesViaje (flotan sobre estos huecos y luego viajan a la barra) */}
                         <div className="anticipate-boton-wrap">
                             <div className="anticipate-burbuja">¿Qué es este mundo? Descubre nuestra historia aquí</div>
-                            {/* Todavía no lleva a ningún lado -- falta que el equipo defina qué pantalla abre */}
-                            <button type="button" className="anticipate-boton" aria-label="Descubre nuestra historia">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                    <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                                    <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
-                                    <line x1="12" y1="18" x2="12" y2="22" />
-                                    <line x1="9" y1="22" x2="15" y2="22" />
-                                </svg>
-                            </button>
+                            <div className="anticipate-slot" data-slot="historia" aria-hidden="true" />
                         </div>
                         <div className="anticipate-boton-wrap">
                             <div className="anticipate-burbuja">Prepárate para el viaje. Personaliza tu traje aquí</div>
-                            {/* Todavía no lleva a ningún lado -- falta decidir si conecta con el demo de personalización */}
-                            <button type="button" className="anticipate-boton" aria-label="Personaliza tu traje">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                    <path d="M12 2a7 7 0 0 0-7 7v5a7 7 0 0 0 14 0V9a7 7 0 0 0-7-7Z" />
-                                    <path d="M5 11h14" />
-                                </svg>
-                            </button>
+                            <div className="anticipate-slot" data-slot="personalizar" aria-hidden="true" />
                         </div>
                     </div>
 
@@ -359,10 +469,28 @@ export default function Home() {
                 </div>
             )}
 
+            {(fase === 2 || fase === 3) && (
+                <ControlesViaje
+                    revelado={anticipateTerminado || fase === 3}
+                    startY={secuencia ? secuencia.startY : null}
+                    pantallaRef={pantallaRef}
+                    barraRef={barraRef}
+                    onPersonalizar={alternarPanelTraje}
+                    personalizarAbierto={panelTrajeAbierto}
+                />
+            )}
+
             {/* Demo técnico (NO es parte del flujo real): se ve al lado de los cohetes, para mostrar
                 que el color del traje sí se puede cambiar por código. Ver comentario completo en
                 DemoTrajeAstronauta.jsx. Se puede quitar borrando este bloque y el import. */}
-            {fase === 3 && <DemoTrajeAstronauta />}
+            {(fase === 2 || fase === 3) && (
+                <div ref={demoLayerRef} style={{ position: 'relative', zIndex: 5 }}>
+                    {/* Panel flotante, NO modal: sin capa oscura ni desenfoque; solo su caja recibe clics */}
+                    <div className={`panel-traje ${panelTrajeAbierto ? 'panel-traje--abierto' : ''}`} aria-hidden={!panelTrajeAbierto}>
+                        <DemoTrajeAstronauta />
+                    </div>
+                </div>
+            )}
 
             <div className={`sections-container ${!loading ? 'hidden' : ''}`}>
                 <div className="section" aria-hidden="true"></div>{/* Espaciador: mantiene "Aquí están las naves" en su mismo tramo de scroll de siempre */}

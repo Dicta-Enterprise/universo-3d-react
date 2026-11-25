@@ -1,0 +1,192 @@
+/* Pantalla interna de una galaxia (Figma "iPhone 14 & 15 Pro - 7"). Todo en vw / dvh / clamp: nada de alturas rígidas. */
+
+/* El contenido fluye: el alto lo manda el contenido (el body global mide 340vh y aquí no debe hacerlo) y el fondo oficial es fijo */
+html.pagina-flujo,
+body.pagina-flujo {
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+.gi-pantalla {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* arriba: espacio fijo para la cabecera (botón + iconos) para que no tape el título; el resto baja un poco */
+    padding: clamp(120px, 20dvh, 190px) 4vw clamp(28px, 6dvh, 64px);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* Volver a la pantalla de selección de galaxias (arriba a la izquierda): imagen public/assets/Boton-regresar.png (250x89).
+   Misma altura (--icono-top) y mismo top/left que los iconos de la derecha. Se usa .boton-imagen.gi-volver para ganarle en
+   especificidad a '.boton-imagen img { width: 100% }' de styles.css, que lo agrandaba. */
+.boton-imagen.gi-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 3;
+    display: block;
+    height: var(--icono-top, 44px);
+    width: calc(var(--icono-top, 44px) * 250 / 89);      /* ancho = alto x proporción de la imagen */
+    line-height: 0;
+}
+.boton-imagen.gi-volver img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+}
+.gi-volver:focus-visible { outline: 2px solid #33fd66; outline-offset: 3px; border-radius: 14px; }
+@media (max-width: 712px) {
+    .boton-imagen.gi-volver { top: 14px; left: 14px; }  /* igual que .iconos-esquina en móvil */
+}
+
+.gi-contenido {
+    width: min(100%, 520px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* styles.css define un h1 global (position:absolute; top/left 20px) que sacaba el título del flujo: se anula aquí */
+.gi-titulo {
+    position: static;
+    z-index: auto;
+    margin: 0;
+    text-align: center;
+    font: 700 clamp(1.7rem, 8.4vw, 2.7rem) / 1.08 'Fredoka', sans-serif;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.gi-subtitulo {
+    margin: 0.7em 0 0;
+    max-width: 74%;
+    text-align: center;
+    font: 400 clamp(0.78rem, 3.5vw, 1rem) / 1.3 'Inter', sans-serif;
+}
+
+/* Carrusel: 3 planetas + flechas. Su alto sale de su ancho (proporción de Figma 400:150) */
+.gi-carrusel {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 400 / 150;
+    margin-top: clamp(26px, 6dvh, 60px);
+}
+.gi-canvas {
+    position: absolute;
+    inset: 0;
+}
+.gi-planeta {
+    position: absolute;
+    top: 50%;
+    left: var(--x);
+    width: var(--d);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+}
+.gi-planeta:focus-visible { outline: 2px solid #33fd66; outline-offset: 3px; }
+
+.gi-flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    width: clamp(30px, 8vw, 40px);                       /* área táctil cómoda */
+    height: clamp(30px, 8vw, 40px);
+    padding: 0.28em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #33fd66;
+    border-radius: 10px;
+    background: rgba(10, 16, 48, 0.35);
+    color: #33fd66;
+    cursor: pointer;
+}
+.gi-flecha svg { width: 100%; height: 100%; }
+.gi-flecha--izq { left: 0; }
+.gi-flecha--der { right: 0; }
+.gi-flecha:disabled { opacity: 0.35; cursor: default; }
+
+/* Etiquetas bajo cada planeta: dos líneas ("Planeta" / nombre), centradas en la misma posición (--x) que su planeta
+   y pegadas a él. Los laterales tienen todos el mismo tamaño. Se suben sobre el carrusel con cqw (ancho del carrusel). */
+.gi-etiquetas {
+    container-type: inline-size;
+    position: relative;
+    width: 100%;
+    height: clamp(40px, 11vw, 56px);
+}
+.gi-etiqueta {
+    position: absolute;
+    top: -8cqw;                                      /* laterales: justo debajo de su planeta (más pequeño) */
+    left: var(--x);
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    width: 18%;                                      /* mismo ancho y alto para todos los laterales */
+    min-height: 2.5em;
+    padding: 0.3em 0.2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);      /* no elegido: discreto */
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    font: 500 clamp(0.52rem, 2.4vw, 0.72rem) / 1.15 'Fredoka', sans-serif;
+}
+.gi-etiqueta--centro {                               /* el elegido: verde, un poco mayor, pegado a su planeta */
+    top: -2.5cqw;
+    width: 30%;
+    min-height: 0;
+    padding: 0.4em 0.6em;
+    border: 0;
+    border-radius: 12px;
+    background: #33ff66;
+    color: #10163f;
+    font: 700 clamp(0.75rem, 3.5vw, 1rem) / 1.15 'Fredoka', sans-serif;
+}
+
+/* Tarjeta "Primer Vistazo": marco verde grueso con la pestaña arriba */
+.gi-vistazo {
+    position: relative;
+    box-sizing: border-box;
+    width: min(88%, 480px);
+    margin-top: clamp(40px, 9dvh, 96px);
+    padding: clamp(10px, 3.4vw, 18px);
+    border-radius: clamp(20px, 6.5vw, 32px);
+    background: #33ff66;
+}
+.gi-vistazo__tab {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0.35em 1.2em;
+    border-radius: 14px;
+    background: #33ff66;
+    color: #10163f;
+    white-space: nowrap;
+    font: 700 clamp(0.75rem, 3.4vw, 1rem) / 1.1 'Fredoka', sans-serif;
+}
+.gi-vistazo__panel {
+    border-radius: clamp(14px, 4.8vw, 24px);
+    padding: clamp(20px, 6.5vw, 36px) clamp(12px, 4vw, 26px);
+    background: #3d47b0;
+    text-align: center;
+    font: 400 clamp(0.85rem, 4vw, 1.15rem) / 1.4 'Inter', sans-serif;
+    overflow-wrap: anywhere;                             /* los textos largos nunca se salen de la tarjeta */
+}

@@ -1,4 +1,4 @@
-    body {
+body {
         margin: 0;
         overflow: auto;
         /* Subido de 200vh a 340vh: con la fase "Anticípate..." nueva de por medio, el scroll total
@@ -87,6 +87,15 @@
         font-family: 'Fredoka';
         src: url('/assets/fonts/Fredoka-VariableFont.ttf') format('truetype-variations');
         font-weight: 300 700;
+        font-display: swap;
+    }
+
+    /* Inter (variable): texto de los globos de las tarjetas. Archivo: public/assets/fonts/Inter-VariableFont_opsz,wght.ttf
+       Si tu archivo tiene otra extensión (p. ej. .woff2) o nombre, cambia solo esta ruta. */
+    @font-face {
+        font-family: 'Inter';
+        src: url('/assets/fonts/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+        font-weight: 100 900;
         font-display: swap;
     }
 
@@ -552,4 +561,394 @@
             height: 36px;
             padding: 7px;
         }
+    }
+
+    /* ==========================================================================
+       Pantalla "Anticípate" coordinada + barra superior de 5 controles
+       (ver ControlesViaje.jsx y Home.jsx). Va al final para pisar las reglas de arriba.
+       ========================================================================== */
+
+    /* Barra superior: separación uniforme. Los huecos (.barra-slot) de Historia y Personalización
+       están cerrados (ancho 0) hasta que el scroll los abre con --barra (0..1), así música y sonido
+       se desplazan poco a poco hacia la izquierda en vez de saltar. */
+    .iconos-esquina {
+        --slot-w: 44px;
+        --gap-barra: 10px;
+        gap: var(--gap-barra);
+    }
+
+    .barra-slot {
+        flex: none;
+        width: calc(var(--slot-w) * var(--barra, 0));
+        height: var(--slot-w);
+        margin-right: calc(var(--gap-barra) * (var(--barra, 0) - 1)); /* cancela el gap mientras está cerrado */
+        pointer-events: none;
+    }
+
+    /* Hueco del logotipo Mundo Dictariano: se abre solo cuando entra en la fase 2 */
+    .icono-mundo-slot {
+        flex: none;
+        display: flex;
+        justify-content: center;
+        width: 0;
+        margin-left: calc(-1 * var(--gap-barra));
+        opacity: 0;
+        transition: width 0.6s ease, margin-left 0.6s ease, opacity 0.6s ease 0.2s;
+    }
+    .icono-mundo-slot--abierto {
+        width: var(--slot-w);
+        margin-left: 0;
+        opacity: 1;
+    }
+
+    @media (max-width: 712px) {
+        .iconos-esquina {
+            --slot-w: 36px;
+            --gap-barra: 8px;
+        }
+    }
+
+    /* Título "Anticípate...": el texto completo (invisible) reserva el espacio, el que se escribe se
+       superpone en la misma celda -- así nada se mueve mientras se escribe. */
+    .anticipate-titulo {
+        display: grid;
+        justify-items: center;
+    }
+    .anticipate-titulo > span {
+        grid-area: 1 / 1;
+        text-align: center;
+    }
+    .anticipate-titulo__fantasma {
+        visibility: hidden;
+    }
+
+    /* Campo de nombre y globos: aparecen juntos (opacidad + desplazamiento) cuando el título termina */
+    .anticipate-revelable {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .anticipate-revelable--on {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Hueco donde "vive" cada botón en la pantalla Anticípate (el botón real es ControlesViaje) */
+    .anticipate-slot {
+        width: 56px;
+        height: 56px;
+    }
+
+    /* La guía llega un poco después del conjunto (campo + botones) */
+    .anticipate-guia--visible {
+        transition: opacity 0.6s ease 0.7s;
+    }
+
+    /* Botones de Historia y Personalización (capa fija que viaja a la barra con el scroll).
+       Estructura: .control-viaje (posición/escala por scroll) > .control-viaje__reveal (aparición)
+       > botón (pulsación). Cada transformación está en un nivel distinto para no pisarse. */
+    .control-viaje {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 6;
+        transform-origin: 0 0;
+        will-change: transform;
+        pointer-events: none;
+        visibility: hidden; /* hasta el primer cálculo de posición (ControlesViaje) */
+    }
+    /* Solo opacidad: el desplazamiento suave ya lo trae el hueco donde se apoya (.anticipate-revelable) */
+    .control-viaje__reveal {
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+    .control-viaje__reveal--on {
+        opacity: 1;
+    }
+    .control-viaje__boton {
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border: none;
+        background: none;       /* el PNG ya trae su marco, igual que icono-musica.png */
+        line-height: 0;
+        cursor: pointer;
+        pointer-events: auto;
+        animation: control-latido 2s ease-in-out infinite; /* pulsación sutil: escala + brillo */
+    }
+    .control-viaje__boton img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+        user-select: none;
+    }
+    .control-viaje--quieto .control-viaje__boton {
+        animation: none; /* ya en la barra, junto a música y sonido */
+    }
+    .control-viaje + .control-viaje .control-viaje__boton {
+        animation-delay: 0.25s; /* el segundo, ligeramente desfasado */
+    }
+
+    @keyframes control-latido {
+        0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 0 rgba(51, 253, 102, 0)); }
+        50%      { transform: scale(1.07); filter: drop-shadow(0 0 8px rgba(51, 253, 102, 0.55)); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .control-viaje__boton, .anticipate-guia--visible { animation: none; }
+        .anticipate-revelable, .control-viaje__reveal, .icono-mundo-slot { transition-duration: 0.01s; transition-delay: 0s; }
+    }
+
+    /* ==========================================================================
+       Ajuste visual a Figma (pantalla de inicio): iconos superiores iguales, iconos centrales
+       más grandes y sin fondo, y botón de estrella con el mismo estilo neón.
+       Todos los tamaños salen de DOS variables -- cámbialas aquí y todo escala junto.
+       ========================================================================== */
+    :root {
+        --icono-top: 44px;      /* música, sonido, mundo y los huecos de la barra: mismo tamaño exacto */
+        --icono-central: 68px;  /* historia, personalización y estrella (Figma: ~1.5x los de arriba) */
+        --neon: #33fd66;
+    }
+    @media (max-width: 712px) {
+        :root {
+            --icono-top: 36px;
+            --icono-central: 56px;
+        }
+    }
+
+    /* 1. Iconos superiores: la misma caja para los tres, alineados arriba y con el mismo espacio */
+    .iconos-esquina {
+        --slot-w: var(--icono-top);
+        align-items: flex-start;
+    }
+    .icono-esquina-btn {
+        flex: none;
+        width: var(--icono-top);
+        height: var(--icono-top);
+    }
+    .icono-esquina-btn img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .icono-mundo-girando {
+        flex: none;
+    }
+    .icono-mundo-girando-canvas {
+        width: var(--icono-top);
+        height: var(--icono-top);
+    }
+
+    /* 2. Iconos centrales (Historia / Personalización): más grandes, mismo tamaño exacto, sin fondo
+       y con brillo neón. El PNG trae un fondo azul opaco: el filtro #icono-sin-fondo (en
+       ControlesViaje.jsx) lo vuelve transparente y deja solo el marco y el dibujo verdes. */
+    .anticipate-slot {
+        width: var(--icono-central);
+        height: var(--icono-central);
+    }
+    .control-viaje__boton {
+        width: var(--icono-central);
+        height: var(--icono-central);
+        background: transparent;
+        border-radius: 24%;
+        filter: drop-shadow(0 0 5px rgba(51, 253, 102, 0.65)); /* brillo neón permanente */
+    }
+    .control-viaje__boton img {
+        filter: url(#icono-sin-fondo);
+    }
+    .control-viaje--quieto .control-viaje__boton {
+        filter: drop-shadow(0 0 4px rgba(51, 253, 102, 0.55));
+    }
+    @keyframes control-latido {
+        0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 5px rgba(51, 253, 102, 0.6)); }
+        50%      { transform: scale(1.06); filter: drop-shadow(0 0 13px rgba(51, 253, 102, 0.95)); }
+    }
+
+    /* 4. Botón de estrella (arriba a la izquierda): conserva su tamaño de siempre (44px; 36px en móvil,
+       igual que música y sonido), pero con borde neón y brillo como los iconos centrales.
+       Apagado = brillo suave y estrella gris; activo = brillo fuerte y estrella verde. */
+    .icono-estrellas-btn {
+        top: 20px;
+        left: 20px;
+        width: var(--icono-top);
+        height: var(--icono-top);
+        padding: calc(var(--icono-top) * 0.2);
+        box-sizing: border-box;
+        background: transparent;
+        border: 2px solid var(--neon);
+        border-radius: 24%;
+        box-shadow: 0 0 8px rgba(51, 253, 102, 0.5), inset 0 0 8px rgba(51, 253, 102, 0.2);
+    }
+    .icono-estrellas-btn--activo {
+        border-color: var(--neon);
+        box-shadow: 0 0 16px rgba(51, 253, 102, 0.9), inset 0 0 10px rgba(51, 253, 102, 0.4);
+    }
+    @media (max-width: 712px) {
+        .icono-estrellas-btn {
+            top: 14px;
+            left: 14px;
+        }
+    }
+
+    /* ==========================================================================
+       Ajuste de tamaño de los iconos de Historia / Personalización y panel del traje
+       ========================================================================== */
+
+    /* Los PNG de estos dos iconos traen un margen transparente alrededor del marco verde (el marco ocupa
+       ~2/3 del archivo), por eso se veían mucho más chicos que música y sonido aunque su caja midiera
+       lo mismo. --icono-zoom agranda SOLO el dibujo dentro de la caja: el marco queda del tamaño de la caja.
+       Si el marco se ve más chico/grande que música y sonido, ajusta este número (1 = sin compensar). */
+    :root {
+        --icono-zoom: 1.5;
+        --icono-central: 66px;
+    }
+    .control-viaje__boton {
+        position: relative;
+    }
+    .control-viaje__boton img {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: calc(100% * var(--icono-zoom));
+        height: calc(100% * var(--icono-zoom));
+        max-width: none;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+    .control-viaje__boton--activo {
+        filter: drop-shadow(0 0 9px rgba(51, 253, 102, 0.95));
+    }
+    @media (max-width: 712px) {
+        :root {
+            --icono-central: 56px;
+        }
+    }
+
+    /* Panel flotante del traje (abre/cierra el icono del astronauta). La caja .demo-traje ya era
+       position: fixed abajo-izquierda: aquí solo se oculta/aparece con opacidad y desplazamiento.
+       NO hay capa oscura ni desenfoque, y cerrado no recibe clics (visibility: hidden). La transición va
+       en .demo-traje y NO en el envoltorio: un transform en el envoltorio rompería su position: fixed. */
+    .panel-traje {
+        visibility: hidden;
+        transition: visibility 0s linear 0.3s;
+    }
+    .panel-traje--abierto {
+        visibility: visible;
+        transition-delay: 0s;
+    }
+    .panel-traje .demo-traje {
+        opacity: 0;
+        transform: translateY(14px) scale(0.96);
+        transform-origin: bottom left;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .panel-traje--abierto .demo-traje {
+        opacity: 1;
+        transform: none;
+    }
+    @media (max-width: 600px) {
+        .panel-traje .demo-traje {
+            box-sizing: border-box;
+            max-width: calc(100vw - 28px);
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .panel-traje, .panel-traje .demo-traje { transition-duration: 0.01s; transition-delay: 0s; }
+    }
+
+    /* ==========================================================================
+       Páginas de una sola pantalla fija (por ahora /ninos): ocupan exactamente la ventana, sin scroll
+       horizontal ni vertical. Se activan añadiendo la clase "pagina-sin-scroll" a <html> y <body>
+       (lo hace la propia página al montarse y la quita al salir). Gana al `body { height: 340vh }`
+       global porque tiene más especificidad (clase + elemento).
+       ========================================================================== */
+    html.pagina-sin-scroll,
+    body.pagina-sin-scroll {
+        width: 100%;
+        max-width: 100vw;
+        height: 100vh;      /* respaldo para navegadores sin dvh */
+        height: 100dvh;     /* alto visible real (en móvil descuenta la barra del navegador) */
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+    body.pagina-sin-scroll {
+        position: relative;
+        touch-action: none; /* en pantallas táctiles no se desplaza nada (los toques sí siguen funcionando) */
+    }
+
+    /* ==========================================================================
+       Botones hechos con imágenes ya diseñadas (BotonImagen.jsx): <button> real con la imagen dentro.
+       La imagen conserva su proporción; no se le añade texto ni color.
+       ========================================================================== */
+    .boton-imagen {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background: none;
+        line-height: 0;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .boton-imagen img {
+        display: block;
+        width: 100%;
+        height: auto;
+        user-select: none;
+        -webkit-user-drag: none;
+        pointer-events: none;      /* el clic siempre lo recibe el botón, no la imagen */
+    }
+    .boton-imagen:hover { transform: scale(1.05); filter: brightness(1.12) drop-shadow(0 0 8px rgba(51, 253, 102, 0.55)); }
+    .boton-imagen:active { transform: scale(0.96); }
+    .boton-imagen:focus-visible { outline: 2px solid #33fd66; outline-offset: 3px; border-radius: 14px; }
+
+    /* "Volver a roles" (páginas de galaxias): arriba a la izquierda, alto táctil >= 44 px */
+    .boton-volver-roles {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        width: calc(var(--icono-top) * 2.638);  /* alto = alto de los iconos de la derecha (volver-a-roles.png ya recortada: 744x282) */
+    }
+    @media (max-width: 712px) {
+        .boton-volver-roles { top: 14px; left: 14px; }
+    }
+
+    /* Botón de estrellas con su imagen (estrella.png): sin marco CSS, el dibujo ya trae el suyo.
+       Apagado = un poco atenuado; activo = pleno y con brillo. Conserva tamaño y posición de siempre. */
+    .icono-estrellas-btn.boton-imagen {
+        padding: 0;
+        border: 0;
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    .icono-estrellas-btn.boton-imagen img {
+        width: 100%;           /* estrella.png ya viene recortada al marco: llena la caja de --icono-top, igual que música y sonido */
+        height: 100%;
+        object-fit: contain;
+        opacity: 0.75;
+        transition: opacity 0.2s ease, filter 0.2s ease;
+    }
+    .icono-estrellas-btn.boton-imagen.icono-estrellas-btn--activo img {
+        opacity: 1;
+        filter: drop-shadow(0 0 8px rgba(51, 253, 102, 0.8));
+    }
+    /* "Volver a galáxias" (pantalla de planetas): arriba a la izquierda, tamaño de Figma (~24% del ancho en móvil).
+       Misma esquina que "Volver a roles"; el título ya baja debajo de esta fila (DivCentral.jsx). */
+    .boton-volver-galaxias {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        width: calc(var(--icono-top) * 2.809);  /* alto = alto de los iconos (Boton-regresar.png: 250x89) */
+    }
+    @media (max-width: 712px) {
+        .boton-volver-galaxias { top: 14px; left: 14px; }
     }

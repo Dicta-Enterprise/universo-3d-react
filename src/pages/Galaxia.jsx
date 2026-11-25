@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
 import CentralText from '../components/Galaxias/CentralText';
 import BackButton from '../components/BackButton';
+import FondoUniverso from '../components/FondoUniverso';
+import { reproducirClic, reproducirMagia } from '../components/sonidos';
 
 export default function Ninos() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -11,9 +13,6 @@ export default function Ninos() {
     const galaxiesRef = useRef([]);
     const cameraRef = useRef(null);
     const isAnimatingRef = useRef(false);
-    const audioListenerRef = useRef(null);
-    const clickSoundRef = useRef(null);
-    const magicSoundRef = useRef(null);
 
     useEffect(() => {
         const handleResize = () => {
@@ -40,36 +39,16 @@ export default function Ninos() {
     useEffect(() => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // alpha: el fondo lo pone <FondoUniverso />
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
         cameraRef.current = camera;
 
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
-        audioListenerRef.current = listener;
+        // (Audio: todos los sonidos pasan por components/sonidos.js, que respeta el silencio global)
 
-        const clickSound = new THREE.Audio(listener);
-        const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('/assets/sounds/click.mp3', (buffer) => {
-            clickSound.setBuffer(buffer);
-            clickSound.setLoop(false);
-            clickSound.setVolume(0.5);
-        });
-        clickSoundRef.current = clickSound;
-
-        const magicSound = new THREE.Audio(listener);
-        audioLoader.load('/assets/sounds/magic.mp3', (buffer) => {
-            magicSound.setBuffer(buffer);
-            magicSound.setLoop(false);
-            magicSound.setVolume(0.5);
-        });
-        magicSoundRef.current = magicSound;
-
-        const spaceTexture = new THREE.TextureLoader().load('/assets/2k_stars.jpg');
-        scene.background = spaceTexture;
+        scene.background = null; // fondo oficial: <FondoUniverso /> (antes: textura /assets/2k_stars.jpg)
 
         const galaxies = [];
         const galaxyMaterials = [];
@@ -191,9 +170,7 @@ export default function Ninos() {
                         index: galaxyIndex,
                     });
 
-                    if (clickSoundRef.current) {
-                        clickSoundRef.current.play();
-                    }
+                    reproducirClic(); // ABRIR-BOTON.wav (antes: click.mp3)
                 }
             } else {
                 setSelectedGalaxy(null);
@@ -232,9 +209,7 @@ export default function Ninos() {
 
             isAnimatingRef.current = true;
 
-            if (magicSoundRef.current) {
-                magicSoundRef.current.play();
-            }
+            reproducirMagia(); // magic.mp3 al confirmar la galaxia
 
             const duration = 1.5;
             const distance = 9;
@@ -268,6 +243,7 @@ export default function Ninos() {
 
     return (
         <>
+            <FondoUniverso />
             <CentralText selectedGalaxy={selectedGalaxy} onConfirm={handleConfirm} />
             <BackButton redirectUrl="/" />
         </>

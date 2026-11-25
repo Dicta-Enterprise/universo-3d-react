@@ -1,0 +1,491 @@
+/* ==========================================================================
+   Pantalla de cohetes / tarjetas -- responsive.
+   Todo se calcula a partir de UNA variable, --card-w (ancho de la tarjeta): textos, botones,
+   espacios y el tamaño del cohete 3D (ThreeScene lo ancla a la tarjeta leyendo su tamaño real),
+   así el diseño escala junto en celular, tablet y escritorio.
+   Medidas tomadas de las capturas de Figma (escritorio y celular).
+   ========================================================================== */
+
+.rocket-cards {
+    /* Escritorio: tarjeta ~48% de la altura de la pantalla, sin pasar de 28vw ni de 300px */
+    --card-ratio: 0.58;                                   /* ancho / alto de la tarjeta */
+    --card-w: min(calc(48vh * var(--card-ratio)), 28vw, 300px);
+    --card-gap: clamp(12px, 3.3vw, 44px);
+    --nariz: calc(var(--card-w) * 0.40);                  /* lo que sobresale el cohete por encima de la tarjeta (debe coincidir con COHETE_NARIZ_REL en ThreeScene) */
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: clamp(56px, 9vh, 96px) 4vw 4vh;              /* deja libres los iconos de la esquina */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;                              /* el bloque queda centrado verticalmente, como en el diseño */
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;                                 /* el contenedor nunca bloquea lo que hay detrás */
+}
+
+.rocket-cards--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rocket-cards__header {
+    color: white;
+    font-size: clamp(0.9rem, 3vh, 1.5rem);
+    text-align: center;
+    max-width: clamp(320px, 40vw, 700px);
+    margin: 0 0 calc(var(--nariz) + 3.5vh) 0;             /* espacio para que la nariz del cohete no toque el texto */
+    font-family: 'Fredoka', sans-serif;                   /* "En un universo plagado..." */
+    font-weight: 400;                                     /* Figma: letra regular, más ligera que antes (500) */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    line-height: 1.4;
+}
+
+.rocket-cards__container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--card-gap);
+    width: 100%;
+}
+
+.rocket-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--card-w) * 0.08);
+}
+
+.rocket-card {
+    width: var(--card-w);
+    height: calc(var(--card-w) / var(--card-ratio));
+    box-sizing: border-box;
+    background: var(--card-primary);
+    border: clamp(2px, calc(var(--card-w) * 0.016), 4px) solid var(--card-secondary);
+    border-radius: calc(var(--card-w) * 0.08);
+    padding: calc(var(--card-w) * 0.19) calc(var(--card-w) * 0.075) calc(var(--card-w) * 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Escritorio: el título va a la izquierda (el cohete ocupa el centro), como en el diseño */
+.rocket-card__title {
+    align-self: flex-start;
+    margin: 0 0 calc(var(--card-w) * 0.07) calc(var(--card-w) * 0.04);
+    color: white;
+    font-size: max(0.95rem, calc(var(--card-w) * 0.11));
+    font-weight: 800;
+    line-height: 1.1;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.rocket-card__bubble {
+    background: white;
+    border-radius: calc(var(--card-w) * 0.05);
+    padding: calc(var(--card-w) * 0.04) calc(var(--card-w) * 0.055);
+    font-family: 'Inter', sans-serif;                     /* texto de los globos (recuadros rojos) */
+    font-size: max(0.68rem, calc(var(--card-w) * 0.05));
+    line-height: 1.3;
+    color: #333;
+    text-align: center;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.rocket-card__bubble p {
+    margin: 0;
+}
+
+/* Colita del globo de texto */
+.rocket-card__bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+}
+
+.rocket-card__character-space {
+    flex: 1;
+    min-height: 0;                                        /* permite que el astronauta se encoja en vez de desbordar la tarjeta */
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: calc(var(--card-w) * 0.06);
+}
+
+.astronauta-img {
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+    object-fit: contain; 
+}
+
+.rocket-card__button {
+    background-color: var(--card-primary);
+    color: #333;
+    font-family: 'Fredoka', sans-serif;                   /* botones "Elegir" */
+    font-weight: bold;
+    font-size: max(0.85rem, calc(var(--card-w) * 0.09));
+    line-height: 1.2;
+    text-decoration: none;
+    padding: calc(var(--card-w) * 0.045) calc(var(--card-w) * 0.15);
+    border-radius: 30px;
+    border: clamp(2px, calc(var(--card-w) * 0.012), 3px) solid var(--card-secondary);
+    transition: transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    pointer-events: none;                                 /* solo es clicable cuando las tarjetas ya son visibles */
+}
+
+.rocket-cards--visible .rocket-card__button {
+    pointer-events: auto;
+}
+
+.rocket-card__button:hover {
+    transform: scale(1.05);
+}
+
+/* Popup */
+.rocket-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    padding-top: 28vh;                                    /* el popup queda más abajo, para que se vea el cohete preparándose */
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.rocket-popup {
+    background: #1a1f4d;
+    border: 3px solid #33ff66;
+    border-radius: 15px;
+    padding: 30px 40px;
+    max-width: min(90vw, 420px);
+    box-sizing: border-box;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: popIn 0.3s ease-out;
+}
+
+.rocket-popup p {
+    color: white;
+    font-size: 1.2rem;
+    margin: 0 0 20px 0;
+}
+
+.rocket-popup__buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.rocket-popup__buttons button {
+    padding: 10px 25px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.rocket-popup__buttons button:hover {
+    transform: scale(1.05);
+}
+
+.btn-aceptar { background: #33ff66; color: #0a2f12; }
+.btn-cancelar { background: #ff4d4d; color: white; }
+
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   Celular (vertical): tarjetas altas y angostas, título centrado debajo del cohete,
+   y los botones "Elegir" más separados, como en el diseño.
+   ========================================================================== */
+@media (max-width: 600px) {
+    .rocket-cards {
+        --card-w: min(26vw, 190px);
+        --card-gap: 3.2vw;
+        padding: clamp(64px, 10vh, 100px) 2vw 3vh;
+    }
+    .rocket-cards__header {
+        font-size: clamp(0.85rem, 3.9vw, 1.15rem);
+        max-width: 80%;
+    }
+    .rocket-card {
+        height: clamp(240px, 36vh, 390px);                /* más alta que ancha en celular */
+        padding: calc(var(--card-w) * 0.10) calc(var(--card-w) * 0.07) calc(var(--card-w) * 0.07);
+    }
+    .rocket-card__title {
+        align-self: center;
+        margin: calc(var(--card-w) * 0.44) 0 calc(var(--card-w) * 0.12) 0;  /* debajo de la llama */
+        font-size: max(0.9rem, calc(var(--card-w) * 0.16));
+    }
+    .rocket-card__bubble {
+        font-size: max(0.6rem, calc(var(--card-w) * 0.095));
+        padding: calc(var(--card-w) * 0.06);
+    }
+    .rocket-card__bubble::after {
+        bottom: -8px;
+        border-width: 8px 8px 0;
+    }
+    .rocket-card-wrapper {
+        gap: calc(var(--card-w) * 0.4);
+    }
+    .rocket-card__button {
+        font-size: max(0.8rem, calc(var(--card-w) * 0.12));
+        padding: calc(var(--card-w) * 0.07) calc(var(--card-w) * 0.26);
+    }
+}
+
+/* Celular en horizontal / pantallas bajas: todo un poco más compacto */
+@media (max-height: 520px) and (min-width: 601px) {
+    .rocket-cards {
+        --card-w: min(calc(46vh * var(--card-ratio)), 24vw);
+        padding-top: 14vh;
+    }
+    .rocket-cards__header {
+        font-size: clamp(0.75rem, 3.4vh, 1rem);
+    }
+    .rocket-card {
+        padding-top: calc(var(--card-w) * 0.17);
+    }
+    .rocket-card__title {
+        font-size: 0.8rem;
+        margin-bottom: calc(var(--card-w) * 0.04);
+    }
+    .rocket-card__bubble {
+        font-size: 0.5rem;
+        padding: calc(var(--card-w) * 0.03) calc(var(--card-w) * 0.04);
+    }
+    .rocket-card__button {
+        font-size: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   Guía de scroll: "Desliza para seguir la exploración ↓"
+   Va dentro de .rocket-cards (position: fixed) con posición absoluta, así no mueve las tarjetas.
+   ========================================================================== */
+.rocket-cards__guia {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 6vh;                                          /* misma altura que .desliza-hint de las otras fases */
+    text-align: center;
+    font-family: 'Courier Prime', 'Courier New', monospace; /* mismo estilo que .desliza-hint */
+    font-size: clamp(0.85rem, 2.2vw, 1rem);
+    color: #cfd3f0;
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.rocket-cards__guia--visible {
+    opacity: 1;
+    transition: opacity 0.6s ease 0.35s;                  /* aparece un instante después de cerrarse el modal */
+}
+
+.rocket-cards__guia-flecha {
+    display: inline-block;
+    animation: guiaRebote 1.6s ease-in-out infinite;      /* sugerencia sutil de desplazamiento */
+}
+
+@keyframes guiaRebote {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(4px); }
+}
+
+
+/* ==========================================================================
+   Modal de la nave. El overlay es una capa aparte (oscurece + desenfoca lo que hay detrás);
+   el modal es su hijo, por eso NO se desenfoca. z-index 2000: por encima de la capa 3D de cohetes (1001).
+   ========================================================================== */
+.nave-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 4vh, 40px) clamp(12px, 4vw, 40px);
+    background: rgba(3, 6, 24, 0.62);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.28s ease;                       /* MODAL_ANIM_MS en RocketCards.jsx */
+    touch-action: none;                                   /* en móvil no se desplaza nada detrás */
+    overscroll-behavior: contain;
+}
+
+.nave-modal-overlay--abierto {
+    opacity: 1;
+}
+
+.nave-modal {
+    position: relative;
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: 100%;
+    line-height: 0;
+    background: #050816;
+    border: clamp(3px, 0.5vw, 5px) solid #33ff66;
+    border-radius: clamp(12px, 2vw, 22px);
+    box-shadow: 0 0 18px rgba(51, 255, 102, 0.65), 0 0 60px rgba(51, 255, 102, 0.3), 0 20px 50px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    transform: scale(0.92);
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.nave-modal-overlay--abierto .nave-modal {
+    transform: scale(1);
+}
+
+/* El marco toma la proporción real de la imagen: no se deforma ni se recorta */
+.nave-modal__img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(92vw, 1200px);
+    max-height: 84vh;
+    user-select: none;
+}
+
+.nave-modal__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: min(88vw, 900px);
+    aspect-ratio: 16 / 9;
+    padding: 24px;
+    box-sizing: border-box;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.nave-modal__cerrar {
+    position: absolute;
+    top: clamp(8px, 1.6vw, 16px);
+    right: clamp(8px, 1.6vw, 16px);
+    width: 44px;                                          /* área táctil mínima en móvil */
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0b1020;
+    color: #33ff66;
+    border: 2px solid #33ff66;
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 1;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.nave-modal__cerrar svg {
+    width: 20px;
+    height: 20px;
+}
+
+.nave-modal__cerrar:hover,
+.nave-modal__cerrar:focus-visible {
+    transform: scale(1.08);
+    background: #13204a;
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nave-modal-overlay,
+    .nave-modal,
+    .rocket-cards__guia { transition-duration: 0.01s; transition-delay: 0s; }
+    .rocket-cards__guia-flecha { animation: none; }
+}
+
+/* ==========================================================================
+   Secuencia de entrada: el texto se escribe (RocketCards.jsx) y después las tarjetas
+   aparecen una tras otra. Los cohetes 3D siguen a cada tarjeta, así que entran con ellas.
+   ========================================================================== */
+
+/* El texto completo (invisible) reserva el espacio; el escrito se superpone en la misma celda */
+.rocket-cards__header {
+    display: grid;
+    justify-items: center;
+}
+.rocket-cards__header > span {
+    grid-area: 1 / 1;
+    text-align: center;
+    white-space: pre-line;      /* respeta el salto de línea del texto: "¿A quién vas a proteger?" en su propia línea */
+}
+.rocket-cards__header-fantasma {
+    visibility: hidden;
+}
+
+/* Las tarjetas empiezan ocultas SOLO si RocketCards.jsx es la versión que escribe el texto (su <h2> trae
+   la capa .rocket-cards__header-fantasma). Así, con un RocketCards.jsx anterior, esta hoja nunca las
+   deja ocultas para siempre. */
+.rocket-card-wrapper {
+    transition: opacity 0.6s ease, transform 0.6s ease;       /* al ocultarse: sin retraso */
+}
+.rocket-cards:has(.rocket-cards__header-fantasma) .rocket-card-wrapper {
+    opacity: 0;
+    transform: translateY(28px);
+}
+.rocket-cards:has(.rocket-cards__header-fantasma) .rocket-card-wrapper--listo {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--i, 0) * 0.18s);              /* Niño, Joven, Padre en orden */
+}
+
+/* Mientras una tarjeta aún no aparece no recibe clics ni hover (su botón y su cuerpo tienen pointer-events propios) */
+.rocket-cards:has(.rocket-cards__header-fantasma) .rocket-card-wrapper:not(.rocket-card-wrapper--listo) .rocket-card,
+.rocket-cards:has(.rocket-cards__header-fantasma) .rocket-card-wrapper:not(.rocket-card-wrapper--listo) .rocket-card__button {
+    pointer-events: none;
+}
+
+/* Elevación al pasar el cursor: cada tarjeta responde sola (el hover es de .rocket-card, no del contenedor) */
+.rocket-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.rocket-cards--visible .rocket-card {
+    pointer-events: auto;
+}
+.rocket-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rocket-card-wrapper, .rocket-card { transition-duration: 0.01s; transition-delay: 0s; }
+    .rocket-card:hover { transform: none; }
+}
